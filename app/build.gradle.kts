@@ -96,8 +96,9 @@ dependencies {
     // Play Location Services
     implementation(libs.play.services.location)
 
-    // Kotlin Coroutines Play Services
+    // Kotlin Coroutines Support for Task<T>
     implementation(libs.kotlinx.coroutines.play.services)
+    testImplementation(libs.kotlinx.coroutines.test)
 
     // Retrofit
     implementation(libs.retrofit)
