@@ -14,6 +14,7 @@ daggerHiltAndroid = "2.55"
 daggerHiltCompiler = "2.55"
 hiltNavigationCompose = "1.2.0"
 library = "8.9.0"
+playServicesLocation = "21.3.0"
 timber = "5.0.1"
 
 [libraries]
@@ -37,6 +38,7 @@ google-dagger-hilt-android = { group = "com.google.dagger", name = "hilt-android
 google-dagger-hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "daggerHiltCompiler" }
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 jakewharton-timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
+play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

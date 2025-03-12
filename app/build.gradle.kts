@@ -93,6 +93,9 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     androidTestImplementation(libs.androidx.ui.test.junit4)
 
+    // Play Location Services
+    implementation(libs.play.services.location)
+
     // Hilt
     implementation(libs.google.dagger.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
