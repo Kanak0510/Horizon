@@ -3,9 +3,10 @@ package com.example.horizon.data.remote.models
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
-// todo stopship docs - @JsonClass makes use of compile code gen instead of depending on reflection +
-//  generates Kotlin code using KotlinPoet
-
+/**
+ * todo stopship docs - @JsonClass makes use of compile code gen instead of depending on reflection +
+ *  generates KOTLIN CODE USING KOTLIN POET
+ */
 @JsonClass(generateAdapter = true)
 data class WeatherResponse(
     @Json(name = "id") val cityId: Int,
