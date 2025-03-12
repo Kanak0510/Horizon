@@ -96,6 +96,9 @@ dependencies {
     // Play Location Services
     implementation(libs.play.services.location)
 
+    // Kotlin Coroutines Play Services
+    implementation(libs.kotlinx.coroutines.play.services)
+
     // Hilt
     implementation(libs.google.dagger.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
