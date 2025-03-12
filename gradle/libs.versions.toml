@@ -1,5 +1,6 @@
 [versions]
 agp = "8.9.0"
+converterMoshi = "2.11.0"
 kotlin = "2.0.21"
 coreKtx = "1.15.0"
 junit = "4.13.2"
@@ -10,16 +11,20 @@ lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.10.1"
 composeBom = "2024.09.00"
 lifecycleViewModelCompose = "2.8.7"
+moshi = "1.15.2"
+moshiKotlinCodegen = "1.15.2"
 navigationCompose = "2.8.8"
 daggerHiltAndroid = "2.55"
 daggerHiltCompiler = "2.55"
 hiltNavigationCompose = "1.2.0"
 library = "8.9.0"
 playServicesLocation = "21.3.0"
+retrofit = "2.11.0"
 timber = "5.0.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+converter-moshi = { module = "com.squareup.retrofit2:converter-moshi", version.ref = "converterMoshi" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -40,7 +45,10 @@ google-dagger-hilt-compiler = { group = "com.google.dagger", name = "hilt-compil
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 jakewharton-timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 kotlinx-coroutines-play-services = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "kotlinxCoroutinesPlayServices" }
+moshi = { module = "com.squareup.moshi:moshi", version.ref = "moshi" }
+moshi-kotlin-codegen = { module = "com.squareup.moshi:moshi-kotlin-codegen", version.ref = "moshiKotlinCodegen" }
 play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

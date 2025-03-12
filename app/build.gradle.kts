@@ -99,6 +99,14 @@ dependencies {
     // Kotlin Coroutines Play Services
     implementation(libs.kotlinx.coroutines.play.services)
 
+    // Retrofit
+    implementation(libs.retrofit)
+    implementation(libs.converter.moshi)
+
+    // Moshi
+    implementation(libs.moshi)
+    implementation(libs.moshi.kotlin.codegen) // Make's Moshi not depend on Reflection + Generates Kotlin Code using KotlinPoet
+
     // Hilt
     implementation(libs.google.dagger.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
