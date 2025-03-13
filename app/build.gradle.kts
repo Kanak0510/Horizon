@@ -5,8 +5,7 @@ plugins {
     alias(libs.plugins.google.dagger.hilt.android)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    kotlin("kapt")
-
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -111,7 +110,7 @@ dependencies {
     // Hilt
     implementation(libs.google.dagger.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
-    kapt(libs.google.dagger.hilt.compiler)
+    ksp(libs.google.dagger.hilt.compiler)
 
     // Logging
     implementation(libs.jakewharton.timber)
