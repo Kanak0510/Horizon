@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -19,11 +18,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 
 /**
@@ -47,15 +43,13 @@ fun CompactWeatherCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val superscriptSpan = MaterialTheme.typography.displaySmall.toSpanStyle()
     val weatherWithDegreesSuperscript = remember(weatherInDegrees) {
-        buildAnnotatedString {
-            append(weatherInDegrees)
-            withStyle(
-                style = superscriptSpan.copy(baselineShift = BaselineShift.Superscript),
-                block = { append("º") }
-            )
-        }
+        /**
+        * Note: the weather superscript used here is not the default one that
+        * is available on Macs by using the shortcut option + 0. The one used in
+        * MacOS does not look good in the user interface.
+        */
+        "$weatherInDegrees°"
     }
     OutlinedCard(modifier = modifier, onClick = onClick) {
         Row(
@@ -78,9 +72,7 @@ fun CompactWeatherCard(
                     iconRes = shortDescriptionIcon
                 )
             }
-            // OffSet Text Composable to accommodate the superscript
             Text(
-                modifier = Modifier.offset(y = (-8).dp),
                 text = weatherWithDegreesSuperscript,
                 style = MaterialTheme.typography.displayMedium
             )
