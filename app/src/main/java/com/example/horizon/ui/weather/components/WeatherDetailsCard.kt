@@ -24,7 +24,7 @@ import com.example.horizon.domain.models.WeatherDetails
  * @param windDirectionIcon The wind direction icon.
  * @param pressureIcon The pressure icon.
  */
-data class WeatherIcons(
+data class WeatherDetailIcons(
     @DrawableRes val minTempIcon: Int = R.drawable.ic_min_temp,
     @DrawableRes val maxTempIcon: Int = R.drawable.ic_max_temp,
     @DrawableRes val humidityIcon: Int = R.drawable.ic_humidity,
@@ -46,7 +46,7 @@ fun WeatherDetailsCard(
     modifier: Modifier = Modifier,
     cardColors: CardColors = CardDefaults.cardColors(),
     weatherDetails: WeatherDetails,
-    weatherDetailsIcons: WeatherIcons = WeatherIcons(),
+    weatherDetailsIcons: WeatherDetailIcons = WeatherDetailIcons(),
     shortWeatherDescription: String
 ) {
     Card(
