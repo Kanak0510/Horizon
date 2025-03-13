@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -75,6 +76,16 @@ fun HomeScreen(
     }
 }
 
+/**
+ * A composable that contains a centered [SearchBar] meant to be used in the lazy column defined in
+ * [HomeScreen].
+ *
+ * Note: In this composable the [SearchBar]'s max height and width are constrained to the max height
+ * and width of the screen. Using it in a lazy column using [LazyListScope.item], will cause the app
+ * to crash. This is because the width of the [SearchBar], when expanded is set to infinity. A composable
+ * of width infinity, in a lazy column, will make the app crash. Hence, the size is explicitly
+ * constrained. This might be a bug, and might be fixed in the future.
+ */
 @ExperimentalMaterial3Api
 @Composable
 private fun Header(
@@ -84,7 +95,7 @@ private fun Header(
     onSearchQueryChange: (String) -> Unit,
     onSearchBarActiveChange: (Boolean) -> Unit,
     onSearch: (String) -> Unit,
-    searchBarSuggestionsContent: @Composable() (ColumnScope.() -> Unit)
+    searchBarSuggestionsContent: @Composable (ColumnScope.() -> Unit)
 ) {
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
@@ -93,8 +104,8 @@ private fun Header(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .sizeIn(
-                    maxWidth = screenWidth,
-                    maxHeight = screenHeight // todo explain
+                    maxWidth = screenWidth, // See Docs for Explanation
+                    maxHeight = screenHeight // See Docs for Explanation
                 ),
             query = currentSearchQuery,
             onQueryChange = onSearchQueryChange,
