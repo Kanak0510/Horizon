@@ -1,5 +1,7 @@
 package com.example.horizon.di
 
+import com.example.horizon.data.remote.location.LocationClient
+import com.example.horizon.data.remote.location.LocationClientConstants
 import com.example.horizon.data.remote.weather.WeatherClient
 import com.example.horizon.data.remote.weather.WeatherClientConstants
 import dagger.Module
@@ -20,4 +22,10 @@ object NetworkModule {
         .build()
         .create(WeatherClient::class.java)
 
+    @Provides
+    fun provideLocationClient(): LocationClient = Retrofit.Builder()
+        .baseUrl(LocationClientConstants.BASE_URL)
+        .addConverterFactory(MoshiConverterFactory.create())
+        .build()
+        .create(LocationClient::class.java)
 }
