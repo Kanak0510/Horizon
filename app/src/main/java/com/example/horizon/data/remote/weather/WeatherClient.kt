@@ -1,6 +1,6 @@
-package com.example.horizon.data.remote
+package com.example.horizon.data.remote.weather
 
-import com.example.horizon.data.remote.models.WeatherResponse
+import com.example.horizon.data.remote.weather.models.WeatherResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query

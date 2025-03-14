@@ -1,4 +1,4 @@
-package com.example.horizon.data.remote
+package com.example.horizon.data.remote.weather
 
 import com.example.horizon.BuildConfig
 import com.example.horizon.di.NetworkModule

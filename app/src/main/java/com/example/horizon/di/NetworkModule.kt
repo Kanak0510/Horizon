@@ -1,7 +1,7 @@
 package com.example.horizon.di
 
-import com.example.horizon.data.remote.WeatherClient
-import com.example.horizon.data.remote.WeatherClientConstants
+import com.example.horizon.data.remote.weather.WeatherClient
+import com.example.horizon.data.remote.weather.WeatherClientConstants
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

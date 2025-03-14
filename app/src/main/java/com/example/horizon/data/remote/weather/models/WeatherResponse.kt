@@ -1,4 +1,4 @@
-package com.example.horizon.data.remote.models
+package com.example.horizon.data.remote.weather.models
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
