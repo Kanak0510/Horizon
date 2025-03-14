@@ -1,0 +1,18 @@
+package com.example.horizon.di
+
+import com.example.horizon.data.repositories.location.HorizonLocationServicesRepository
+import com.example.horizon.data.repositories.location.LocationServicesRepository
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ViewModelComponent
+
+@Module
+@InstallIn(ViewModelComponent::class)
+abstract class RepositoriesModule {
+
+    @Binds
+    abstract fun bindLocationServicesRepository(
+        impl: HorizonLocationServicesRepository
+    ): LocationServicesRepository
+}
