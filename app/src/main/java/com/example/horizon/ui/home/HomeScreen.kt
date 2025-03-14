@@ -8,8 +8,10 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
@@ -20,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -54,6 +57,7 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     weatherDetailsOfSavedLocations: List<BriefWeatherDetails>,
     suggestionsForSearchQuery: List<LocationAutofillSuggestion>,
+    isSuggestionsListLoading: Boolean = false,
     onSuggestionClick: (LocationAutofillSuggestion) -> Unit,
     onSearchQueryChange: (String) -> Unit
 ) {
@@ -82,7 +86,8 @@ fun HomeScreen(
                 searchBarSuggestionsContent = {
                     AutoFillSuggestionsList(
                         suggestions = suggestionsForSearchQuery,
-                        onSuggestionClick = onSuggestionClick
+                        onSuggestionClick = onSuggestionClick,
+                        isSuggestionsListLoading = isSuggestionsListLoading
                     )
                 }
             )
@@ -222,18 +227,34 @@ private fun AnimatedSearchBarLeadingIcon(
 private fun AutoFillSuggestionsList(
     suggestions: List<LocationAutofillSuggestion>,
     onSuggestionClick: (LocationAutofillSuggestion) -> Unit,
-    modifier: Modifier = Modifier
+    isSuggestionsListLoading: Boolean
 ) {
-    LazyColumn(modifier = modifier) {
-        items(items = suggestions, key = { it.idOfLocation }) {
-            AutofillSuggestion(
-                title = it.nameOfLocation,
-                subText = it.addressOfLocation,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                onClick = { onSuggestionClick(it) }
-            )
+    Box(modifier = Modifier.fillMaxSize()) {
+        if (isSuggestionsListLoading) {
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+        } else {
+            LazyColumn {
+                autofillSuggestionItems(
+                    suggestions = suggestions,
+                    onSuggestionClick = onSuggestionClick
+                )
+            }
         }
+    }
+}
+
+private fun LazyListScope.autofillSuggestionItems(
+    suggestions: List<LocationAutofillSuggestion>,
+    onSuggestionClick: (LocationAutofillSuggestion) -> Unit
+) {
+    items(items = suggestions, key = { it.idOfLocation }) {
+        AutofillSuggestion(
+            title = it.nameOfLocation,
+            subText = it.addressOfLocation,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            onClick = { onSuggestionClick(it) }
+        )
     }
 }
