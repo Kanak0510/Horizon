@@ -19,4 +19,9 @@ object LocationClientConstants {
          */
         const val GET_PLACES_SUGGESTIONS_FOR_QUERY = "suggest"
     }
+
+    /**
+     * The endpoint used to get the coordinates of a place with a specific id.
+     */
+    const val GET_COORDINATES_FOR_PLACE_ID = "retrieve/{id}"
 }
