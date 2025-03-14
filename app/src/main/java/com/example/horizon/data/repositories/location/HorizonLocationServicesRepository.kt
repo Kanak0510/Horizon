@@ -7,6 +7,7 @@ import com.example.horizon.data.remote.location.models.toLocationAutofillSuggest
 import com.example.horizon.domain.models.LocationAutofillSuggestion
 import java.util.UUID
 import javax.inject.Inject
+import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * A concrete implementation of [LocationServicesRepository].
@@ -15,9 +16,13 @@ class HorizonLocationServicesRepository @Inject constructor(
     private val locationClient: LocationClient
 ) : LocationServicesRepository {
 
-    override suspend fun fetchSuggestedPlacesForQuery(query: String): Result<List<LocationAutofillSuggestion>> =
-        runCatching {
+    override suspend fun fetchSuggestedPlacesForQuery(query: String): Result<List<LocationAutofillSuggestion>> {
+        return if (query.isBlank()) Result.success(emptyList())
+        else try {
             val sessionToken = UUID.randomUUID().toString()
+            // non-null assertions to body() calls are fine here because, if the body is empty,
+            // it essentially means that there was some error during the fetch operation. The
+            // null pointer exception will get caught by the enclosing try catch block.
             val suggestionCoordinatePairs = locationClient.getPlacesSuggestionsForQuery(
                 query = query,
                 accessToken = BuildConfig.MAP_BOX_API_KEY,
@@ -29,12 +34,18 @@ class HorizonLocationServicesRepository @Inject constructor(
                     sessionToken = sessionToken
                 ).body()!!.coordinates
             }.toList()
-            suggestionCoordinatePairs.map { (suggestion, coordinates) ->
-                val autoFillSuggestionCoordinate = LocationAutofillSuggestion.Coordinates(
-                    latitude = coordinates.latitude,
-                    longitude = coordinates.longitude
-                )
-                suggestion.toLocationAutofillSuggestionList(autoFillSuggestionCoordinate)
-            }
+            val autofillSuggestionList =
+                suggestionCoordinatePairs.map { (suggestion, coordinates) ->
+                    val autoFillSuggestionCoordinate = LocationAutofillSuggestion.Coordinates(
+                        latitude = coordinates.latitude,
+                        longitude = coordinates.longitude
+                    )
+                    suggestion.toLocationAutofillSuggestionList(autoFillSuggestionCoordinate)
+                }
+            Result.success(autofillSuggestionList)
+        } catch (exception: Exception) {
+            if (exception is CancellationException) throw exception
+            Result.failure(exception)
         }
+    }
 }
