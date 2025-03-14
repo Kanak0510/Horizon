@@ -54,7 +54,8 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     weatherDetailsOfSavedLocations: List<BriefWeatherDetails>,
     suggestionsForSearchQuery: List<LocationAutofillSuggestion>,
-    onSuggestionClick: (LocationAutofillSuggestion) -> Unit
+    onSuggestionClick: (LocationAutofillSuggestion) -> Unit,
+    onSearchQueryChange: (String) -> Unit
 ) {
     var isSearchBarActive by remember { mutableStateOf(false) }
     var currentQueryText by remember { mutableStateOf("") }
@@ -67,9 +68,15 @@ fun HomeScreen(
             Header(
                 modifier = Modifier.fillMaxWidth(),
                 currentSearchQuery = currentQueryText,
-                onClearSearchQueryIconClick = { currentQueryText = "" },
+                onClearSearchQueryIconClick = {
+                    currentQueryText = ""
+                    onSearchQueryChange("")
+                },
                 isSearchBarActive = isSearchBarActive,
-                onSearchQueryChange = { currentQueryText = it },
+                onSearchQueryChange = {
+                    currentQueryText = it
+                    onSearchQueryChange(it)
+                },
                 onSearchBarActiveChange = { isSearchBarActive = it },
                 onSearch = {/* TODO: handle search */ },
                 searchBarSuggestionsContent = {
