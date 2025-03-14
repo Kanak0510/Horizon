@@ -1,10 +1,12 @@
 package com.example.horizon
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.material3.Surface
+import com.example.horizon.ui.navigation.HorizonNavigation
+import com.example.horizon.ui.theme.HorizonTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -12,8 +14,11 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        Toast.makeText(this, BuildConfig.OPEN_WEATHER_MAP_API_KEY, Toast.LENGTH_SHORT).show()
-        setContent {}
+        setContent {
+            HorizonTheme {
+                Surface(content = { HorizonNavigation() })
+            }
+        }
     }
 }
 
