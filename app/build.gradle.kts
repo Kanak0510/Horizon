@@ -30,13 +30,20 @@ android {
         }
 
         // Load the API Key form local.properties file and make it available as a BuildConfig Field
-        val properties = Properties()
-        properties.load(project.rootProject.file("local.properties").inputStream())
-        val apiKey = properties.getProperty("HORIZON_API_KEY")
+        val properties = Properties().apply {
+            load(project.rootProject.file("local.properties").inputStream())
+        }
+        val openWeatherMapApiKey = properties.getProperty("OPEN_WEATHER_MAP_API_KEY")
+        val mapBoxApiKey = properties.getProperty("MAP_BOX_API_KEY")
         buildConfigField(
             type = "String",
             name = "OPEN_WEATHER_MAP_API_KEY",
-            value = "\"$apiKey\""
+            value = "\"$openWeatherMapApiKey\""
+        )
+        buildConfigField(
+            type = "String",
+            name = "MAP_BOX_API_KEY",
+            value = "\"$mapBoxApiKey\""
         )
     }
 
