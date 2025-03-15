@@ -18,6 +18,7 @@ object NetworkModule {
     @Provides
     fun provideWeatherClient(): WeatherClient = Retrofit.Builder()
         .baseUrl(WeatherClientConstants.BASE_URL)
+        .client(WeatherClientConstants.AutoAddApiKeyClient)
         .addConverterFactory(MoshiConverterFactory.create())
         .build()
         .create(WeatherClient::class.java)

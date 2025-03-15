@@ -1,6 +1,5 @@
 package com.example.horizon.data.remote.weather
 
-import com.example.horizon.BuildConfig
 import com.example.horizon.di.NetworkModule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -14,7 +13,6 @@ class WeatherClientTest {
     @Test
     fun `Given valid coordinates, the weather should be successfully fetched`() = runTest {
         val response = client.getWeatherForCoordinates(
-            apiKey = BuildConfig.OPEN_WEATHER_MAP_API_KEY,
             latitude = "37.333333",
             longitude = "-122.028033",
             units = WeatherClientConstants.Units.CELSIUS

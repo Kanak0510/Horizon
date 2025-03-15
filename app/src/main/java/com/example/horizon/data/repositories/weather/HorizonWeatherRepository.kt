@@ -1,6 +1,5 @@
 package com.example.horizon.data.repositories.weather
 
-import com.example.horizon.BuildConfig
 import com.example.horizon.data.remote.weather.WeatherClient
 import com.example.horizon.data.remote.weather.WeatherClientConstants
 import com.example.horizon.data.remote.weather.models.toWeatherDetails
@@ -20,7 +19,6 @@ class HorizonWeatherRepository @Inject constructor(
         longitude: String
     ): Result<WeatherDetails> = try {
         val response = weatherClient.getWeatherForCoordinates(
-            apiKey = BuildConfig.OPEN_WEATHER_MAP_API_KEY,
             latitude = latitude,
             longitude = longitude,
             units = WeatherClientConstants.Units.CELSIUS // todo
