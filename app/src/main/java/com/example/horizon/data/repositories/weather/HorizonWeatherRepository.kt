@@ -15,7 +15,7 @@ class HorizonWeatherRepository @Inject constructor(
     private val weatherClient: WeatherClient
 ) : WeatherRepository {
 
-    override suspend fun getWeatherForLocation(
+    override suspend fun fetchWeatherForLocation(
         latitude: String,
         longitude: String
     ): Result<WeatherDetails> = try {

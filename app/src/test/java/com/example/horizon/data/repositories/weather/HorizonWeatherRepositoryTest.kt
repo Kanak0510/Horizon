@@ -16,7 +16,7 @@ class HorizonWeatherRepositoryTest {
         runTest {
             val latitude = "37.422131"
             val longitude = "-122.084801"
-            val result = weatherRepository.getWeatherForLocation(latitude, longitude)
+            val result = weatherRepository.fetchWeatherForLocation(latitude, longitude)
             assert(result.isSuccess)
             assert(result.getOrNull() != null)
         }
@@ -29,7 +29,7 @@ class HorizonWeatherRepositoryTest {
          */
         val latitude = "1000.0"
         val longitude = "-2000.0"
-        val result = weatherRepository.getWeatherForLocation(latitude, longitude)
+        val result = weatherRepository.fetchWeatherForLocation(latitude, longitude)
         assert(result.isFailure)
         assert(result.exceptionOrNull() != null)
     }
