@@ -15,8 +15,8 @@ interface WeatherClient {
     @GET(WeatherClientConstants.EndPoints.GET_WEATHER_ENDPOINT)
     suspend fun getWeatherForCoordinates(
         @Query("appid") apiKey: String,
-        @Query("lat") latitude: Double,
-        @Query("lon") longitude: Double,
+        @Query("lat") latitude: String,
+        @Query("lon") longitude: String,
         @Query("units") units: String = WeatherClientConstants.Units.CELSIUS
     ): Response<WeatherResponse>
 }
