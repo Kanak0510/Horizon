@@ -1,15 +1,53 @@
 package com.example.horizon.data.repositories.weather
 
+import com.example.horizon.data.local.weather.HorizonDatabaseDao
+import com.example.horizon.data.local.weather.SavedWeatherLocationEntity
 import com.example.horizon.di.NetworkModule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
+import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.doAnswer
+import org.mockito.kotlin.mock
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class HorizonWeatherRepositoryTest {
 
-    private val weatherRepository =
-        HorizonWeatherRepository(NetworkModule.provideWeatherClient())
+    private lateinit var weatherRepository: HorizonWeatherRepository
+    private val savedLocations = listOf(
+        SavedWeatherLocationEntity(
+            id = "1",
+            nameOfLocation = "Seattle",
+            latitude = "47.6062",
+            longitude = "-122.3321"
+        ),
+        SavedWeatherLocationEntity(
+            id = "2",
+            nameOfLocation = "New York",
+            latitude = "40.7128",
+            longitude = "-74.0060"
+        ),
+        SavedWeatherLocationEntity(
+            id = "3",
+            nameOfLocation = "London",
+            latitude = "51.5074",
+            longitude = "-0.1278"
+        )
+    )
+
+    @Before
+    fun setup() {
+        val daoMock = mock<HorizonDatabaseDao> {
+            onBlocking { getAllSavedWeatherEntities() } doAnswer {
+                flowOf(savedLocations)
+            }
+        }
+        weatherRepository = HorizonWeatherRepository(
+            weatherClient = NetworkModule.provideWeatherClient(),
+            horizonDatabaseDao = daoMock
+        )
+    }
 
     @Test
     fun `getWeatherForLocation should successfully fetch weather details for a given valid coordinate`() =
