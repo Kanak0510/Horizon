@@ -61,6 +61,7 @@ fun HomeScreen(
     suggestionsForSearchQuery: List<LocationAutofillSuggestion>,
     isSuggestionsListLoading: Boolean = false,
     onSuggestionClick: (LocationAutofillSuggestion) -> Unit,
+    onSavedLocationClick: (BriefWeatherDetails) -> Unit,
     onSearchQueryChange: (String) -> Unit
 ) {
     var isSearchBarActive by remember { mutableStateOf(false) }
@@ -112,7 +113,7 @@ fun HomeScreen(
                 shortDescription = it.shortDescription,
                 shortDescriptionIcon = it.shortDescriptionIcon,
                 weatherInDegrees = it.currentTemperature,
-                onClick = { /*TODO*/ }
+                onClick = { onSavedLocationClick(it) }
             )
         }
     }
