@@ -28,6 +28,7 @@ class HomeViewModel @Inject constructor(
 
     @OptIn(FlowPreview::class)
     val currentSuggestions = currentSearchQuery.debounce(250)
+        .filter { it.isNotBlank() }
         .map { query ->
             _uiState.value = UiState.LOADING_SUGGESTIONS
             locationServicesRepository.fetchSuggestedPlacesForQuery(query)
@@ -40,9 +41,15 @@ class HomeViewModel @Inject constructor(
     val weatherDetailsOfSavedLocations = _weatherDetailsOfSavedLocations as StateFlow<List<BriefWeatherDetails>>
 
     init {
+        _uiState.value = UiState.LOADING_SAVED_LOCATIONS
         weatherRepository
             .getWeatherStreamForPreviouslySavedLocations()
-            .onEach { _weatherDetailsOfSavedLocations.value = it }
+            .onEach {
+                if (_uiState.value == UiState.LOADING_SAVED_LOCATIONS) {
+                    _uiState.value = UiState.IDLE
+                }
+                _weatherDetailsOfSavedLocations.value = it
+            }
             .launchIn(viewModelScope)
     }
 
@@ -56,5 +63,9 @@ class HomeViewModel @Inject constructor(
     /**
      * An enum that contains all possible UI states.
      */
-    enum class UiState { IDLE, LOADING_SUGGESTIONS }
+    enum class UiState {
+        IDLE,
+        LOADING_SUGGESTIONS,
+        LOADING_SAVED_LOCATIONS
+    }
 }
