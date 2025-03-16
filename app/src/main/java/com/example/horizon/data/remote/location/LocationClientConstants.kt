@@ -1,5 +1,8 @@
 package com.example.horizon.data.remote.location
 
+import com.example.horizon.BuildConfig
+import okhttp3.OkHttpClient
+
 /**
  * This object contains constants used by the [LocationClient].
  */
@@ -23,5 +26,19 @@ object LocationClientConstants {
          * The endpoint used to get the coordinates of a place with a specific id.
          */
         const val GET_COORDINATES_FOR_PLACE_ID = "retrieve/{id}"
+
+        /**
+         * An OkHttpClient instance that automatically adds the Location Client's API Key required for
+         * all requests.
+         */
     }
+
+    val AutoAddApiKeyClient: OkHttpClient = OkHttpClient().newBuilder()
+        .addInterceptor { chain ->
+            val url = chain.request().url().newBuilder()
+                .addQueryParameter("access_token", BuildConfig.MAP_BOX_API_KEY)
+                .build()
+            val request = chain.request().newBuilder().url(url).build()
+            chain.proceed(request)
+        }.build()
 }

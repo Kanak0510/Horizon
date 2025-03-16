@@ -1,6 +1,5 @@
 package com.example.horizon.data.repositories.location
 
-import com.example.horizon.BuildConfig
 import com.example.horizon.data.remote.location.LocationClient
 import com.example.horizon.data.remote.location.models.coordinates
 import com.example.horizon.data.remote.location.models.toLocationAutofillSuggestionList
@@ -25,12 +24,10 @@ class HorizonLocationServicesRepository @Inject constructor(
             // null pointer exception will get caught by the enclosing try catch block.
             val suggestionCoordinatePairs = locationClient.getPlacesSuggestionsForQuery(
                 query = query,
-                accessToken = BuildConfig.MAP_BOX_API_KEY,
                 sessionToken = sessionToken,
             ).body()!!.suggestions.associateWith { suggestion ->
                 locationClient.getCoordinatesForPlace(
                     placeId = suggestion.idOfPlace,
-                    accessToken = BuildConfig.MAP_BOX_API_KEY,
                     sessionToken = sessionToken
                 ).body()!!.coordinates
             }.toList()
