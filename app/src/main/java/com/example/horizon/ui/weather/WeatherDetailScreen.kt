@@ -14,7 +14,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -22,7 +25,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.buildAnnotatedString
@@ -43,10 +45,21 @@ import com.example.horizon.ui.weather.components.WeatherDetailsCard
 fun WeatherDetailScreen(
     background: @Composable BoxScope.() -> Unit,
     weatherDetails: WeatherDetails,
+    onBackButtonClick: () -> Unit,
+    onAddButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier) {
         background()
+        TopButtonRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .statusBarsPadding()
+                .padding(16.dp),
+            onBackButtonClick = onBackButtonClick,
+            onAddButtonClick = onAddButtonClick,
+            shouldDisplayAddButton = false // todo: hoist
+        )
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -69,8 +82,7 @@ fun WeatherDetailScreen(
                     .fillMaxWidth()
                     .padding(16.dp),
                 weatherDetails = weatherDetails,
-                shortWeatherDescription = "Feels like 43 with a 33 change of rain and thunderstorm night.",
-                cardColors = CardDefaults.cardColors(containerColor = Color(0xff121212))
+                shortWeatherDescription = "Feels like 43 with a 33 change of rain and thunderstorm night."
             )
         }
     }
@@ -117,6 +129,30 @@ private fun MainWeatherInfoColumn(
                 contentDescription = null
             )
             Text(text = weatherCondition)
+        }
+    }
+}
+
+@Composable
+private fun TopButtonRow(
+    modifier: Modifier = Modifier,
+    onBackButtonClick: () -> Unit,
+    onAddButtonClick: () -> Unit,
+    shouldDisplayAddButton: Boolean
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        FilledIconButton(
+            onClick = onBackButtonClick,
+            content = { Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = null) }
+        )
+        if (shouldDisplayAddButton) {
+            FilledIconButton(
+                onClick = onAddButtonClick,
+                content = { Icon(imageVector = Icons.Filled.Add, contentDescription = null) }
+            )
         }
     }
 }
