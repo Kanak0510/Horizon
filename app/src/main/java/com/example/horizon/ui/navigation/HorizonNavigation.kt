@@ -12,6 +12,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.horizon.domain.models.BriefWeatherDetails
 import com.example.horizon.domain.models.LocationAutofillSuggestion
 import com.example.horizon.ui.home.HomeScreen
 import com.example.horizon.ui.home.HomeViewModel
@@ -32,6 +33,12 @@ fun HorizonNavigation(navController: NavHostController = rememberNavController()
                     latitude = it.coordinatesOfLocation.latitude,
                     longitude = it.coordinatesOfLocation.longitude
                 )
+            },
+            onSavedLocationItemClick = {
+                navController.navigateToWeatherDetailScreen(
+                    latitude = it.latitude,
+                    longitude = it.longitude
+                )
             }
         )
 
@@ -41,7 +48,8 @@ fun HorizonNavigation(navController: NavHostController = rememberNavController()
 
 private fun NavGraphBuilder.homeScreen(
     route: String,
-    onSuggestionClick: (suggestion: LocationAutofillSuggestion) -> Unit
+    onSuggestionClick: (suggestion: LocationAutofillSuggestion) -> Unit,
+    onSavedLocationItemClick: (BriefWeatherDetails) -> Unit
 ) {
     composable(route = route) {
         val viewModel = hiltViewModel<HomeViewModel>()
@@ -55,7 +63,8 @@ private fun NavGraphBuilder.homeScreen(
             suggestionsForSearchQuery = suggestionsForCurrentQuery,
             isSuggestionsListLoading = uiState == HomeViewModel.UiState.LOADING_SUGGESTIONS,
             onSuggestionClick = onSuggestionClick,
-            onSearchQueryChange = viewModel::setSearchQueryForSuggestionsGeneration
+            onSearchQueryChange = viewModel::setSearchQueryForSuggestionsGeneration,
+            onSavedLocationItemClick = onSavedLocationItemClick
         )
     }
 }
