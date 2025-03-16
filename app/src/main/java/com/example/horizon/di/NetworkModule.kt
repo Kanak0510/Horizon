@@ -10,12 +10,14 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
     @Provides
+    @Singleton
     fun provideWeatherClient(): WeatherClient = Retrofit.Builder()
         .baseUrl(WeatherClientConstants.BASE_URL)
         .client(WeatherClientConstants.AutoAddApiKeyClient)
@@ -24,6 +26,7 @@ object NetworkModule {
         .create(WeatherClient::class.java)
 
     @Provides
+    @Singleton
     fun provideLocationClient(): LocationClient = Retrofit.Builder()
         .baseUrl(LocationClientConstants.BASE_URL)
         .client(LocationClientConstants.AutoAddApiKeyClient)
