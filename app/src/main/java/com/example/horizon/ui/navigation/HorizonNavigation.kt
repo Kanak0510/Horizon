@@ -1,12 +1,9 @@
 package com.example.horizon.ui.navigation
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -18,6 +15,8 @@ import androidx.navigation.compose.rememberNavController
 import com.example.horizon.domain.models.LocationAutofillSuggestion
 import com.example.horizon.ui.home.HomeScreen
 import com.example.horizon.ui.home.HomeViewModel
+import com.example.horizon.ui.weather.WeatherDetailScreen
+import com.example.horizon.ui.weather.WeatherDetailViewModel
 
 @Composable
 fun HorizonNavigation(navController: NavHostController = rememberNavController()) {
@@ -36,14 +35,7 @@ fun HorizonNavigation(navController: NavHostController = rememberNavController()
             }
         )
 
-        composable(route = HorizonNavigationDestinations.WeatherDetailScreen.route) {
-            Box(modifier = Modifier.fillMaxSize()) {
-                Text(
-                    modifier = Modifier.align(Alignment.Center),
-                    text = "PlaceHolder"
-                )
-            }
-        }
+        weatherDetailScreen(route = HorizonNavigationDestinations.WeatherDetailScreen.route)
     }
 }
 
@@ -64,6 +56,18 @@ private fun NavGraphBuilder.homeScreen(
             isSuggestionsListLoading = uiState == HomeViewModel.UiState.LOADING_SUGGESTIONS,
             onSuggestionClick = onSuggestionClick,
             onSearchQueryChange = viewModel::setSearchQueryForSuggestionsGeneration
+        )
+    }
+}
+
+fun NavGraphBuilder.weatherDetailScreen(route: String) {
+    composable(route) {
+        val viewModel = hiltViewModel<WeatherDetailViewModel>()
+        val uiState by viewModel.uiState.collectAsState()
+        WeatherDetailScreen(
+            background = { }, // todo
+            weatherDetails = uiState.weatherDetails,
+            modifier = Modifier.fillMaxSize()
         )
     }
 }
