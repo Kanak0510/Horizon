@@ -78,3 +78,15 @@ data class WeatherDetails(
         )
     }
 }
+
+/**
+ * Used to map an instance of [WeatherDetails] to an instance of [BriefWeatherDetails].
+ */
+fun WeatherDetails.toBriefWeatherDetails(): BriefWeatherDetails {
+    return BriefWeatherDetails(
+        nameOfLocation = this.nameOfLocation,
+        currentTemperature = this.temperature.currentTemp,
+        shortDescription = this.weatherCondition.oneWordDescription,
+        shortDescriptionIcon = this.weatherCondition.currentWeatherConditionIcon
+    )
+}
