@@ -91,6 +91,9 @@ fun WeatherDetails.toBriefWeatherDetails(): BriefWeatherDetails {
         nameOfLocation = this.nameOfLocation,
         currentTemperature = this.temperature.currentTemp,
         shortDescription = this.weatherCondition.oneWordDescription,
-        shortDescriptionIcon = this.weatherCondition.currentWeatherConditionIcon
+        shortDescriptionIcon = this.weatherCondition.currentWeatherConditionIcon,
+        latitude = latitude,
+        longitude = longitude
+
     )
 }

@@ -17,6 +17,8 @@ data class BriefWeatherDetails(
     val currentTemperature: String,
     val shortDescription: String,
     @DrawableRes val shortDescriptionIcon: Int,
+    val latitude: String,
+    val longitude: String
 ) {
     companion object {
         /**
@@ -26,7 +28,9 @@ data class BriefWeatherDetails(
             nameOfLocation = "- -",
             currentTemperature = "- -",
             shortDescription = "- -",
-            shortDescriptionIcon = R.drawable.ic_scattered_clouds // todo
+            shortDescriptionIcon = R.drawable.ic_scattered_clouds, // todo
+            latitude = "- -",
+            longitude = "- -"
         )
     }
 }
