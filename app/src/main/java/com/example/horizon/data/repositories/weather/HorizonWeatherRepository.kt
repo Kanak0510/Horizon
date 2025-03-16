@@ -1,5 +1,6 @@
 package com.example.horizon.data.repositories.weather
 
+import com.example.horizon.data.getBodyOrThrowException
 import com.example.horizon.data.remote.weather.WeatherClient
 import com.example.horizon.data.remote.weather.WeatherClientConstants
 import com.example.horizon.data.remote.weather.models.toWeatherDetails
@@ -23,10 +24,7 @@ class HorizonWeatherRepository @Inject constructor(
             longitude = longitude,
             units = WeatherClientConstants.Units.CELSIUS // todo
         )
-        if (!response.isSuccessful) {
-            throw Exception("${response.code()} : ${response.message()}")
-        }
-        Result.success(response.body()!!.toWeatherDetails())
+        Result.success(response.getBodyOrThrowException().toWeatherDetails())
     } catch (exception: Exception) {
         if (exception is CancellationException) throw exception
         Result.failure(exception)
