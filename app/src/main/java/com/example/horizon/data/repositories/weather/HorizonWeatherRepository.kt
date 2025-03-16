@@ -2,6 +2,7 @@ package com.example.horizon.data.repositories.weather
 
 import com.example.horizon.data.getBodyOrThrowException
 import com.example.horizon.data.local.weather.HorizonDatabaseDao
+import com.example.horizon.data.local.weather.SavedWeatherLocationEntity
 import com.example.horizon.data.remote.weather.WeatherClient
 import com.example.horizon.data.remote.weather.WeatherClientConstants
 import com.example.horizon.data.remote.weather.models.toWeatherDetails
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.map
+import java.util.UUID
 import javax.inject.Inject
 
 /**
@@ -48,5 +50,19 @@ class HorizonWeatherRepository @Inject constructor(
             }.map {
                 it.getOrNull()?.toBriefWeatherDetails() ?: BriefWeatherDetails.EmptyBriefWeatherDetails
             }
+    }
+
+    override suspend fun saveWeatherLocation(
+        nameOfLocation: String,
+        latitude: String,
+        longitude: String
+    ) {
+        val savedWeatherEntity = SavedWeatherLocationEntity(
+            id = UUID.randomUUID().toString(),
+            nameOfLocation = nameOfLocation,
+            latitude = latitude,
+            longitude = longitude
+        )
+        horizonDatabaseDao.addSavedWeatherEntity(savedWeatherEntity)
     }
 }
