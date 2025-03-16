@@ -87,9 +87,14 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.graphics)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     androidTestImplementation(libs.androidx.ui.test.junit4)
+
+    // JUnit
+    testImplementation(libs.junit)
 
     // Play Location Services
     implementation(libs.play.services.location)
@@ -116,13 +121,12 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
 
+    // Mockito
+    testImplementation(libs.mockito.kotlin)
+
     // Logging
     implementation(libs.jakewharton.timber)
 
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.graphics)
-
-    testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
