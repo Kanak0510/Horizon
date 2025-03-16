@@ -10,10 +10,7 @@ import com.example.horizon.domain.models.BriefWeatherDetails
 import com.example.horizon.domain.models.WeatherDetails
 import com.example.horizon.domain.models.toBriefWeatherDetails
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.map
 import java.util.UUID
 import javax.inject.Inject
@@ -41,14 +38,16 @@ class HorizonWeatherRepository @Inject constructor(
         Result.failure(exception)
     }
 
-    @OptIn(FlowPreview::class)
-    override fun getWeatherStreamForPreviouslySavedLocations(): Flow<BriefWeatherDetails> {
+    override fun getWeatherStreamForPreviouslySavedLocations(): Flow<List<BriefWeatherDetails>> {
         return horizonDatabaseDao.getAllSavedWeatherEntities()
-            .flatMapConcat { it.asFlow() }
-            .map {
-                fetchWeatherForLocation(latitude = it.latitude, longitude = it.longitude)
-            }.map {
-                it.getOrNull()?.toBriefWeatherDetails() ?: BriefWeatherDetails.EmptyBriefWeatherDetails
+            .map { savedWeatherLocationEntities ->
+                savedWeatherLocationEntities.map {
+                    fetchWeatherForLocation(latitude = it.latitude, longitude = it.longitude)
+                }
+            }.map { weatherDetailResults ->
+                weatherDetailResults.mapNotNull { weatherDetailsResult ->
+                    weatherDetailsResult.getOrNull()?.toBriefWeatherDetails()
+                }
             }
     }
 

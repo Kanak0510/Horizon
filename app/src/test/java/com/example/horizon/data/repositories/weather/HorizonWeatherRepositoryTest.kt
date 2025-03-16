@@ -4,6 +4,7 @@ import com.example.horizon.data.local.weather.HorizonDatabaseDao
 import com.example.horizon.data.local.weather.SavedWeatherLocationEntity
 import com.example.horizon.di.NetworkModule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -70,5 +71,17 @@ class HorizonWeatherRepositoryTest {
         val result = weatherRepository.fetchWeatherForLocation(latitude, longitude)
         assert(result.isFailure)
         assert(result.exceptionOrNull() != null)
+    }
+
+    @Test
+    fun `weather details for saved locations are successfully fetched`() = runTest {
+        val weatherDetailsForSavedLocations = weatherRepository
+            .getWeatherStreamForPreviouslySavedLocations()
+            .first()
+        assert(weatherDetailsForSavedLocations.isNotEmpty())
+        for ((index, weatherDetail) in weatherDetailsForSavedLocations.withIndex()) {
+            assert(weatherDetail.nameOfLocation == savedLocations[index].nameOfLocation)
+            println(weatherDetail)
+        }
     }
 }
