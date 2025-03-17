@@ -11,11 +11,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -60,6 +62,7 @@ fun HomeScreen(
     weatherDetailsOfSavedLocations: List<BriefWeatherDetails>,
     suggestionsForSearchQuery: List<LocationAutofillSuggestion>,
     isSuggestionsListLoading: Boolean = false,
+    isWeatherForSavedLocationsLoading: Boolean = false,
     onSuggestionClick: (LocationAutofillSuggestion) -> Unit,
     onSavedLocationItemClick: (BriefWeatherDetails) -> Unit,
     onSearchQueryChange: (String) -> Unit
@@ -98,12 +101,22 @@ fun HomeScreen(
         }
 
         item {
-            Text(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                text = "Saved Locations",
-                style = MaterialTheme.typography.labelLarge,
-                fontWeight = FontWeight.Normal
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    modifier = Modifier
+                        .padding(start = 16.dp)
+                        .padding(end = 8.dp),
+                    text = "Saved Locations",
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Normal
+                )
+                if (isWeatherForSavedLocationsLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(12.dp),
+                        strokeWidth = 2.dp
+                    )
+                }
+            }
         }
 
         items(weatherDetailsOfSavedLocations) {
