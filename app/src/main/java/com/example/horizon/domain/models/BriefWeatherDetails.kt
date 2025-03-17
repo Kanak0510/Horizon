@@ -2,6 +2,7 @@ package com.example.horizon.domain.models
 
 import androidx.annotation.DrawableRes
 import com.example.horizon.R
+import com.example.horizon.data.local.weather.SavedWeatherLocationEntity
 
 /**
  * A data class that holds brief weather details of a particular location. It can be seen as data
@@ -34,3 +35,13 @@ data class BriefWeatherDetails(
         )
     }
 }
+
+/**
+ * Used to map an instance of [BriefWeatherDetails] to an instance of [SavedWeatherLocationEntity].
+ */
+fun BriefWeatherDetails.toSavedWeatherLocationEntity(): SavedWeatherLocationEntity =
+    SavedWeatherLocationEntity(
+        nameOfLocation = this.nameOfLocation,
+        latitude = this.latitude,
+        longitude = this.longitude
+    )
