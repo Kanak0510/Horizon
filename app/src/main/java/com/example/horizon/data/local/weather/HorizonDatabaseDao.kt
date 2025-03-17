@@ -1,6 +1,7 @@
 package com.example.horizon.data.local.weather
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
@@ -13,4 +14,8 @@ interface HorizonDatabaseDao {
 
     @Upsert
     suspend fun addSavedWeatherEntity(weatherLocationEntity: SavedWeatherLocationEntity)
+
+    @Delete
+    suspend fun deleteSavedWeatherEntity(weatherLocationEntity: SavedWeatherLocationEntity)
+
 }
