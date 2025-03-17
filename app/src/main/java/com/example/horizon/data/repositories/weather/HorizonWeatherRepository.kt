@@ -9,6 +9,7 @@ import com.example.horizon.data.remote.weather.models.toWeatherDetails
 import com.example.horizon.domain.models.BriefWeatherDetails
 import com.example.horizon.domain.models.WeatherDetails
 import com.example.horizon.domain.models.toBriefWeatherDetails
+import com.example.horizon.domain.models.toSavedWeatherLocationEntity
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -61,5 +62,9 @@ class HorizonWeatherRepository @Inject constructor(
             longitude = longitude
         )
         horizonDatabaseDao.addSavedWeatherEntity(savedWeatherEntity)
+    }
+
+    override suspend fun deleteWeatherLocationFromSavedItems(briefWeatherLocation: BriefWeatherDetails) {
+        horizonDatabaseDao.deleteSavedWeatherEntity(briefWeatherLocation.toSavedWeatherLocationEntity())
     }
 }
