@@ -11,6 +11,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -102,4 +104,35 @@ private fun ShortWeatherDescriptionWithIconRow(
             fontWeight = FontWeight.Normal
         )
     }
+}
+
+/**
+ * A swipe-to-dismiss version of [CompactWeatherCard]
+ */
+@ExperimentalMaterial3Api
+@Composable
+fun SwipeToDismissCompactWeatherCard(
+    nameOfLocation: String,
+    shortDescription: String,
+    @DrawableRes shortDescriptionIcon: Int,
+    weatherInDegrees: String,
+    onClick: () -> Unit,
+    swipeToDismissBoxState: SwipeToDismissBoxState,
+    modifier: Modifier = Modifier
+) {
+    SwipeToDismissBox(
+        modifier = modifier,
+        state = swipeToDismissBoxState,
+        backgroundContent = {},
+        enableDismissFromEndToStart = true,
+        content = {
+            CompactWeatherCard(
+                nameOfLocation = nameOfLocation,
+                shortDescription = shortDescription,
+                shortDescriptionIcon = shortDescriptionIcon,
+                weatherInDegrees = weatherInDegrees,
+                onClick = onClick
+            )
+        }
+    )
 }
