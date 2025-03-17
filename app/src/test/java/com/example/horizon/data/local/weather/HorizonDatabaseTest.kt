@@ -45,4 +45,24 @@ internal class HorizonDatabaseTest {
         }
     }
 
+    @Test
+    fun deleteSavedWeatherEntityTest_ValidExistingEntity_isSuccessfullyDeleted() = runTest {
+        val weatherLocationEntity = SavedWeatherLocationEntity(
+            id = "1",
+            nameOfLocation = "Seattle",
+            latitude = "47.6062",
+            longitude = "-122.3321"
+        )
+        with(dao){
+            // Add item to database
+            addSavedWeatherEntity(weatherLocationEntity)
+            // Item must be inserted
+            assert(getAllSavedWeatherEntities().first().contains(weatherLocationEntity))
+            // Delete item from database
+            deleteSavedWeatherEntity(weatherLocationEntity)
+            // Item must not exist in the database
+            assert(!getAllSavedWeatherEntities().first().contains(weatherLocationEntity))
+        }
+    }
+
 }
