@@ -31,13 +31,15 @@ fun HorizonNavigation(navController: NavHostController = rememberNavController()
             onSuggestionClick = {
                 navController.navigateToWeatherDetailScreen(
                     latitude = it.coordinatesOfLocation.latitude,
-                    longitude = it.coordinatesOfLocation.longitude
+                    longitude = it.coordinatesOfLocation.longitude,
+                    wasLocationPreviouslySaved = false
                 )
             },
             onSavedLocationItemClick = {
                 navController.navigateToWeatherDetailScreen(
                     latitude = it.latitude,
-                    longitude = it.longitude
+                    longitude = it.longitude,
+                    wasLocationPreviouslySaved = true
                 )
             }
         )
@@ -80,27 +82,31 @@ fun NavGraphBuilder.weatherDetailScreen(
     route: String,
     onBackButtonClick: () -> Unit
 ) {
-    composable(route) {
+    composable(route) { backStackEntry ->
         val viewModel = hiltViewModel<WeatherDetailViewModel>()
         val weatherDetails by viewModel.weatherDetailsOfChosenLocation.collectAsStateWithLifecycle()
+        val argumentKey = HorizonNavigationDestinations.WeatherDetailScreen.NAV_ARG_WAS_LOCATION_PREVIOUSLY_SAVED
+        val wasLocationPreviouslySaved = backStackEntry.arguments!!.getString(argumentKey).toBoolean()
         WeatherDetailScreen(
             background = { }, // todo
             weatherDetails = weatherDetails,
             modifier = Modifier.fillMaxSize(),
             onBackButtonClick = onBackButtonClick,
             onAddButtonClick = viewModel::addLocationToSavedLocations,
-            wasLocationPreviouslySaved = false // todo
+            wasLocationPreviouslySaved = wasLocationPreviouslySaved
         )
     }
 }
 
 private fun NavHostController.navigateToWeatherDetailScreen(
     latitude: String,
-    longitude: String
+    longitude: String,
+    wasLocationPreviouslySaved: Boolean
 ) {
     val destination = HorizonNavigationDestinations.WeatherDetailScreen.buildRoute(
         latitude = latitude,
-        longitude = longitude
+        longitude = longitude,
+        wasLocationPreviouslySaved = wasLocationPreviouslySaved
     )
     navigate(destination)
 }
