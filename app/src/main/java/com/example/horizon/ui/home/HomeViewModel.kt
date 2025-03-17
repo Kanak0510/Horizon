@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -58,6 +59,12 @@ class HomeViewModel @Inject constructor(
      */
     fun setSearchQueryForSuggestionsGeneration(searchQuery: String) {
         currentSearchQuery.value = searchQuery
+    }
+
+    fun deleteSavedWeatherLocation(briefWeatherDetails: BriefWeatherDetails) {
+        viewModelScope.launch {
+            weatherRepository.deleteWeatherLocationFromSavedItems(briefWeatherDetails)
+        }
     }
 
     /**
