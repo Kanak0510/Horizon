@@ -46,7 +46,7 @@ import androidx.compose.ui.unit.dp
 import com.example.horizon.domain.models.BriefWeatherDetails
 import com.example.horizon.domain.models.LocationAutofillSuggestion
 import com.example.horizon.ui.components.AutofillSuggestion
-import com.example.horizon.ui.components.CompactWeatherCard
+import com.example.horizon.ui.components.SwipeToDismissCompactWeatherCard
 
 /**
  * A home screen composable that displays a search bar with a list containing the current weather for
@@ -65,6 +65,7 @@ fun HomeScreen(
     isWeatherForSavedLocationsLoading: Boolean = false,
     onSuggestionClick: (LocationAutofillSuggestion) -> Unit,
     onSavedLocationItemClick: (BriefWeatherDetails) -> Unit,
+    onSavedLocationDismissed: (BriefWeatherDetails) -> Unit,
     onSearchQueryChange: (String) -> Unit
 ) {
     var isSearchBarActive by remember { mutableStateOf(false) }
@@ -119,14 +120,18 @@ fun HomeScreen(
             }
         }
 
-        items(weatherDetailsOfSavedLocations) {
-            CompactWeatherCard(
+        items(
+            weatherDetailsOfSavedLocations,
+            key = { it.nameOfLocation } // Swipe-able cards will be buggy without keys
+        ) {
+            SwipeToDismissCompactWeatherCard(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 nameOfLocation = it.nameOfLocation,
                 shortDescription = it.shortDescription,
                 shortDescriptionIcon = it.shortDescriptionIcon,
                 weatherInDegrees = it.currentTemperature,
-                onClick = { onSavedLocationItemClick(it) }
+                onClick = { onSavedLocationItemClick(it) },
+                swipeToDismissBoxState = { onSavedLocationDismissed(it) }
             )
         }
     }
