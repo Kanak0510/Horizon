@@ -70,7 +70,8 @@ private fun NavGraphBuilder.homeScreen(
             isWeatherForSavedLocationsLoading = uiState == HomeViewModel.UiState.LOADING_SAVED_LOCATIONS,
             onSuggestionClick = onSuggestionClick,
             onSearchQueryChange = viewModel::setSearchQueryForSuggestionsGeneration,
-            onSavedLocationItemClick = onSavedLocationItemClick
+            onSavedLocationItemClick = onSavedLocationItemClick,
+            onSavedLocationDismissed = viewModel::deleteSavedWeatherLocation
         )
     }
 }
