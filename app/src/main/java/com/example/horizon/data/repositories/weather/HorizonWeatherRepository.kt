@@ -12,7 +12,6 @@ import com.example.horizon.domain.models.toBriefWeatherDetails
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import java.util.UUID
 import javax.inject.Inject
 
 /**
@@ -57,7 +56,6 @@ class HorizonWeatherRepository @Inject constructor(
         longitude: String
     ) {
         val savedWeatherEntity = SavedWeatherLocationEntity(
-            id = UUID.randomUUID().toString(),
             nameOfLocation = nameOfLocation,
             latitude = latitude,
             longitude = longitude

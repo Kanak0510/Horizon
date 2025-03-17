@@ -1,8 +1,11 @@
-package com.example.horizon.data.local.weather
+package com.example.horizon.data.weather
 
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
+import com.example.horizon.data.local.weather.HorizonDatabase
+import com.example.horizon.data.local.weather.HorizonDatabaseDao
+import com.example.horizon.data.local.weather.SavedWeatherLocationEntity
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -33,7 +36,6 @@ internal class HorizonDatabaseTest {
     @Test
     fun addSavedWeatherEntityTest_ValidEntity_isSuccessfullySaved() = runTest {
         val weatherLocationEntity = SavedWeatherLocationEntity(
-            id = "1",
             nameOfLocation = "New York",
             latitude = "40.7128",
             longitude = "74.0060"
@@ -48,7 +50,6 @@ internal class HorizonDatabaseTest {
     @Test
     fun deleteSavedWeatherEntityTest_ValidExistingEntity_isSuccessfullyDeleted() = runTest {
         val weatherLocationEntity = SavedWeatherLocationEntity(
-            id = "1",
             nameOfLocation = "Seattle",
             latitude = "47.6062",
             longitude = "-122.3321"
