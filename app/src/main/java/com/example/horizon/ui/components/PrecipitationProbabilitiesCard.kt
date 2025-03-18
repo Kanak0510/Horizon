@@ -1,5 +1,6 @@
 package com.example.horizon.ui.components
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,6 +16,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -66,13 +72,18 @@ private fun ProbabilityProgressRow(
     precipitationProbability: PrecipitationProbability,
     modifier: Modifier = Modifier
 ) {
+    var progressValue by remember { mutableStateOf(0f) }
+    val animatedProgressValue by animateFloatAsState(targetValue = progressValue)
+    LaunchedEffect(precipitationProbability) {
+        progressValue = precipitationProbability.probability
+    }
     Row(modifier = modifier, horizontalArrangement = Arrangement.SpaceBetween) {
         Text(
             text = precipitationProbability.hourString,
             style = MaterialTheme.typography.labelLarge
         )
         LinearProgressIndicator(
-        progress = { precipitationProbability.probability },
+        progress = { animatedProgressValue },
         modifier = Modifier
             .padding(horizontal = 16.dp)
             .height(24.dp)
