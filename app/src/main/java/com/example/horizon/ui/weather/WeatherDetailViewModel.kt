@@ -5,10 +5,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.horizon.data.repositories.weather.WeatherRepository
 import com.example.horizon.domain.models.WeatherDetails
-import com.example.horizon.ui.navigation.HorizonNavigationDestinations
+import com.example.horizon.ui.navigation.HorizonNavigationDestinations.WeatherDetailScreen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -18,14 +21,25 @@ class WeatherDetailViewModel @Inject constructor(
     private val weatherRepository: WeatherRepository
 ) : ViewModel() {
     private val latitude: String =
-        savedStateHandle[HorizonNavigationDestinations.WeatherDetailScreen.NAV_ARG_LATITUDE]!!
+        savedStateHandle[WeatherDetailScreen.NAV_ARG_LATITUDE]!!
     private val longitude: String =
-        savedStateHandle[HorizonNavigationDestinations.WeatherDetailScreen.NAV_ARG_LONGITUDE]!!
+        savedStateHandle[WeatherDetailScreen.NAV_ARG_LONGITUDE]!!
 
     private val _weatherDetailsOfChosenLocation =
         MutableStateFlow(WeatherDetails.EmptyWeatherDetails)
     val weatherDetailsOfChosenLocation =
         _weatherDetailsOfChosenLocation as StateFlow<WeatherDetails>
+
+    private val initialValueOfIsSavedLocation: String =
+        savedStateHandle[WeatherDetailScreen.NAV_ARG_WAS_LOCATION_PREVIOUSLY_SAVED]!!
+    val isSavedLocation = weatherRepository.getWeatherStreamForPreviouslySavedLocations()
+        .map { savedWeatherDetails ->
+            savedWeatherDetails.any { it.nameOfLocation == weatherDetailsOfChosenLocation.value.nameOfLocation }
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 250L),
+            initialValue = initialValueOfIsSavedLocation.toBoolean()
+        )
 
     private val _uiState = MutableStateFlow(UiState.IDLE)
     val uiState = _uiState as StateFlow<UiState>
