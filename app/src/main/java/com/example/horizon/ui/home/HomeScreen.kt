@@ -32,6 +32,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
+import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -166,43 +167,49 @@ private fun Header(
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     Column(modifier = modifier) {
         SearchBar(
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .sizeIn(
-                    maxWidth = screenWidth, // See Docs for Explanation
-                    maxHeight = screenHeight // See Docs for Explanation
-                ),
-            query = currentSearchQuery,
-            onQueryChange = onSearchQueryChange,
-            onSearch = onSearch,
-            active = isSearchBarActive,
-            onActiveChange = onSearchBarActiveChange,
-            leadingIcon = {
-                AnimatedSearchBarLeadingIcon(
-                    isSearchBarActive = isSearchBarActive,
-                    onSearchIconClick = { onSearchBarActiveChange(true) },
-                    onBackIconClick = {
-                        // Clear Search Query text when clicking on the Back Button
-                        onClearSearchQueryIconClick()
-                        onSearchBarActiveChange(false)
-                    }
+            inputField = {
+                SearchBarDefaults.InputField(
+                    query = currentSearchQuery,
+                    onQueryChange = onSearchQueryChange,
+                    onSearch = onSearch,
+                    expanded = isSearchBarActive,
+                    onExpandedChange = onSearchBarActiveChange,
+                    placeholder = { Text(text = "Search for a location") },
+                    leadingIcon = {
+                        AnimatedSearchBarLeadingIcon(
+                            isSearchBarActive = isSearchBarActive,
+                            onSearchIconClick = { onSearchBarActiveChange(true) },
+                            onBackIconClick = {
+                                // Clear Search Query text when clicking on the Back Button
+                                onClearSearchQueryIconClick()
+                                onSearchBarActiveChange(false)
+                            }
+                        )
+                    },
+                    trailingIcon = {
+                        AnimatedVisibility(
+                            visible = isSearchBarActive,
+                            enter = slideInHorizontally(initialOffsetX = { it }),
+                            exit = slideOutHorizontally(targetOffsetX = { it })
+                        ) {
+                            val iconImageVector = Icons.Filled.Close
+                            IconButton(
+                                onClick = onClearSearchQueryIconClick,
+                                content = { Icon(imageVector = iconImageVector, contentDescription = null) }
+                            )
+                        }
+                    },
                 )
             },
-            trailingIcon = {
-                AnimatedVisibility(
-                    visible = isSearchBarActive,
-                    enter = slideInHorizontally(initialOffsetX = { it }),
-                    exit = slideOutHorizontally(targetOffsetX = { it })
-                ) {
-                    val iconImageVector = Icons.Filled.Close
-                    IconButton(
-                        onClick = onClearSearchQueryIconClick,
-                        content = { Icon(imageVector = iconImageVector, contentDescription = null) }
-                    )
-                }
-            },
-            placeholder = { Text(text = "Search for a location") },
-            content = searchBarSuggestionsContent
+            expanded = isSearchBarActive,
+            onExpandedChange = onSearchBarActiveChange,
+            modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .sizeIn(
+                            maxWidth = screenWidth, // See Docs for Explanation
+                            maxHeight = screenHeight // See Docs for Explanation
+                        ),
+            content = searchBarSuggestionsContent,
         )
     }
 }
