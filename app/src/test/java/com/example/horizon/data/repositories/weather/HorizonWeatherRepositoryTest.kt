@@ -18,19 +18,16 @@ class HorizonWeatherRepositoryTest {
     private lateinit var weatherRepository: HorizonWeatherRepository
     private val savedLocations = listOf(
         SavedWeatherLocationEntity(
-            id = "1",
             nameOfLocation = "Seattle",
             latitude = "47.6062",
             longitude = "-122.3321"
         ),
         SavedWeatherLocationEntity(
-            id = "2",
             nameOfLocation = "New York",
             latitude = "40.7128",
             longitude = "-74.0060"
         ),
         SavedWeatherLocationEntity(
-            id = "3",
             nameOfLocation = "London",
             latitude = "51.5074",
             longitude = "-0.1278"
