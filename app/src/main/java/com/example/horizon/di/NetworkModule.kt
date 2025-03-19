@@ -29,7 +29,6 @@ object NetworkModule {
     @Singleton
     fun provideLocationClient(): LocationClient = Retrofit.Builder()
         .baseUrl(LocationClientConstants.BASE_URL)
-        .client(LocationClientConstants.AutoAddApiKeyClient)
         .addConverterFactory(MoshiConverterFactory.create())
         .build()
         .create(LocationClient::class.java)
