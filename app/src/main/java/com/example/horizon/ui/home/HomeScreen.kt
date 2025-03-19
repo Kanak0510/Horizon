@@ -41,10 +41,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.horizon.domain.models.BriefWeatherDetails
 import com.example.horizon.domain.models.LocationAutofillSuggestion
@@ -269,20 +267,6 @@ private fun AutoFillSuggestionsList(
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
         } else {
             LazyColumn {
-                item {
-                    Text(
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp)
-                            .padding(top = 8.dp)
-                            .alpha(alpha = 0.38f), // applied emphasis according to material 3 design spec
-                        text = "The weather information closest to the selected location is " +
-                                "displayed if the weather information for the selected location is " +
-                                "not available.",
-                        style = MaterialTheme.typography.labelSmall,
-                        fontWeight = FontWeight.Normal,
-                        textAlign = TextAlign.Center
-                    )
-                }
                 autofillSuggestionItems(
                     suggestions = suggestions,
                     onSuggestionClick = onSuggestionClick
