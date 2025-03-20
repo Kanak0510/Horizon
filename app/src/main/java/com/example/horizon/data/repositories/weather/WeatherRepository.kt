@@ -1,7 +1,7 @@
 package com.example.horizon.data.repositories.weather
 
 import com.example.horizon.domain.models.BriefWeatherDetails
-import com.example.horizon.domain.models.WeatherDetails
+import com.example.horizon.domain.models.CurrentWeatherDetails
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -11,13 +11,18 @@ import kotlinx.coroutines.flow.Flow
 interface WeatherRepository {
 
     /**
-     * Retrieves the weather details for the specified location.
+     * Retrieves the [CurrentWeatherDetails] for the specified location.
      *
+     * @param nameOfLocation The name of the location.
      * @param latitude The latitude of the location.
      * @param longitude The longitude of the location.
      * @return A [Result] object containing the weather details if successful, or an exception if not.
      */
-    suspend fun fetchWeatherForLocation(latitude: String, longitude: String): Result<WeatherDetails>
+    suspend fun fetchWeatherForLocation(
+        nameOfLocation: String,
+        latitude: String,
+        longitude: String
+    ): Result<CurrentWeatherDetails>
 
     /**
      * Used to get a a [Flow] of [BriefWeatherDetails] for each previously saved location.
