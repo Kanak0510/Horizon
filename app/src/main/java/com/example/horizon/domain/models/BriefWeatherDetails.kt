@@ -5,8 +5,7 @@ import com.example.horizon.R
 import com.example.horizon.data.local.weather.SavedWeatherLocationEntity
 
 /**
- * A data class that holds brief weather details of a particular location. It can be seen as data
- * class that contains a subset of all the properties of the [WeatherDetails] class.
+ * A data class that holds brief weather details of a particular location.
  *
  * @param nameOfLocation The name of the location.
  * @param currentTemperature The current temperature (without superscript).
