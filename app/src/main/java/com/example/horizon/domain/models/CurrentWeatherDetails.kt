@@ -17,7 +17,7 @@ data class CurrentWeatherDetails(
 )
 
 /**
- * Used to convert an instance of [CurrentWeatherDetails] to an instance of [toBriefWeatherDetails].
+ * Used to convert an instance of [CurrentWeatherDetails] to an instance of [BriefWeatherDetails].
  */
 fun CurrentWeatherDetails.toBriefWeatherDetails(): BriefWeatherDetails = BriefWeatherDetails(
     nameOfLocation = nameOfLocation,
