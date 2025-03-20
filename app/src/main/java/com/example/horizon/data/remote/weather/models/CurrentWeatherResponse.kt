@@ -1,6 +1,7 @@
 package com.example.horizon.data.remote.weather.models
 
 import com.example.horizon.R
+import com.example.horizon.domain.models.CurrentWeatherDetails
 import com.example.horizon.domain.models.WeatherDetails
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
@@ -34,6 +35,23 @@ data class CurrentWeatherResponse(
         @Json(name = "weathercode") val weatherCode: Int,
     )
 }
+
+/**
+ * Used to map an instance of [CurrentWeatherResponse] to an instance of [CurrentWeatherDetails]
+ */
+fun CurrentWeatherResponse.toCurrentWeatherDetails(nameOfLocation: String): CurrentWeatherDetails =
+    CurrentWeatherDetails(
+        temperature = currentWeather.temperature,
+        nameOfLocation = nameOfLocation,
+        isDay = currentWeather.isDay,
+        iconResId = getWeatherIconResForCode(
+            weatherCode = currentWeather.weatherCode,
+            isDay = currentWeather.isDay == 1
+        ),
+        imageResId = R.drawable.ic_launcher_background, // todo
+        latitude = latitude,
+        longitude = longitude,
+    )
 
 /**
  * Used to map an instance of [CurrentWeatherResponse] to an instance of [WeatherDetails]
