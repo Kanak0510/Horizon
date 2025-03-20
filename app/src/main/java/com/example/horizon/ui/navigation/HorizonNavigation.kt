@@ -16,7 +16,6 @@ import com.example.horizon.domain.models.BriefWeatherDetails
 import com.example.horizon.domain.models.LocationAutofillSuggestion
 import com.example.horizon.ui.home.HomeScreen
 import com.example.horizon.ui.home.HomeViewModel
-import com.example.horizon.ui.weather.WeatherDetailScreen
 import com.example.horizon.ui.weather.WeatherDetailViewModel
 
 @Composable
@@ -30,6 +29,7 @@ fun HorizonNavigation(navController: NavHostController = rememberNavController()
             route = HorizonNavigationDestinations.HomeScreen.route,
             onSuggestionClick = {
                 navController.navigateToWeatherDetailScreen(
+                    nameOfLocation = it.nameOfLocation,
                     latitude = it.coordinatesOfLocation.latitude,
                     longitude = it.coordinatesOfLocation.longitude,
                     wasLocationPreviouslySaved = false
@@ -37,6 +37,7 @@ fun HorizonNavigation(navController: NavHostController = rememberNavController()
             },
             onSavedLocationItemClick = {
                 navController.navigateToWeatherDetailScreen(
+                    nameOfLocation = it.nameOfLocation,
                     latitude = it.latitude,
                     longitude = it.longitude,
                     wasLocationPreviouslySaved = true
@@ -86,23 +87,17 @@ fun NavGraphBuilder.weatherDetailScreen(
         val viewModel = hiltViewModel<WeatherDetailViewModel>()
         val weatherDetails by viewModel.weatherDetailsOfChosenLocation.collectAsStateWithLifecycle()
         val isSavedLocation by viewModel.isSavedLocation.collectAsStateWithLifecycle()
-        WeatherDetailScreen(
-            background = { }, // todo
-            weatherDetails = weatherDetails,
-            modifier = Modifier.fillMaxSize(),
-            onBackButtonClick = onBackButtonClick,
-            onAddButtonClick = viewModel::addLocationToSavedLocations,
-            wasLocationPreviouslySaved = isSavedLocation
-        )
     }
 }
 
 private fun NavHostController.navigateToWeatherDetailScreen(
+    nameOfLocation: String,
     latitude: String,
     longitude: String,
     wasLocationPreviouslySaved: Boolean
 ) {
     val destination = HorizonNavigationDestinations.WeatherDetailScreen.buildRoute(
+        nameOfLocation = nameOfLocation,
         latitude = latitude,
         longitude = longitude,
         wasLocationPreviouslySaved = wasLocationPreviouslySaved
