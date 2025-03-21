@@ -29,6 +29,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -53,7 +54,7 @@ import com.example.horizon.ui.components.HourlyForecastCard
 import com.example.horizon.ui.components.PrecipitationProbabilitiesCard
 import com.example.horizon.ui.components.SingleWeatherDetailCard
 
-// todo - need to add top bar when screen is fully scrolled
+// todo stopship - need to add top bar when screen is fully scrolled + add Save button
 @Composable
 fun WeatherDetailScreen(
     nameOfLocation: String,
@@ -62,6 +63,8 @@ fun WeatherDetailScreen(
     weatherInDegrees: Int,
     weatherCondition: String,
     onBackButtonClick: () -> Unit,
+    isPreviouslySavedLocation: Boolean,
+    onSaveButtonClick: () -> Unit,
     singleWeatherDetails: List<SingleWeatherDetail>,
     hourlyForecasts: List<HourlyForecast>,
     precipitationProbabilities: List<PrecipitationProbability>
@@ -83,6 +86,8 @@ fun WeatherDetailScreen(
                 headerImageResId = weatherConditionImage,
                 weatherConditionIconId = weatherConditionIconId,
                 onBackButtonClick = onBackButtonClick,
+                shouldDisplaySaveButton = !isPreviouslySavedLocation,
+                onSaveButtonClick = onSaveButtonClick,
                 nameOfLocation = nameOfLocation,
                 currentWeatherInDegrees = weatherInDegrees,
                 weatherCondition = weatherCondition
@@ -129,6 +134,8 @@ private fun Header(
     @DrawableRes headerImageResId: Int,
     @DrawableRes weatherConditionIconId: Int,
     onBackButtonClick: () -> Unit,
+    shouldDisplaySaveButton: Boolean,
+    onSaveButtonClick: () -> Unit,
     nameOfLocation: String,
     currentWeatherInDegrees: Int,
     weatherCondition: String,
@@ -164,6 +171,22 @@ private fun Header(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = null
             )
+        }
+        if (shouldDisplaySaveButton) {
+            IconButton(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .statusBarsPadding(),
+                colors = IconButtonDefaults.filledIconButtonColors(
+                    containerColor = iconButtonContainerColor
+                ),
+                onClick = onSaveButtonClick
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = null
+                )
+            }
         }
         Column(
             modifier = Modifier
