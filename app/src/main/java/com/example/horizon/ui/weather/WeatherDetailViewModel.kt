@@ -4,7 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.horizon.data.repositories.weather.WeatherRepository
-import com.example.horizon.domain.models.WeatherDetails
+import com.example.horizon.domain.models.CurrentWeatherDetails
 import com.example.horizon.ui.navigation.HorizonNavigationDestinations.WeatherDetailScreen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,17 +24,18 @@ class WeatherDetailViewModel @Inject constructor(
         savedStateHandle[WeatherDetailScreen.NAV_ARG_LATITUDE]!!
     private val longitude: String =
         savedStateHandle[WeatherDetailScreen.NAV_ARG_LONGITUDE]!!
+    private val nameOfLocation: String =
+        savedStateHandle[WeatherDetailScreen.NAV_ARG_NAME_OF_LOCATION]!!
 
-    private val _weatherDetailsOfChosenLocation =
-        MutableStateFlow(WeatherDetails.EmptyWeatherDetails)
+    private val _weatherDetailsOfChosenLocation = MutableStateFlow<CurrentWeatherDetails?>(null)
     val weatherDetailsOfChosenLocation =
-        _weatherDetailsOfChosenLocation as StateFlow<WeatherDetails>
+        _weatherDetailsOfChosenLocation as StateFlow<CurrentWeatherDetails>
 
     private val initialValueOfIsSavedLocation: String =
         savedStateHandle[WeatherDetailScreen.NAV_ARG_WAS_LOCATION_PREVIOUSLY_SAVED]!!
     val isSavedLocation = weatherRepository.getWeatherStreamForPreviouslySavedLocations()
         .map { savedWeatherDetails ->
-            savedWeatherDetails.any { it.nameOfLocation == weatherDetailsOfChosenLocation.value.nameOfLocation }
+            savedWeatherDetails.any { it.nameOfLocation == weatherDetailsOfChosenLocation.value?.nameOfLocation }
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 250L),
@@ -55,6 +56,7 @@ class WeatherDetailViewModel @Inject constructor(
     private suspend fun fetchWeatherInfo() {
         _uiState.value = UiState.LOADING
         val weatherDetails = weatherRepository.fetchWeatherForLocation(
+            nameOfLocation = nameOfLocation,
             latitude = latitude,
             longitude = longitude
         ).getOrNull()?.also { _weatherDetailsOfChosenLocation.value = it }
@@ -64,11 +66,11 @@ class WeatherDetailViewModel @Inject constructor(
     }
 
     fun addLocationToSavedLocations() {
-        if (weatherDetailsOfChosenLocation.value == WeatherDetails.EmptyWeatherDetails) return
+        if (weatherDetailsOfChosenLocation.value == null) return
         viewModelScope.launch {
             _uiState.value = UiState.LOADING
             weatherRepository.saveWeatherLocation(
-                nameOfLocation = weatherDetailsOfChosenLocation.value.nameOfLocation,
+                nameOfLocation = weatherDetailsOfChosenLocation.value!!.nameOfLocation,
                 latitude = latitude,
                 longitude = longitude
             )
