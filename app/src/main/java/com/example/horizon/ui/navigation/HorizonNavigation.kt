@@ -35,16 +35,14 @@ fun HorizonNavigation(navController: NavHostController = rememberNavController()
                 navController.navigateToWeatherDetailScreen(
                     nameOfLocation = it.nameOfLocation,
                     latitude = it.coordinatesOfLocation.latitude,
-                    longitude = it.coordinatesOfLocation.longitude,
-                    wasLocationPreviouslySaved = false
+                    longitude = it.coordinatesOfLocation.longitude
                 )
             },
             onSavedLocationItemClick = {
                 navController.navigateToWeatherDetailScreen(
                     nameOfLocation = it.nameOfLocation,
                     latitude = it.latitude,
-                    longitude = it.longitude,
-                    wasLocationPreviouslySaved = true
+                    longitude = it.longitude
                 )
             }
         )
@@ -101,7 +99,7 @@ fun NavGraphBuilder.weatherDetailScreen(
             onBackButtonClick = onBackButtonClick,
             isPreviouslySavedLocation = isSavedLocation,
             onSaveButtonClick = viewModel::addLocationToSavedLocations,
-            singleWeatherDetails = List(5){ //todo
+            singleWeatherDetails = List(5) { //todo
                 SingleWeatherDetail("Test", value = "1", R.drawable.ic_wind_pressure)
             },
             hourlyForecasts = emptyList(),
@@ -113,14 +111,12 @@ fun NavGraphBuilder.weatherDetailScreen(
 private fun NavHostController.navigateToWeatherDetailScreen(
     nameOfLocation: String,
     latitude: String,
-    longitude: String,
-    wasLocationPreviouslySaved: Boolean
+    longitude: String
 ) {
     val destination = HorizonNavigationDestinations.WeatherDetailScreen.buildRoute(
         nameOfLocation = nameOfLocation,
         latitude = latitude,
-        longitude = longitude,
-        wasLocationPreviouslySaved = wasLocationPreviouslySaved
+        longitude = longitude
     )
     navigate(destination)
 }

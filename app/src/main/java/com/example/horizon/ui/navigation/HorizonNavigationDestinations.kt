@@ -8,11 +8,10 @@ sealed class HorizonNavigationDestinations(val route: String) {
     object HomeScreen : HorizonNavigationDestinations(route = "home_screen")
 
     object WeatherDetailScreen :
-        HorizonNavigationDestinations(route = "weather_detail/{nameOfLocation}/{latitude}/{longitude}/{wasPreviouslySaved}") {
+        HorizonNavigationDestinations(route = "weather_detail/{nameOfLocation}/{latitude}/{longitude}") {
             const val NAV_ARG_NAME_OF_LOCATION = "nameOfLocation"
             const val NAV_ARG_LATITUDE = "latitude"
             const val NAV_ARG_LONGITUDE = "longitude"
-            const val NAV_ARG_WAS_LOCATION_PREVIOUSLY_SAVED = "wasPreviouslySaved"
 
             /**
              * Builds the route string for the weather detail screen destination with the provided
@@ -22,7 +21,6 @@ sealed class HorizonNavigationDestinations(val route: String) {
                 nameOfLocation : String,
                 latitude : String,
                 longitude : String,
-                wasLocationPreviouslySaved : Boolean
-            ) = "weather_detail/$nameOfLocation/$latitude/$longitude/${wasLocationPreviouslySaved}"
+            ) = "weather_detail/$nameOfLocation/$latitude/$longitude"
     }
 }
