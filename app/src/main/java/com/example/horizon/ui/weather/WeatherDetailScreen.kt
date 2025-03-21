@@ -55,7 +55,7 @@ import com.example.horizon.ui.components.SingleWeatherDetailCard
 
 // todo - need to add top bar when screen is fully scrolled
 @Composable
-fun WeatherDetailsV2(
+fun WeatherDetailScreen(
     nameOfLocation: String,
     @DrawableRes weatherConditionImage: Int,
     @DrawableRes weatherConditionIconId: Int,

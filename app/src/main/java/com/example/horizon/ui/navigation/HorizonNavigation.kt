@@ -18,8 +18,8 @@ import com.example.horizon.domain.models.LocationAutofillSuggestion
 import com.example.horizon.domain.models.SingleWeatherDetail
 import com.example.horizon.ui.home.HomeScreen
 import com.example.horizon.ui.home.HomeViewModel
+import com.example.horizon.ui.weather.WeatherDetailScreen
 import com.example.horizon.ui.weather.WeatherDetailViewModel
-import com.example.horizon.ui.weather.WeatherDetailsV2
 import kotlin.math.roundToInt
 
 @Composable
@@ -92,7 +92,7 @@ fun NavGraphBuilder.weatherDetailScreen(
         val weatherDetails by viewModel.weatherDetailsOfChosenLocation.collectAsStateWithLifecycle()
         val isSavedLocation by viewModel.isSavedLocation.collectAsStateWithLifecycle() // todo
 
-        WeatherDetailsV2(
+        WeatherDetailScreen(
             nameOfLocation = weatherDetails?.nameOfLocation ?: "- -",
             weatherConditionImage = weatherDetails?.imageResId ?: R.drawable.ic_day_clear, // todo
             weatherConditionIconId = weatherDetails?.iconResId ?: R.drawable.ic_day_clear,
