@@ -60,6 +60,9 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+
+        // To enable the use of java.time api's with minSdk < 26
+        isCoreLibraryDesugaringEnabled = true
     }
 
     kotlinOptions {
@@ -76,6 +79,9 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.core)
+
+    // java.time support for API's < Android O
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
 
     // Compose
     implementation(platform(libs.androidx.compose.bom))
