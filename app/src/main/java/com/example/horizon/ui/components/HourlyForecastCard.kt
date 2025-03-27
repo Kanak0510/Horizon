@@ -64,7 +64,7 @@ fun HourlyForecastCard(
                     hourOfDay = it.hour,
                     isAM = it.isAM,
                     iconResId = it.weatherIconResId,
-                    temperatureString = it.temperatureString
+                    temperature = it.temperature
                 )
             }
         }
@@ -78,7 +78,7 @@ private fun HourlyForecastItem(
     hourOfDay: Int,
     isAM: Boolean,
     @DrawableRes iconResId: Int,
-    temperatureString: String
+    temperature: Int
 ) {
     val labelLargeStyle = MaterialTheme.typography.labelLarge.toSpanStyle()
     val labelSmallStyle = MaterialTheme.typography.labelSmall.toSpanStyle()
@@ -107,7 +107,7 @@ private fun HourlyForecastItem(
             contentDescription = null
         )
         Text(
-            text = "${temperatureString}°",
+            text = "${temperature}°",
             style = MaterialTheme.typography.labelLarge
         )
     }
