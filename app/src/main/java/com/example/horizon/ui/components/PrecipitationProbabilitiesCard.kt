@@ -79,7 +79,7 @@ private fun ProbabilityProgressRow(
     }
     Row(modifier = modifier, horizontalArrangement = Arrangement.SpaceBetween) {
         Text(
-            text = precipitationProbability.hourString,
+            text = precipitationProbability.hour.toString(),
             style = MaterialTheme.typography.labelLarge
         )
         LinearProgressIndicator(
