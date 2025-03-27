@@ -10,7 +10,17 @@ import java.time.ZoneId
 // An interface representing a network based weather client
 interface WeatherClient {
 
-    // todo docs
+    /**
+     * Get the current weather for the given coordinates.
+     * @param latitude The latitude of the location.
+     * @param longitude The longitude of the location.
+     * @param temperatureUnit The unit of temperature to use.
+     * @param windSpeedUnit The unit of wind speed to use.
+     * @param precipitationUnit The unit of precipitation to use.
+     * @param shouldIncludeCurrentWeatherInformation Whether or not to include current weather information.
+     * **MUST ALWAYS BE SET TO TRUE!**
+     * @return A [Response] object containing the current weather information.
+     */
     @GET(WeatherClientConstants.EndPoints.GET_WEATHER_ENDPOINT)
     suspend fun getWeatherForCoordinates(
         @Query("latitude") latitude: String,
@@ -21,6 +31,18 @@ interface WeatherClient {
         @Query("current_weather") shouldIncludeCurrentWeatherInformation: Boolean = true // Must always be set to true
     ): Response<CurrentWeatherResponse>
 
+    /**
+     * Get the [HourlyWeatherInfoResponse] for the given coordinates.
+     * @param latitude The latitude of the location.
+     * @param longitude The longitude of the location.
+     * @param startDate The start date for the hourly forecast in YYYY-MM-DD format.
+     * @param endDate The end date for the hourly forecast in YYYY-MM-DD format.
+     * @param timezone The timezone to use for the hourly forecast.
+     * @param precipitationUnit The unit of precipitation to use.
+     * @param timeFormat The time format to use for the hourly forecast.
+     * @param hourlyForecastsToReturn The number of hourly forecasts to return.
+     * @return A [Response] object containing the hourly forecast information.
+     */
     @GET(WeatherClientConstants.EndPoints.GET_WEATHER_ENDPOINT)
     suspend fun getHourlyForecast(
         @Query("latitude") latitude: String,
