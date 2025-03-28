@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface HorizonDatabaseDao {
 
-    @Query("Select * FROM savedweatherlocations ORDER BY nameOfLocation ASC")
+    @Query("SELECT * FROM savedweatherlocations WHERE isDeleted == 0 ORDER BY nameOfLocation ASC")
     fun getAllSavedWeatherEntities(): Flow<List<SavedWeatherLocationEntity>>
 
     @Upsert
