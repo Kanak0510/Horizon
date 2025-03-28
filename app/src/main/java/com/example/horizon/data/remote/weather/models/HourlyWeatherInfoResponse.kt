@@ -80,7 +80,7 @@ fun HourlyWeatherInfoResponse.toPrecipitationProbabilities(): List<Precipitation
             val precipitationProbability = PrecipitationProbability(
                 hour = hoursOfCorrespondingLocalTime,
                 isAM = correspondingLocalTime.isAM,
-                probability = precipitationProbabilityPercentages[i],
+                probabilityPercentage = precipitationProbabilityPercentages[i],
                 latitude = latitude,
                 longitude = longitude
             )
