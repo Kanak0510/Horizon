@@ -93,7 +93,7 @@ class HorizonWeatherRepositoryTest {
             val dateRange = currentLocalDate..currentLocalDate.plusDays(1) // 48 hours
             // when getting the hourly precipitation probabilities for a given date range (48 hours)
             val result =
-                weatherRepository.getHourlyPrecipitationProbabilities(
+                weatherRepository.fetchHourlyPrecipitationProbabilities(
                     latitude = testLatitude,
                     longitude = testLongitude,
                     dateRange = dateRange

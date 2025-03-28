@@ -82,7 +82,7 @@ class WeatherDetailViewModel @Inject constructor(
 
     private suspend fun fetchAndAssignPrecipitationForecasts() {
         val hourlyPrecipitationProbabilities =
-            weatherRepository.getHourlyPrecipitationProbabilities(
+            weatherRepository.fetchHourlyPrecipitationProbabilities(
                 latitude = latitude,
                 longitude = longitude,
                 dateRange = LocalDate.now()..LocalDate.now().plusDays(1)

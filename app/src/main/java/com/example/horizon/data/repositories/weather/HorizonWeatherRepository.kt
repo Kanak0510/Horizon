@@ -73,7 +73,7 @@ class HorizonWeatherRepository @Inject constructor(
     }
 
     // todo - rename prefix of function to "fetch"
-    override suspend fun getHourlyPrecipitationProbabilities(
+    override suspend fun fetchHourlyPrecipitationProbabilities(
         latitude: String,
         longitude: String,
         dateRange: ClosedRange<LocalDate>
