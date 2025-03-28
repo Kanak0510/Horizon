@@ -59,6 +59,7 @@ fun AdditionalDailyForecastVariablesResponse.toSingleWeatherDetailList(
 private fun AdditionalDailyForecastVariablesResponse.AdditionalForecastedVariables.toSingleWeatherDetailList(
     timeFormat: DateTimeFormatter
 ): List<SingleWeatherDetail> {
+
     require(minTemperatureForTheDay.size == 1) {
         "This mapper method will only consider the first value of each list" +
                 "Make sure you request the details for only one day."
@@ -81,37 +82,42 @@ private fun AdditionalDailyForecastVariablesResponse.AdditionalForecastedVariabl
         SingleWeatherDetail(
             name = "Feels Like",
             value = "${apparentTemperature}º",
-            iconResId = R.drawable.ic_day_clear // todo : this is a place holder
+            iconResId = R.drawable.ic_thermometer
         ),
         SingleWeatherDetail(
             name = "Max Temp",
             value = "${maxTemperatureForTheDay.first().roundToInt()}º",
-            iconResId = R.drawable.ic_day_clear // todo : this is a place holder
+            iconResId = R.drawable.ic_thermometer
+        ),
+        SingleWeatherDetail(
+            name = "Min Temp",
+            value = "${minTemperatureForTheDay.first().roundToInt()}º",
+            iconResId = R.drawable.ic_thermometer
         ),
         SingleWeatherDetail(
             name = "Sunrise",
             value = sunriseTimeString,
-            iconResId = R.drawable.ic_day_clear // todo : this is a place holder
+            iconResId = R.drawable.ic_sunrise
         ),
         SingleWeatherDetail(
             name = "Sunset",
             value = sunsetTimeString,
-            iconResId = R.drawable.ic_day_clear // todo : this is a place holder
+            iconResId = R.drawable.ic_sunset
         ),
         SingleWeatherDetail(
             name = "Max UV Index",
             value = maxUvIndex.toString(),
-            iconResId = R.drawable.ic_day_clear // todo : this is a place holder
+            iconResId = R.drawable.ic_uv_index
         ),
         SingleWeatherDetail(
             name = "Wind Direction",
             value = dominantWindDirection.toString(), // todo : this is a place holder
-            iconResId = R.drawable.ic_day_clear // todo : this is a place holder
+            iconResId = R.drawable.ic_wind_direction
         ),
         SingleWeatherDetail(
             name = "Wind Speed",
             value = windSpeed.toString(),
-            iconResId = R.drawable.ic_day_clear // todo : this is a place holder
+            iconResId = R.drawable.ic_wind_direction
         )
     )
 }
