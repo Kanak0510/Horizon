@@ -31,8 +31,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.example.horizon.R
+import com.example.horizon.domain.hourStringInTwelveHourFormat
 import com.example.horizon.domain.models.PrecipitationProbability
-import com.example.horizon.domain.models.hourStringInTwelveHourFormat
 
 /**
  * A card composable that displays precipitation probabilities in a "vertical progress bar" styled manner.
@@ -93,7 +93,7 @@ private fun ProbabilityProgressColumn(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text(
-            text = precipitationProbability.hourStringInTwelveHourFormat.padStart(length = 5),
+            text = precipitationProbability.dateTime.hourStringInTwelveHourFormat.padStart(length = 5),
             style = MaterialTheme.typography.labelLarge
         )
         // Since Modifier.rotate() rotates the composable in a separate graphics layer,
