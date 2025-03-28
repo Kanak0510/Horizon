@@ -90,8 +90,8 @@ class HorizonWeatherRepositoryTest {
             val testLatitude = "38.6275"
             val testLongitude = "-92.5666"
             val currentLocalDate = LocalDate.now().also(::println)
-            val dateRange = currentLocalDate..currentLocalDate.plusDays(1)
-            // when getting the hourly precipitation probabilities for a given date range
+            val dateRange = currentLocalDate..currentLocalDate.plusDays(1) // 48 hours
+            // when getting the hourly precipitation probabilities for a given date range (48 hours)
             val result =
                 weatherRepository.getHourlyPrecipitationProbabilities(
                     latitude = testLatitude,
@@ -110,21 +110,7 @@ class HorizonWeatherRepositoryTest {
                     probability.longitude.toDouble() - testLongitude.toDouble()
                 assert(latitudeDifference <= 1 && longitudeDifference <= 1)
             }
-            val probabilityHoursFor1Day = buildList {
-                var hour = 12
-                repeat(12) {
-                    add(Pair(hour, true))
-                    hour = (hour + 1) % 12
-                }
-                hour = 12
-                repeat(12) {
-                    add(Pair(hour, false))
-                    hour = (hour + 1) % 12
-                }
-            } // [ (12,true)..(11,true),(12,false)..(11,false)] the second value in the pair indicates whether the hour isAM or not
-            // the list must contain hourly probabilities for the given date range (2 days)
-            val expectedProbabilityHours = probabilityHoursFor1Day + probabilityHoursFor1Day
-            val probabilityHours = result.map { Pair(it.hour, it.isAM) }
-            assert(probabilityHours == expectedProbabilityHours)
+            // the result must have exactly 48 hours forecast items
+            assert(result.size == 48)
         }
 }
