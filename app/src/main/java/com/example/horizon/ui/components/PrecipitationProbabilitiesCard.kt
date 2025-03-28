@@ -2,13 +2,15 @@ package com.example.horizon.ui.components
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
@@ -21,7 +23,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
@@ -31,7 +35,7 @@ import com.example.horizon.domain.models.PrecipitationProbability
 import com.example.horizon.domain.models.hourStringInTwelveHourFormat
 
 /**
- * A card composable that displays precipitation probabilities in a "progress bar" styled manner.
+ * A card composable that displays precipitation probabilities in a "vertical progress bar" styled manner.
  * @param precipitationProbabilities The list of precipitation probabilities.
  * @param modifier The modifier to apply to the card.
  */
@@ -55,20 +59,22 @@ fun PrecipitationProbabilitiesCard(
                 style = MaterialTheme.typography.titleMedium
             )
         }
-        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-            for (precipitationProbability in precipitationProbabilities) {
-                ProbabilityProgressRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    precipitationProbability = precipitationProbability
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            contentPadding = PaddingValues(horizontal = 16.dp)
+        ) {
+            items(precipitationProbabilities) {
+                ProbabilityProgressColumn(
+                    modifier = Modifier.padding(bottom = 16.dp),
+                    precipitationProbability = it
                 )
-                Spacer(modifier = Modifier.size(16.dp))
             }
         }
     }
 }
 
 @Composable
-private fun ProbabilityProgressRow(
+private fun ProbabilityProgressColumn(
     precipitationProbability: PrecipitationProbability,
     modifier: Modifier = Modifier
 ) {
@@ -78,20 +84,43 @@ private fun ProbabilityProgressRow(
         // dividing a percentage value by 100 will yield a value that is between 0.0f..1.0f
         progressValue = precipitationProbability.probabilityPercentage / 100f
     }
-    Row(modifier = modifier, horizontalArrangement = Arrangement.SpaceBetween) {
+    val (heightOfProgressBarWhenVertical, widthOfProgressBarWhenVertical) = remember {
+        Pair(120.dp, 16.dp)
+    }
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
         Text(
             text = precipitationProbability.hourStringInTwelveHourFormat.padStart(length = 5),
             style = MaterialTheme.typography.labelLarge
         )
-        LinearProgressIndicator(
-        progress = { animatedProgressValue },
-        modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .height(24.dp)
-            .weight(1f),
-        trackColor = ProgressIndicatorDefaults.linearColor.copy(alpha = 0.5f),
-        strokeCap = StrokeCap.Round,
-        )
+        // Since Modifier.rotate() rotates the composable in a separate graphics layer,
+        // other contents of the column will overlap with the progress bar.
+        // In order to accommodate for that, use a Box as a spacer for the other
+        // composables.
+        Box(
+            modifier = Modifier.size(
+                height = heightOfProgressBarWhenVertical,
+                width = widthOfProgressBarWhenVertical
+            )
+        ) {
+            // Since Modifier.rotate() will rotate the composable with it's center point as the
+            // pivot, center the progress bar composable to correctly fit the Box composable.
+            LinearProgressIndicator(
+            progress = { animatedProgressValue },
+            modifier = Modifier
+                                .align(Alignment.Center)
+                                .requiredSize(
+                                    height = widthOfProgressBarWhenVertical, // after rotating, the width will be the height and vice-versa
+                                    width = heightOfProgressBarWhenVertical
+                                )
+                                .rotate(-90f),
+            trackColor = ProgressIndicatorDefaults.linearColor.copy(alpha = 0.5f),
+            strokeCap = StrokeCap.Round,
+            )
+        }
         Text(
             text = "${precipitationProbability.probabilityPercentage}%".padStart(length = 4),
             style = MaterialTheme.typography.labelLarge
