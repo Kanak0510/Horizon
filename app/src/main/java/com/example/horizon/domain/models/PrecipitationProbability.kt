@@ -1,5 +1,7 @@
 package com.example.horizon.domain.models
 
+import java.time.LocalDateTime
+
 /**
  * A data class that represents the precipitation probability.
  * Note: It's better to have the time as an instance of LocalDateTime. This will allow for additional
@@ -9,7 +11,6 @@ package com.example.horizon.domain.models
 data class PrecipitationProbability(
     val latitude: String,
     val longitude: String,
-    val hour: Int,
-    val isAM: Boolean,
+    val dateTime: LocalDateTime,
     val probabilityPercentage: Int
 )
