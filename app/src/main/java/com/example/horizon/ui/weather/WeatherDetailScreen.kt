@@ -69,7 +69,6 @@ fun WeatherDetailScreen(
     hourlyForecasts: List<HourlyForecast>,
     precipitationProbabilities: List<PrecipitationProbability>
 ) {
-    require(singleWeatherDetails.size >= 4)
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     LazyVerticalGrid(
         modifier = Modifier.fillMaxSize(),
@@ -94,24 +93,15 @@ fun WeatherDetailScreen(
             )
         }
 
-        items(singleWeatherDetails.subList(0, 4)) {
-            SingleWeatherDetailCard(
-                name = it.name,
-                value = it.value,
-                iconResId = it.iconResId
-            )
+        item(span = { GridItemSpan(maxLineSpan) }) {
+            HourlyForecastCard(hourlyForecasts = hourlyForecasts)
         }
 
         item(span = { GridItemSpan(maxLineSpan) }) {
             PrecipitationProbabilitiesCard(precipitationProbabilities = precipitationProbabilities)
         }
 
-
-        item(span = { GridItemSpan(maxLineSpan) }) {
-            HourlyForecastCard(hourlyForecasts = hourlyForecasts)
-        }
-
-        items(singleWeatherDetails.subList(4, singleWeatherDetails.size)) {
+        items(singleWeatherDetails) {
             SingleWeatherDetailCard(
                 name = it.name,
                 value = it.value,
