@@ -5,13 +5,16 @@ import com.example.horizon.data.local.weather.HorizonDatabaseDao
 import com.example.horizon.data.local.weather.SavedWeatherLocationEntity
 import com.example.horizon.data.remote.weather.WeatherClient
 import com.example.horizon.data.remote.weather.models.toCurrentWeatherDetails
+import com.example.horizon.data.remote.weather.models.toPrecipitationProbabilities
 import com.example.horizon.domain.models.BriefWeatherDetails
 import com.example.horizon.domain.models.CurrentWeatherDetails
+import com.example.horizon.domain.models.PrecipitationProbability
 import com.example.horizon.domain.models.toBriefWeatherDetails
 import com.example.horizon.domain.models.toSavedWeatherLocationEntity
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import java.time.LocalDate
 import javax.inject.Inject
 
 /**
@@ -65,5 +68,22 @@ class HorizonWeatherRepository @Inject constructor(
 
     override suspend fun deleteWeatherLocationFromSavedItems(briefWeatherLocation: BriefWeatherDetails) {
         horizonDatabaseDao.deleteSavedWeatherEntity(briefWeatherLocation.toSavedWeatherLocationEntity())
+    }
+
+    override suspend fun getHourlyPrecipitationProbabilities(
+        latitude: String,
+        longitude: String,
+        dateRange: ClosedRange<LocalDate>
+    ): Result<List<PrecipitationProbability>> = try {
+        val precipitationProbabilities = weatherClient.getHourlyForecast(
+            latitude = latitude,
+            longitude = longitude,
+            startDate = dateRange.start,
+            endDate = dateRange.endInclusive
+        ).getBodyOrThrowException().toPrecipitationProbabilities()
+        Result.success(precipitationProbabilities)
+    } catch (exception: Exception) {
+        if (exception is CancellationException) throw exception
+        Result.failure(exception)
     }
 }
