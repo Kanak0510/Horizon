@@ -44,6 +44,7 @@ class HomeViewModel @Inject constructor(
 
     private val _weatherDetailsOfSavedLocations = MutableStateFlow<List<BriefWeatherDetails>>(emptyList())
     val weatherDetailsOfSavedLocations = _weatherDetailsOfSavedLocations as StateFlow<List<BriefWeatherDetails>>
+    private var recentlyDeletedItem: BriefWeatherDetails? = null
 
     init {
         _uiState.value = UiState.LOADING_SAVED_LOCATIONS
@@ -66,8 +67,15 @@ class HomeViewModel @Inject constructor(
     }
 
     fun deleteSavedWeatherLocation(briefWeatherDetails: BriefWeatherDetails) {
+        recentlyDeletedItem = briefWeatherDetails
         viewModelScope.launch {
             weatherRepository.deleteWeatherLocationFromSavedItems(briefWeatherDetails)
+        }
+    }
+
+    fun restoreRecentlyDeletedItem() {
+        recentlyDeletedItem?.let {
+            viewModelScope.launch { weatherRepository.tryRestoringDeletedWeatherLocation(it.nameOfLocation) }
         }
     }
 
