@@ -75,15 +75,17 @@ private fun AdditionalDailyForecastVariablesResponse.AdditionalForecastedVariabl
         ZoneId.systemDefault()
     ).format(timeFormat)
 
+    // Since these single weather detail items are displayed in smaller cards, the default mac OS
+    // 'º' character is used instead of the other degree superscript used in other parts of the app.
     return listOf(
         SingleWeatherDetail(
             name = "Feels Like",
-            value = apparentTemperature.toString(),
+            value = "${apparentTemperature}º",
             iconResId = R.drawable.ic_day_clear // todo : this is a place holder
         ),
         SingleWeatherDetail(
-            name = "Max Temperature",
-            value = maxTemperatureForTheDay.first().roundToInt().toString(),
+            name = "Max Temp",
+            value = "${maxTemperatureForTheDay.first().roundToInt()}º",
             iconResId = R.drawable.ic_day_clear // todo : this is a place holder
         ),
         SingleWeatherDetail(
