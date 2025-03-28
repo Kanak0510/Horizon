@@ -5,9 +5,11 @@ import com.example.horizon.data.local.weather.HorizonDatabaseDao
 import com.example.horizon.data.local.weather.SavedWeatherLocationEntity
 import com.example.horizon.data.remote.weather.WeatherClient
 import com.example.horizon.data.remote.weather.models.toCurrentWeatherDetails
+import com.example.horizon.data.remote.weather.models.toHourlyForecasts
 import com.example.horizon.data.remote.weather.models.toPrecipitationProbabilities
 import com.example.horizon.domain.models.BriefWeatherDetails
 import com.example.horizon.domain.models.CurrentWeatherDetails
+import com.example.horizon.domain.models.HourlyForecast
 import com.example.horizon.domain.models.PrecipitationProbability
 import com.example.horizon.domain.models.toBriefWeatherDetails
 import com.example.horizon.domain.models.toSavedWeatherLocationEntity
@@ -70,6 +72,7 @@ class HorizonWeatherRepository @Inject constructor(
         horizonDatabaseDao.deleteSavedWeatherEntity(briefWeatherLocation.toSavedWeatherLocationEntity())
     }
 
+    // todo - rename prefix of function to "fetch"
     override suspend fun getHourlyPrecipitationProbabilities(
         latitude: String,
         longitude: String,
@@ -82,6 +85,23 @@ class HorizonWeatherRepository @Inject constructor(
             endDate = dateRange.endInclusive
         ).getBodyOrThrowException().toPrecipitationProbabilities()
         Result.success(precipitationProbabilities)
+    } catch (exception: Exception) {
+        if (exception is CancellationException) throw exception
+        Result.failure(exception)
+    }
+
+    override suspend fun fetchHourlyForecasts(
+        latitude: String,
+        longitude: String,
+        dateRange: ClosedRange<LocalDate>
+    ): Result<List<HourlyForecast>> = try {
+        val hourlyForecasts = weatherClient.getHourlyForecast(
+            latitude = latitude,
+            longitude = longitude,
+            startDate = dateRange.start,
+            endDate = dateRange.endInclusive
+        ).getBodyOrThrowException().toHourlyForecasts()
+        Result.success(hourlyForecasts)
     } catch (exception: Exception) {
         if (exception is CancellationException) throw exception
         Result.failure(exception)

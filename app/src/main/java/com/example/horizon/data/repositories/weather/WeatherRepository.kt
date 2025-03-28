@@ -2,6 +2,7 @@ package com.example.horizon.data.repositories.weather
 
 import com.example.horizon.domain.models.BriefWeatherDetails
 import com.example.horizon.domain.models.CurrentWeatherDetails
+import com.example.horizon.domain.models.HourlyForecast
 import com.example.horizon.domain.models.PrecipitationProbability
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
@@ -59,4 +60,15 @@ interface WeatherRepository {
         longitude: String,
         dateRange: ClosedRange<LocalDate> = LocalDate.now()..LocalDate.now().plusDays(1)
     ): Result<List<PrecipitationProbability>>
+
+    /**
+     * Fetches hourly forecasts for the given [latitude] and [longitude] within the specified
+     * [dateRange]. It returns a [Result] object containing a list of [HourlyForecast] objects if
+     * the fetch operation was successful, else an error message.
+     */
+    suspend fun fetchHourlyForecasts(
+        latitude: String,
+        longitude: String,
+        dateRange: ClosedRange<LocalDate>
+    ): Result<List<HourlyForecast>>
 }
