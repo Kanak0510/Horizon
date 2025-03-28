@@ -13,8 +13,3 @@ data class PrecipitationProbability(
     val isAM: Boolean,
     val probabilityPercentage: Int
 )
-
-/**
- * Returns the precipitation probability as a percentage string.
- */
-val PrecipitationProbability.probabilityPercentageString get() = "${probabilityPercentage * 100}%"
