@@ -4,6 +4,7 @@ import com.example.horizon.domain.models.BriefWeatherDetails
 import com.example.horizon.domain.models.CurrentWeatherDetails
 import com.example.horizon.domain.models.HourlyForecast
 import com.example.horizon.domain.models.PrecipitationProbability
+import com.example.horizon.domain.models.SingleWeatherDetail
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 
@@ -71,4 +72,14 @@ interface WeatherRepository {
         longitude: String,
         dateRange: ClosedRange<LocalDate>
     ): Result<List<HourlyForecast>>
+
+    /**
+     * Used to fetch a list of [SingleWeatherDetail] items for the current day encapsulated in a
+     * [Result] type. These items represent additional weather information for the given location at
+     * the specified [latitude] and [longitude].
+     */
+    suspend fun fetchAdditionalWeatherInfoItemsListForCurrentDay(
+        latitude: String,
+        longitude: String
+    ): Result<List<SingleWeatherDetail>>
 }

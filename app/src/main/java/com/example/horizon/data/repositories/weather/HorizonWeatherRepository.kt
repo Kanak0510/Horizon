@@ -7,10 +7,12 @@ import com.example.horizon.data.remote.weather.WeatherClient
 import com.example.horizon.data.remote.weather.models.toCurrentWeatherDetails
 import com.example.horizon.data.remote.weather.models.toHourlyForecasts
 import com.example.horizon.data.remote.weather.models.toPrecipitationProbabilities
+import com.example.horizon.data.remote.weather.models.toSingleWeatherDetailList
 import com.example.horizon.domain.models.BriefWeatherDetails
 import com.example.horizon.domain.models.CurrentWeatherDetails
 import com.example.horizon.domain.models.HourlyForecast
 import com.example.horizon.domain.models.PrecipitationProbability
+import com.example.horizon.domain.models.SingleWeatherDetail
 import com.example.horizon.domain.models.toBriefWeatherDetails
 import com.example.horizon.domain.models.toSavedWeatherLocationEntity
 import kotlinx.coroutines.CancellationException
@@ -102,6 +104,22 @@ class HorizonWeatherRepository @Inject constructor(
             endDate = dateRange.endInclusive
         ).getBodyOrThrowException().toHourlyForecasts()
         Result.success(hourlyForecasts)
+    } catch (exception: Exception) {
+        if (exception is CancellationException) throw exception
+        Result.failure(exception)
+    }
+
+    override suspend fun fetchAdditionalWeatherInfoItemsListForCurrentDay(
+        latitude: String,
+        longitude: String,
+    ): Result<List<SingleWeatherDetail>> = try {
+        val additionalWeatherInfoItemsList = weatherClient.getAdditionalDailyForecastVariables(
+            latitude = latitude,
+            longitude = longitude,
+            startDate = LocalDate.now(),
+            endDate = LocalDate.now()
+        ).getBodyOrThrowException().toSingleWeatherDetailList()
+        Result.success(additionalWeatherInfoItemsList)
     } catch (exception: Exception) {
         if (exception is CancellationException) throw exception
         Result.failure(exception)
