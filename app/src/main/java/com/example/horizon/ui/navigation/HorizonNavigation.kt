@@ -90,6 +90,7 @@ fun NavGraphBuilder.weatherDetailScreen(
         val weatherDetails by viewModel.weatherDetailsOfChosenLocation.collectAsStateWithLifecycle()
         val isSavedLocation by viewModel.isSavedLocation.collectAsStateWithLifecycle()
         val precipitationProbabilityList by viewModel.precipitationProbabilityList.collectAsStateWithLifecycle()
+        val hourlyForecastList by viewModel.hourlyForecastList.collectAsStateWithLifecycle()
 
         WeatherDetailScreen(
             nameOfLocation = weatherDetails?.nameOfLocation ?: "- -",
@@ -103,7 +104,7 @@ fun NavGraphBuilder.weatherDetailScreen(
             singleWeatherDetails = List(5) { //todo
                 SingleWeatherDetail("Test", value = "1", R.drawable.ic_wind_pressure)
             },
-            hourlyForecasts = emptyList(),
+            hourlyForecasts = hourlyForecastList,
             precipitationProbabilities = precipitationProbabilityList
         )
     }

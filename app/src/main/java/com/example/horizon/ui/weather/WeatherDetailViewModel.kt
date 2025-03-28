@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.horizon.data.repositories.weather.WeatherRepository
 import com.example.horizon.domain.models.CurrentWeatherDetails
+import com.example.horizon.domain.models.HourlyForecast
 import com.example.horizon.domain.models.PrecipitationProbability
 import com.example.horizon.ui.navigation.HorizonNavigationDestinations.WeatherDetailScreen
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -49,6 +50,9 @@ class WeatherDetailViewModel @Inject constructor(
     val precipitationProbabilityList =
         _precipitationProbabilityList as StateFlow<List<PrecipitationProbability>>
 
+    private val _hourlyForecastList = MutableStateFlow<List<HourlyForecast>>(emptyList())
+    val hourlyForecastList = _hourlyForecastList as StateFlow<List<HourlyForecast>>
+
     private val _uiState = MutableStateFlow(UiState.IDLE)
     val uiState = _uiState as StateFlow<UiState>
 
@@ -56,6 +60,7 @@ class WeatherDetailViewModel @Inject constructor(
         viewModelScope.launch {
             fetchWeatherInfo()
             fetchAndAssignPrecipitationForecasts()
+            fetchAndAssignHourlyForecasts()
         }
     }
 
@@ -88,6 +93,20 @@ class WeatherDetailViewModel @Inject constructor(
             else it.dateTime > LocalDateTime.now()
         }.take(24)
         _precipitationProbabilityList.value = precipitationProbabilitiesForTheNext24hours
+    }
+
+    private suspend fun fetchAndAssignHourlyForecasts() {
+        val hourlyForecasts = weatherRepository.fetchHourlyForecasts(
+            latitude = latitude,
+            longitude = longitude,
+            dateRange = LocalDate.now()..LocalDate.now().plusDays(1)
+        ).getOrNull() ?: return
+        val hourlyForecastsForTheNext24hours = hourlyForecasts.filter {
+            val isSameDay = it.dateTime == LocalDateTime.now()
+            if (isSameDay) it.dateTime.toLocalTime() >= LocalTime.now()
+            else it.dateTime > LocalDateTime.now()
+        }.take(24)
+        _hourlyForecastList.value = hourlyForecastsForTheNext24hours
     }
 
     fun addLocationToSavedLocations() {
