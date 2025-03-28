@@ -55,5 +55,14 @@ class WeatherClientTest {
             assert(distinctResponseTimeStamps.containsAll(requiredTimeStamps))
         }
 
-
+    @Test
+    fun `Additional daily forecast variables must be fetched successfully`() = runTest {
+        val additionalForecastedVariables = client.getAdditionalDailyForecastVariables(
+            latitude = "37.333333",
+            longitude = "-122.028033",
+            startDate = LocalDate.now(),
+            endDate = LocalDate.now(),
+        ).body()
+        assert(additionalForecastedVariables != null)
+    }
 }
