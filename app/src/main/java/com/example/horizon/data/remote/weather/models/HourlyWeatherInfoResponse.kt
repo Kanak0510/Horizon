@@ -6,9 +6,7 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import java.time.Instant
 import java.time.LocalDateTime
-import java.time.LocalTime
 import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 import kotlin.math.roundToInt
 
 /**
@@ -90,19 +88,3 @@ fun HourlyWeatherInfoResponse.toPrecipitationProbabilities(): List<Precipitation
         }
         return@run probabilitiesList
     }
-
-/**
- * Returns an [Int] representing the hour of the [LocalTime], in 12 hour format, removing any
- * leading zeros.
- */
-private fun LocalTime.formatTo12HourInt(): Int {
-    val hourOfLocalTime =
-        format(DateTimeFormatter.ofPattern("hh")) // the hour in 12-hour format (which includes leading zeros)
-    return if (hourOfLocalTime.first() == '0') hourOfLocalTime.last().digitToInt()
-    else hourOfLocalTime.toInt()
-}
-
-/**
- * Returns true if this [LocalTime] is in the AM (before noon), false otherwise.
- */
-private val LocalTime.isAM get() = hour < 12
