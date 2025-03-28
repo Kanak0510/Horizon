@@ -1,9 +1,12 @@
 package com.example.horizon.ui.navigation
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -19,6 +22,7 @@ import com.example.horizon.ui.home.HomeScreen
 import com.example.horizon.ui.home.HomeViewModel
 import com.example.horizon.ui.weatherDetail.WeatherDetailScreen
 import com.example.horizon.ui.weatherDetail.WeatherDetailViewModel
+import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 @Composable
@@ -65,6 +69,8 @@ private fun NavGraphBuilder.homeScreen(
             .collectAsStateWithLifecycle(initialValue = emptyList())
         val weatherDetailsOfSavedLocations by viewModel.weatherDetailsOfSavedLocations
             .collectAsStateWithLifecycle()
+        val snackbarHostState = remember { SnackbarHostState() }
+        val coroutineScope = rememberCoroutineScope()
 
         HomeScreen(
             modifier = Modifier.fillMaxSize(),
@@ -75,7 +81,14 @@ private fun NavGraphBuilder.homeScreen(
             onSuggestionClick = onSuggestionClick,
             onSearchQueryChange = viewModel::setSearchQueryForSuggestionsGeneration,
             onSavedLocationItemClick = onSavedLocationItemClick,
-            onSavedLocationDismissed = viewModel::deleteSavedWeatherLocation
+            onSavedLocationDismissed = {
+                viewModel.deleteSavedWeatherLocation(it)
+                snackbarHostState.currentSnackbarData?.dismiss()
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(message = "${it.nameOfLocation} has been deleted")
+                }
+            },
+            snackbarHostState = snackbarHostState
         )
     }
 }
