@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalFoundationApi::class)
 
-package com.example.horizon.ui.weather
+package com.example.horizon.ui.weatherDetail
 
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.animateColorAsState

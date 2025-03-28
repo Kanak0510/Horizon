@@ -17,8 +17,8 @@ import com.example.horizon.domain.models.BriefWeatherDetails
 import com.example.horizon.domain.models.LocationAutofillSuggestion
 import com.example.horizon.ui.home.HomeScreen
 import com.example.horizon.ui.home.HomeViewModel
-import com.example.horizon.ui.weather.WeatherDetailScreen
-import com.example.horizon.ui.weather.WeatherDetailViewModel
+import com.example.horizon.ui.weatherDetail.WeatherDetailScreen
+import com.example.horizon.ui.weatherDetail.WeatherDetailViewModel
 import kotlin.math.roundToInt
 
 @Composable
