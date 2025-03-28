@@ -28,7 +28,6 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.example.horizon.R
 import com.example.horizon.domain.models.PrecipitationProbability
-import com.example.horizon.domain.models.probabilityPercentageString
 
 /**
  * A card composable that displays precipitation probabilities in a "progress bar" styled manner.
@@ -75,7 +74,8 @@ private fun ProbabilityProgressRow(
     var progressValue by remember { mutableStateOf(0f) }
     val animatedProgressValue by animateFloatAsState(targetValue = progressValue)
     LaunchedEffect(precipitationProbability) {
-        progressValue = precipitationProbability.probability
+        // dividing a percentage value by 100 will yield a value that is between 0.0f..1.0f
+        progressValue = precipitationProbability.probabilityPercentage / 100f
     }
     Row(modifier = modifier, horizontalArrangement = Arrangement.SpaceBetween) {
         Text(
@@ -92,7 +92,7 @@ private fun ProbabilityProgressRow(
         strokeCap = StrokeCap.Round,
         )
         Text(
-            text = precipitationProbability.probabilityPercentageString,
+            text = "${precipitationProbability.probabilityPercentage}%",
             style = MaterialTheme.typography.labelLarge
         )
     }
