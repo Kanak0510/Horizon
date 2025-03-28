@@ -55,6 +55,9 @@ fun AdditionalDailyForecastVariablesResponse.toSingleWeatherDetailList(
 /**
  * Used to convert an instance of [AdditionalDailyForecastVariablesResponse.AdditionalForecastedVariables]
  * to a list of [SingleWeatherDetail] items.
+ *
+ * Note: The best way to do this mapping would be to allow the caller to customize the units.
+ * Since this is just a hobby project, this detail has been left out.
  */
 private fun AdditionalDailyForecastVariablesResponse.AdditionalForecastedVariables.toSingleWeatherDetailList(
     timeFormat: DateTimeFormatter
@@ -106,17 +109,17 @@ private fun AdditionalDailyForecastVariablesResponse.AdditionalForecastedVariabl
         ),
         SingleWeatherDetail(
             name = "Max UV Index",
-            value = maxUvIndex.toString(),
+            value = maxUvIndex.first().toString(),
             iconResId = R.drawable.ic_uv_index
         ),
         SingleWeatherDetail(
             name = "Wind Direction",
-            value = dominantWindDirection.toString(), // todo : this is a place holder
+            value = "${dominantWindDirection.first()}º",
             iconResId = R.drawable.ic_wind_direction
         ),
         SingleWeatherDetail(
             name = "Wind Speed",
-            value = windSpeed.toString(),
+            value = "${windSpeed.first()} Km/h",
             iconResId = R.drawable.ic_wind_direction
         )
     )
