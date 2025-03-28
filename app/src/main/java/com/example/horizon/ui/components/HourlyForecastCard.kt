@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
@@ -42,10 +43,13 @@ fun HourlyForecastCard(
                 .padding(top = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            // Explicitly set tint to Color.Unspecified to ensure that no tint is applied to the vector
+            // resource. See documentation of the Icon composable for more information.
             Icon(
                 modifier = Modifier.size(24.dp),
                 imageVector = ImageVector.vectorResource(id = R.drawable.ic_schedule_24),
-                contentDescription = null
+                contentDescription = null,
+                tint = Color.Unspecified
             )
             Text(
                 text = "Hourly Forecast",
@@ -86,10 +90,13 @@ private fun HourlyForecastItem(
             text = dateTime.hourStringInTwelveHourFormat,
             style = MaterialTheme.typography.labelLarge
         )
+        // Explicitly set tint to Color.Unspecified to ensure that no tint is applied to the vector
+        // resource. See documentation of the Icon composable for more information.
         Icon(
             modifier = Modifier.size(40.dp),
             imageVector = ImageVector.vectorResource(id = iconResId),
-            contentDescription = null
+            contentDescription = null,
+            tint = Color.Unspecified
         )
         Text(
             text = "${temperature}°",

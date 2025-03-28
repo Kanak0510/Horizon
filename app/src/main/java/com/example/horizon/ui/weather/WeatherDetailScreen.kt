@@ -200,7 +200,8 @@ private fun Header(
                 Icon(
                     modifier = Modifier.size(32.dp),
                     imageVector = ImageVector.vectorResource(id = weatherConditionIconId),
-                    contentDescription = null
+                    contentDescription = null,
+                    tint = Color.Unspecified
                 )
                 Text(text = weatherCondition)
             }

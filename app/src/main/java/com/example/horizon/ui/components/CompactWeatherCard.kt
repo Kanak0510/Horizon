@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -93,10 +94,13 @@ private fun ShortWeatherDescriptionWithIconRow(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
+        // Explicitly set tint to Color.Unspecified to ensure that no tint is applied to the vector
+        // resource. See documentation of the Icon composable for more information.
         Icon(
             modifier = Modifier.size(24.dp),
             imageVector = ImageVector.vectorResource(id = iconRes),
-            contentDescription = null
+            contentDescription = null,
+            tint = Color.Unspecified
         )
         Text(
             text = shortDescription,
