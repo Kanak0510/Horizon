@@ -128,4 +128,28 @@ internal class HorizonDatabaseTest {
         dao.markWeatherEntityAsUnDeleted(weatherLocationEntity.nameOfLocation)
     }
 
+    @Test
+    fun deleteAllItemsMarkedAsDeletedTest_allItemsMarkedAsDeletedMustBeDeleted() = runTest {
+        val markedAsDeletedItems = listOf(
+            SavedWeatherLocationEntity("New York", "40.7128", "-74.0060", isDeleted = true),
+            SavedWeatherLocationEntity("Los Angeles", "34.0522", "-118.2437", isDeleted = true)
+        ).onEach { dao.addSavedWeatherEntity(it) }
+        val markedAsNotDeletedItems = listOf(
+            SavedWeatherLocationEntity("Chicago", "41.8781", "-87.6298", isDeleted = false),
+            SavedWeatherLocationEntity("Houston", "29.7604", "-95.3698", isDeleted = false)
+        ).onEach { dao.addSavedWeatherEntity(it) }
+        // given a database filled with some items marked as deleted and some items marked as not deleted
+        assert(
+            dao.getAllWeatherEntitiesIrrespectiveOfDeletedStatus().first()
+                .containsAll(markedAsDeletedItems + markedAsDeletedItems)
+        )
+        // when dao.deleteAllItemsMarkedAsDeleted() is invoked
+        dao.deleteAllItemsMarkedAsDeleted()
+        // all items that were marked as deleted must be removed
+        val savedEntities =
+            dao.getAllWeatherEntitiesIrrespectiveOfDeletedStatus().first().also(::println)
+        assert(savedEntities.size == 2)
+        assert(savedEntities.containsAll(markedAsNotDeletedItems))
+    }
+
 }
