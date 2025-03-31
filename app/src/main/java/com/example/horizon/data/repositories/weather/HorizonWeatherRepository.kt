@@ -45,7 +45,7 @@ class HorizonWeatherRepository @Inject constructor(
     }
 
     override fun getWeatherStreamForPreviouslySavedLocations(): Flow<List<BriefWeatherDetails>> {
-        return horizonDatabaseDao.getAllSavedWeatherEntities()
+        return horizonDatabaseDao.getAllWeatherEntitiesMarkedAsNotDeleted()
             .map { savedWeatherLocationEntities ->
                 savedWeatherLocationEntities.map {
                     fetchWeatherForLocation(nameOfLocation = it.nameOfLocation, latitude = it.latitude, longitude = it.longitude)

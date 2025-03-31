@@ -38,7 +38,7 @@ class HorizonWeatherRepositoryTest {
     @Before
     fun setup() {
         val daoMock = mock<HorizonDatabaseDao> {
-            onBlocking { getAllSavedWeatherEntities() } doAnswer {
+            onBlocking { getAllWeatherEntitiesMarkedAsNotDeleted() } doAnswer {
                 flowOf(savedLocations)
             }
         }

@@ -41,7 +41,7 @@ internal class HorizonDatabaseTest {
             longitude = "74.0060"
         )
         dao.addSavedWeatherEntity(weatherLocationEntity)
-        with(dao.getAllSavedWeatherEntities().first()) {
+        with(dao.getAllWeatherEntitiesMarkedAsNotDeleted().first()) {
             assert(size == 1)
             assert(first() == weatherLocationEntity)
         }
@@ -58,11 +58,11 @@ internal class HorizonDatabaseTest {
             // Add item to database
             addSavedWeatherEntity(weatherLocationEntity)
             // Item must be inserted
-            assert(getAllSavedWeatherEntities().first().contains(weatherLocationEntity))
+            assert(getAllWeatherEntitiesMarkedAsNotDeleted().first().contains(weatherLocationEntity))
             // Delete item from database
             deleteSavedWeatherEntity(weatherLocationEntity)
             // Item must not exist in the database
-            assert(!getAllSavedWeatherEntities().first().contains(weatherLocationEntity))
+            assert(!getAllWeatherEntitiesMarkedAsNotDeleted().first().contains(weatherLocationEntity))
         }
     }
 
@@ -83,7 +83,7 @@ internal class HorizonDatabaseTest {
             isDeleted = true // marked as deleted
         ).also { dao.addSavedWeatherEntity(it) }
         // when getting the list of all saved weather entities
-        val savedWeatherEntities = dao.getAllSavedWeatherEntities().first()
+        val savedWeatherEntities = dao.getAllWeatherEntitiesMarkedAsNotDeleted().first()
         // only those entities that are not marked as deleted must be fetched
         assert(savedWeatherEntities.contains(savedEntity1))
     }
@@ -99,18 +99,18 @@ internal class HorizonDatabaseTest {
 
         // the isDeleted property must be initially set to false
         var savedWeatherEntitiesList: List<SavedWeatherLocationEntity> =
-            dao.getAllSavedWeatherEntities().first()
+            dao.getAllWeatherEntitiesMarkedAsNotDeleted().first()
         assert(!savedWeatherEntitiesList.first().isDeleted)
 
         // when the item is marked as deleted
         dao.markWeatherEntityAsDeleted(weatherLocationEntity.nameOfLocation)
-        savedWeatherEntitiesList = dao.getAllSavedWeatherEntities().first()
+        savedWeatherEntitiesList = dao.getAllWeatherEntitiesMarkedAsNotDeleted().first()
         // the isDeleted property of the item must be set to true
         assert(savedWeatherEntitiesList.first().isDeleted)
 
         // when the item is unmarked as deleted
         dao.markWeatherEntityAsUnDeleted(weatherLocationEntity.nameOfLocation)
-        savedWeatherEntitiesList = dao.getAllSavedWeatherEntities().first()
+        savedWeatherEntitiesList = dao.getAllWeatherEntitiesMarkedAsNotDeleted().first()
         // the isDeleted property of the item must be set back to false
         assert(!savedWeatherEntitiesList.first().isDeleted)
     }
