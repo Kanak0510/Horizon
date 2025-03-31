@@ -1,7 +1,9 @@
 package com.example.horizon.ui.navigation
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -85,7 +87,14 @@ private fun NavGraphBuilder.homeScreen(
                 viewModel.deleteSavedWeatherLocation(it)
                 snackbarHostState.currentSnackbarData?.dismiss()
                 coroutineScope.launch {
-                    snackbarHostState.showSnackbar(message = "${it.nameOfLocation} has been deleted")
+                    val snackbarResult = snackbarHostState.showSnackbar(
+                        message = "${it.nameOfLocation} has been deleted",
+                        actionLabel = "Undo",
+                        duration = SnackbarDuration.Short
+                    )
+                    if (snackbarResult == SnackbarResult.ActionPerformed) {
+                        viewModel.restoreRecentlyDeletedItem()
+                    }
                 }
             },
             snackbarHostState = snackbarHostState
