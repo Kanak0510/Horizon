@@ -12,9 +12,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.SwipeToDismissBox
-import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.material3.SwipeToDismissBoxState
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -122,22 +121,12 @@ fun SwipeToDismissCompactWeatherCard(
     @DrawableRes shortDescriptionIcon: Int,
     weatherInDegrees: String,
     onClick: () -> Unit,
-    swipeToDismissBoxState: () -> Unit,
+    swipeToDismissBoxState: SwipeToDismissBoxState,
     modifier: Modifier = Modifier
 ) {
-    val dismissBoxState = rememberSwipeToDismissBoxState(
-        confirmValueChange = {
-            if (it == SwipeToDismissBoxValue.StartToEnd) {
-                swipeToDismissBoxState()
-                true
-            } else {
-                false
-            }
-        }
-    )
     SwipeToDismissBox(
         modifier = modifier,
-        state = dismissBoxState,
+        state = swipeToDismissBoxState,
         backgroundContent = {},
         enableDismissFromEndToStart = true,
         content = {

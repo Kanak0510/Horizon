@@ -7,6 +7,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,7 +37,9 @@ import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -59,7 +62,11 @@ import com.example.horizon.ui.components.SwipeToDismissCompactWeatherCard
  * @param modifier The modifier to be applied to the composable.
  * @param weatherDetailsOfSavedLocations The list of weather details of saved locations.
  */
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
+@OptIn(
+    ExperimentalMaterial3Api::class,
+    ExperimentalAnimationApi::class,
+    ExperimentalFoundationApi::class,
+)
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
@@ -130,6 +137,23 @@ fun HomeScreen(
                 items = weatherDetailsOfSavedLocations,
                 key = { it.nameOfLocation } // Swipe-able cards will be buggy without keys
             ) {
+                // The default "rememberDismissState" uses "rememberSaveable" under the hood.
+                // This is an issue because the swiped state gets restored when the item is removed
+                // and added back to the list.
+                // If an item gets removed (after getting swiped) and is added back to the list,
+                // the item's state would still be set to "swiped" because the state got saved in
+                // savedInstanceState by rememberSaveable.
+                val swipeToDismissBoxState = rememberSwipeToDismissBoxState(
+                    confirmValueChange = { swipeToDismissBoxValue ->
+                        if (swipeToDismissBoxValue == SwipeToDismissBoxValue.EndToStart) {
+                            onSavedLocationDismissed(it)
+                            true
+                        } else {
+                            false
+                        }
+                    }
+                )
+
                 SwipeToDismissCompactWeatherCard(
                     modifier = Modifier.padding(horizontal = 16.dp),
                     nameOfLocation = it.nameOfLocation,
@@ -137,7 +161,7 @@ fun HomeScreen(
                     shortDescriptionIcon = it.shortDescriptionIcon,
                     weatherInDegrees = it.currentTemperature,
                     onClick = { onSavedLocationItemClick(it) },
-                    swipeToDismissBoxState = { onSavedLocationDismissed(it) }
+                    swipeToDismissBoxState = swipeToDismissBoxState
                 )
             }
         }
