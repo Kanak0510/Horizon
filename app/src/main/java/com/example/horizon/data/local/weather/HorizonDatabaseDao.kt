@@ -12,6 +12,9 @@ interface HorizonDatabaseDao {
     @Query("SELECT * FROM savedweatherlocations WHERE isDeleted == 0 ORDER BY nameOfLocation ASC")
     fun getAllWeatherEntitiesMarkedAsNotDeleted(): Flow<List<SavedWeatherLocationEntity>>
 
+    @Query("SELECT * FROM savedweatherlocations")
+    fun getAllWeatherEntitiesIrrespectiveOfDeletedStatus(): Flow<List<SavedWeatherLocationEntity>>
+
     @Upsert
     suspend fun addSavedWeatherEntity(weatherLocationEntity: SavedWeatherLocationEntity)
 
@@ -20,6 +23,9 @@ interface HorizonDatabaseDao {
 
     @Query("UPDATE savedweatherlocations SET isDeleted = 0 WHERE nameOfLocation = :nameOfWeatherLocationEntity")
     suspend fun markWeatherEntityAsUnDeleted(nameOfWeatherLocationEntity: String)
+
+    @Query("DELETE FROM savedweatherlocations WHERE isDeleted = 1")
+    suspend fun deleteAllItemsMarkedAsDeleted()
 
     @Delete
     suspend fun deleteSavedWeatherEntity(weatherLocationEntity: SavedWeatherLocationEntity)
