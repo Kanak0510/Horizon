@@ -3,7 +3,7 @@ package com.example.horizon.di
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityRetainedComponent
+import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import javax.inject.Qualifier
@@ -18,7 +18,7 @@ annotation class IODispatcher
 annotation class DefaultDispatcher
 
 @Module
-@InstallIn(ActivityRetainedComponent::class)
+@InstallIn(SingletonComponent::class)
 object CoroutineDispatchersModule {
     @Provides
     @DefaultDispatcher
