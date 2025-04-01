@@ -1,9 +1,6 @@
-@file:OptIn(ExperimentalFoundationApi::class)
-
 package com.example.horizon.ui.weatherDetail
 
 import androidx.annotation.DrawableRes
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -31,6 +28,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -64,50 +63,58 @@ fun WeatherDetailScreen(
     onSaveButtonClick: () -> Unit,
     singleWeatherDetails: List<SingleWeatherDetail>,
     hourlyForecasts: List<HourlyForecast>,
-    precipitationProbabilities: List<PrecipitationProbability>
+    precipitationProbabilities: List<PrecipitationProbability>,
+    snackbarHostState: SnackbarHostState
 ) {
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
-    LazyVerticalGrid(
-        modifier = Modifier.fillMaxSize(),
-        columns = GridCells.Fixed(2),
-        contentPadding = PaddingValues(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        item(span = { GridItemSpan(maxLineSpan) }) {
-            Header(
-                modifier = Modifier
-                    .requiredWidth(screenWidth)
-                    .height(360.dp),
-                headerImageResId = weatherConditionImage,
-                weatherConditionIconId = weatherConditionIconId,
-                onBackButtonClick = onBackButtonClick,
-                shouldDisplaySaveButton = !isPreviouslySavedLocation,
-                onSaveButtonClick = onSaveButtonClick,
-                nameOfLocation = nameOfLocation,
-                currentWeatherInDegrees = weatherInDegrees,
-                weatherCondition = weatherCondition
-            )
+    Box {
+        LazyVerticalGrid(
+            modifier = Modifier.fillMaxSize(),
+            columns = GridCells.Fixed(count = 2),
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                Header(
+                    modifier = Modifier
+                        .requiredWidth(screenWidth)
+                        .height(360.dp),
+                    headerImageResId = weatherConditionImage,
+                    weatherConditionIconId = weatherConditionIconId,
+                    onBackButtonClick = onBackButtonClick,
+                    shouldDisplaySaveButton = !isPreviouslySavedLocation,
+                    onSaveButtonClick = onSaveButtonClick,
+                    nameOfLocation = nameOfLocation,
+                    currentWeatherInDegrees = weatherInDegrees,
+                    weatherCondition = weatherCondition
+                )
+            }
+
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                HourlyForecastCard(hourlyForecasts = hourlyForecasts)
+            }
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                PrecipitationProbabilitiesCard(precipitationProbabilities = precipitationProbabilities)
+            }
+            items(singleWeatherDetails) {
+                SingleWeatherDetailCard(
+                    name = it.name,
+                    value = it.value,
+                    iconResId = it.iconResId
+                )
+            }
+            item {
+                Spacer(modifier = Modifier.navigationBarsPadding())
+            }
         }
 
-        item(span = { GridItemSpan(maxLineSpan) }) {
-            HourlyForecastCard(hourlyForecasts = hourlyForecasts)
-        }
-
-        item(span = { GridItemSpan(maxLineSpan) }) {
-            PrecipitationProbabilitiesCard(precipitationProbabilities = precipitationProbabilities)
-        }
-
-        items(singleWeatherDetails) {
-            SingleWeatherDetailCard(
-                name = it.name,
-                value = it.value,
-                iconResId = it.iconResId
-            )
-        }
-        item {
-            Spacer(modifier = Modifier.navigationBarsPadding())
-        }
+        SnackbarHost(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .navigationBarsPadding(),
+            hostState = snackbarHostState
+        )
     }
 }
 
