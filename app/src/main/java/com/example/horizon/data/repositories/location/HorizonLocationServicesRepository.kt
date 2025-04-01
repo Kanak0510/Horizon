@@ -2,7 +2,7 @@ package com.example.horizon.data.repositories.location
 
 import com.example.horizon.data.getBodyOrThrowException
 import com.example.horizon.data.remote.location.LocationClient
-import com.example.horizon.data.remote.location.models.toLocationAutofillSuggestionList
+import com.example.horizon.data.remote.location.models.toLocationAutofillSuggestion
 import com.example.horizon.domain.models.LocationAutofillSuggestion
 import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
@@ -20,7 +20,7 @@ class HorizonLocationServicesRepository @Inject constructor(
             val suggestions = locationClient.getPlacesSuggestionsForQuery(query = query)
                 .getBodyOrThrowException()
                 .suggestions
-                .map { it.toLocationAutofillSuggestionList() }
+                .map { it.toLocationAutofillSuggestion() }
             Result.success(suggestions)
         } catch (exception: Exception) {
             if (exception is CancellationException) throw exception
