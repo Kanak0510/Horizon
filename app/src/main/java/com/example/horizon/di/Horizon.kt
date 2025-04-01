@@ -3,9 +3,14 @@ package com.example.horizon.di
 import android.app.Application
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.example.horizon.BuildConfig
+import com.example.horizon.data.workers.DeleteMarkedItemsWorker
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltAndroidApp
@@ -16,6 +21,7 @@ class Horizon : Application(), Configuration.Provider {
     override fun onCreate() {
         super.onCreate()
         if (BuildConfig.DEBUG) Timber.plant(Timber.DebugTree())
+        enqueueDeleteMarkedItemsWorker()
     }
 
     override val workManagerConfiguration: Configuration
@@ -23,4 +29,21 @@ class Horizon : Application(), Configuration.Provider {
             .setWorkerFactory(hiltWorkerFactory)
             .build()
 
+    private fun enqueueDeleteMarkedItemsWorker() {
+        val periodicWorkRequest = PeriodicWorkRequestBuilder<DeleteMarkedItemsWorker>(
+            repeatInterval = 7, // repeat every week
+            repeatIntervalTimeUnit = TimeUnit.DAYS
+        ).build()
+        WorkManager.getInstance(this)
+            .enqueueUniquePeriodicWork(
+                DELETE_MARKED_ITEMS_WORK_ID,
+                ExistingPeriodicWorkPolicy.KEEP,
+                periodicWorkRequest
+            )
+    }
+
+    companion object {
+        private const val DELETE_MARKED_ITEMS_WORK_ID =
+            "com.example.justweather.data.workers.DeleteMarkedItemsWorker"
+    }
 }
