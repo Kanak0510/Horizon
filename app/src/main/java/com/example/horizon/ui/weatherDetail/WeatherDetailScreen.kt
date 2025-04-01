@@ -25,6 +25,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -46,14 +47,53 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.horizon.domain.models.CurrentWeatherDetails
 import com.example.horizon.domain.models.HourlyForecast
 import com.example.horizon.domain.models.PrecipitationProbability
 import com.example.horizon.domain.models.SingleWeatherDetail
 import com.example.horizon.ui.components.HourlyForecastCard
 import com.example.horizon.ui.components.PrecipitationProbabilitiesCard
 import com.example.horizon.ui.components.SingleWeatherDetailCard
+import kotlin.math.roundToInt
 
-// todo stopship - need to add top bar when screen is fully scrolled + add Save button
+/**
+ * An overload of WeatherDetailScreen that takes in a nullable parameter of type
+ * [CurrentWeatherDetails]. If the [CurrentWeatherDetails] parameter is set to null, then this
+ * composable will display a [CircularProgressIndicator] in the middle of the screen
+ */
+@Composable
+fun WeatherDetailScreen(
+    currentWeatherDetails: CurrentWeatherDetails?,
+    onBackButtonClick: () -> Unit,
+    isPreviouslySavedLocation: Boolean,
+    onSaveButtonClick: () -> Unit,
+    singleWeatherDetails: List<SingleWeatherDetail>,
+    hourlyForecasts: List<HourlyForecast>,
+    precipitationProbabilities: List<PrecipitationProbability>,
+    snackbarHostState: SnackbarHostState
+) {
+    if (currentWeatherDetails == null) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+        }
+    } else {
+        WeatherDetailScreen(
+            nameOfLocation = currentWeatherDetails.nameOfLocation,
+            weatherConditionImage = currentWeatherDetails.imageResId, // todo
+            weatherConditionIconId = currentWeatherDetails.iconResId,
+            weatherInDegrees = currentWeatherDetails.temperature.toFloat().roundToInt(),
+            weatherCondition = currentWeatherDetails.weatherCondition,
+            onBackButtonClick = onBackButtonClick,
+            isPreviouslySavedLocation = isPreviouslySavedLocation,
+            onSaveButtonClick = onSaveButtonClick,
+            singleWeatherDetails = singleWeatherDetails,
+            hourlyForecasts = hourlyForecasts,
+            precipitationProbabilities = precipitationProbabilities,
+            snackbarHostState = snackbarHostState
+        )
+    }
+}
+
 @Composable
 fun WeatherDetailScreen(
     nameOfLocation: String,

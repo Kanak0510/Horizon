@@ -17,7 +17,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.horizon.R
 import com.example.horizon.domain.models.BriefWeatherDetails
 import com.example.horizon.domain.models.LocationAutofillSuggestion
 import com.example.horizon.ui.home.HomeScreen
@@ -25,7 +24,6 @@ import com.example.horizon.ui.home.HomeViewModel
 import com.example.horizon.ui.weatherDetail.WeatherDetailScreen
 import com.example.horizon.ui.weatherDetail.WeatherDetailViewModel
 import kotlinx.coroutines.launch
-import kotlin.math.roundToInt
 
 @Composable
 fun HorizonNavigation(navController: NavHostController = rememberNavController()) {
@@ -117,11 +115,7 @@ fun NavGraphBuilder.weatherDetailScreen(
         val coroutineScope = rememberCoroutineScope()
 
         WeatherDetailScreen(
-            nameOfLocation = weatherDetails?.nameOfLocation ?: "- -",
-            weatherConditionImage = weatherDetails?.imageResId ?: R.drawable.ic_day_clear, // todo
-            weatherConditionIconId = weatherDetails?.iconResId ?: R.drawable.ic_day_clear,
-            weatherInDegrees = weatherDetails?.temperature?.toFloat()?.roundToInt() ?: 0,
-            weatherCondition = weatherDetails?.weatherCondition ?: "- -",
+            currentWeatherDetails = weatherDetails,
             onBackButtonClick = onBackButtonClick,
             isPreviouslySavedLocation = isSavedLocation,
             onSaveButtonClick = {
