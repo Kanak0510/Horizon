@@ -3,11 +3,9 @@
 package com.example.horizon.ui.weatherDetail
 
 import androidx.annotation.DrawableRes
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,7 +33,7 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -126,10 +124,9 @@ private fun Header(
     weatherCondition: String,
 ) {
     Box(modifier = modifier) {
-        val iconButtonContainerColor by animateColorAsState(
-            targetValue = if (isSystemInDarkTheme()) Color.Black.copy(0.4f)
-            else Color.White.copy(0.4f)
-        )
+        val iconButtonContainerColor = remember {
+            Color.Black.copy(0.4f)
+        }
         Image(
             modifier = Modifier.fillMaxSize(),
             painter = painterResource(id = headerImageResId),
