@@ -102,6 +102,7 @@ dependencies {
     // Work Manager
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.androidx.hilt.work)
+    ksp(libs.androidx.hilt.compiler)
 
     // JUnit
     testImplementation(libs.junit)
