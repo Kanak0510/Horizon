@@ -24,6 +24,7 @@ import com.example.horizon.ui.home.HomeViewModel
 import com.example.horizon.ui.weatherDetail.WeatherDetailScreen
 import com.example.horizon.ui.weatherDetail.WeatherDetailViewModel
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 @Composable
 fun HorizonNavigation(navController: NavHostController = rememberNavController()) {
@@ -91,7 +92,8 @@ private fun NavGraphBuilder.homeScreen(
             },
             onSearchQueryChange = viewModel::setSearchQueryForSuggestionsGeneration,
             onSuggestionClick = onSuggestionClick,
-            onSavedLocationItemClick = onSavedLocationItemClick
+            onSavedLocationItemClick = onSavedLocationItemClick,
+            onLocationPermissionGranted = { Timber.d("Location Permission Granted") }
         )
     }
 }
