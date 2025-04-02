@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface HorizonDatabaseDao {
 
-    @Query("SELECT * FROM savedweatherlocations WHERE isDeleted == 0 ORDER BY nameOfLocation ASC")
+    @Query("SELECT * FROM savedweatherlocations WHERE isDeleted == 0")
     fun getAllWeatherEntitiesMarkedAsNotDeleted(): Flow<List<SavedWeatherLocationEntity>>
 
     @Query("SELECT * FROM savedweatherlocations")

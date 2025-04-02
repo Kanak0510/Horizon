@@ -34,6 +34,7 @@ class HomeViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(HomeScreenUiState())
     val uiState = _uiState as StateFlow<HomeScreenUiState>
 
+    // A Cache that stores the CurrentWeatherDetails of a specific SavedLocation
     private var currentWeatherDetailsCache = mutableMapOf<SavedLocation, CurrentWeatherDetails>()
     private var recentlyDeletedItem: BriefWeatherDetails? = null
 
@@ -45,6 +46,7 @@ class HomeViewModel @Inject constructor(
                 fetchCurrentWeatherDetailsWithCache(savedLocations.toSet()) // todo handle exceptions
             }.map { currentWeatherDetails ->
                 currentWeatherDetails.map { it.toBriefWeatherDetails() }
+                    .sortedBy { it.nameOfLocation }
             }
             .onEach { weatherDetailsOfSavedLocations ->
                 _uiState.update {
@@ -102,12 +104,12 @@ class HomeViewModel @Inject constructor(
      * using the [currentWeatherDetailsCache]
      */
     private suspend fun fetchCurrentWeatherDetailsWithCache(savedLocations: Set<SavedLocation>): List<CurrentWeatherDetails> {
-        // remove locations in the cache that have been deleted
+        // Remove locations in the cache that have been deleted by the user
         val removedLocations = currentWeatherDetailsCache.keys subtract savedLocations
         for (removedLocation in removedLocations) {
             currentWeatherDetailsCache.remove(removedLocation)
         }
-        // only fetch weather details of the items that are not in cache.
+        // Only fetch weather details of the items that are not in cache
         val locationsNotInCache = savedLocations subtract currentWeatherDetailsCache.keys
         for (savedLocationNotInCache in locationsNotInCache) {
             weatherRepository.fetchWeatherForLocation(
