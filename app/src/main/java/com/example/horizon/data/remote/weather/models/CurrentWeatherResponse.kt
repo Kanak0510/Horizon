@@ -41,7 +41,7 @@ data class CurrentWeatherResponse(
  */
 fun CurrentWeatherResponse.toCurrentWeatherDetails(nameOfLocation: String): CurrentWeatherDetails =
     CurrentWeatherDetails(
-        temperature = currentWeather.temperature.roundToInt().toString(),
+        temperatureRoundedToInt = currentWeather.temperature.roundToInt(),
         nameOfLocation = nameOfLocation,
         weatherCondition = weatherCodeToDescriptionMap.getValue(currentWeather.weatherCode),
         isDay = currentWeather.isDay,
@@ -51,7 +51,7 @@ fun CurrentWeatherResponse.toCurrentWeatherDetails(nameOfLocation: String): Curr
         ),
         imageResId = R.drawable.ic_launcher_background, // todo
         latitude = latitude,
-        longitude = longitude,
+        longitude = longitude
     )
 
 private val weatherCodeToDescriptionMap = mapOf(

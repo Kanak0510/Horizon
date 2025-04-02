@@ -54,7 +54,6 @@ import com.example.horizon.domain.models.SingleWeatherDetail
 import com.example.horizon.ui.components.HourlyForecastCard
 import com.example.horizon.ui.components.PrecipitationProbabilitiesCard
 import com.example.horizon.ui.components.SingleWeatherDetailCard
-import kotlin.math.roundToInt
 
 /**
  * An overload of WeatherDetailScreen that takes in a nullable parameter of type
@@ -79,9 +78,9 @@ fun WeatherDetailScreen(
     } else {
         WeatherDetailScreen(
             nameOfLocation = currentWeatherDetails.nameOfLocation,
-            weatherConditionImage = currentWeatherDetails.imageResId, // todo
+            weatherConditionImage = currentWeatherDetails.imageResId,
             weatherConditionIconId = currentWeatherDetails.iconResId,
-            weatherInDegrees = currentWeatherDetails.temperature.toFloat().roundToInt(),
+            weatherInDegrees = currentWeatherDetails.temperatureRoundedToInt,
             weatherCondition = currentWeatherDetails.weatherCondition,
             onBackButtonClick = onBackButtonClick,
             isPreviouslySavedLocation = isPreviouslySavedLocation,
