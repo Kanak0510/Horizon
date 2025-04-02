@@ -37,7 +37,7 @@ class WeatherDetailViewModel @Inject constructor(
     val uiState = _uiState as StateFlow<WeatherDetailScreenUiState>
 
     init {
-        viewModelScope.launch {  }
+        viewModelScope.launch { fetchWeatherDetailsAndUpdateState() }
         weatherRepository.getWeatherStreamForPreviouslySavedLocations()
             .map { savedWeatherDetails ->
                 savedWeatherDetails.any { it.nameOfLocation == nameOfLocation }
