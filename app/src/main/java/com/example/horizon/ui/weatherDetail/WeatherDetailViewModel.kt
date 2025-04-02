@@ -38,7 +38,7 @@ class WeatherDetailViewModel @Inject constructor(
 
     init {
         viewModelScope.launch { fetchWeatherDetailsAndUpdateState() }
-        weatherRepository.getWeatherStreamForPreviouslySavedLocations()
+        weatherRepository.fetchWeatherStreamForPreviouslySavedLocations()
             .map { savedWeatherDetails ->
                 savedWeatherDetails.any { it.nameOfLocation == nameOfLocation }
             }

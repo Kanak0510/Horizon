@@ -74,7 +74,7 @@ class HorizonWeatherRepositoryTest {
     @Test
     fun `weather details for saved locations are successfully fetched`() = runTest {
         val weatherDetailsForSavedLocations = weatherRepository
-            .getWeatherStreamForPreviouslySavedLocations()
+            .fetchWeatherStreamForPreviouslySavedLocations()
             .first()
         assert(weatherDetailsForSavedLocations.isNotEmpty())
         for ((index, weatherDetail) in weatherDetailsForSavedLocations.withIndex()) {
