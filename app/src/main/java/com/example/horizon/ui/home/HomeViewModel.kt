@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -27,34 +28,42 @@ class HomeViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val currentSearchQuery = MutableStateFlow("")
-    private val _uiState = MutableStateFlow(UiState.IDLE)
-    val uiState = _uiState as StateFlow<UiState>
+    private val _uiState = MutableStateFlow(HomeScreenUiState())
+    val uiState = _uiState as StateFlow<HomeScreenUiState>
 
-    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
-    val currentSuggestions = currentSearchQuery.debounce(250)
-        .distinctUntilChanged()
-        .mapLatest { query ->
-            if (query.isBlank()) return@mapLatest Result.success(emptyList())
-            _uiState.value = UiState.LOADING_SUGGESTIONS
-            locationServicesRepository.fetchSuggestedPlacesForQuery(query)
-                .also { _uiState.value = UiState.IDLE }
-        }
-        .filter { it.isSuccess }
-        .map { it.getOrThrow() }
-
-    private val _weatherDetailsOfSavedLocations = MutableStateFlow<List<BriefWeatherDetails>>(emptyList())
-    val weatherDetailsOfSavedLocations = _weatherDetailsOfSavedLocations as StateFlow<List<BriefWeatherDetails>>
     private var recentlyDeletedItem: BriefWeatherDetails? = null
 
     init {
-        _uiState.value = UiState.LOADING_SAVED_LOCATIONS
+        _uiState.update { it.copy(isLoadingSavedLocations = true) }
         weatherRepository
             .getWeatherStreamForPreviouslySavedLocations()
-            .onEach {
-                if (_uiState.value == UiState.LOADING_SAVED_LOCATIONS) {
-                    _uiState.value = UiState.IDLE
+            .onEach { weatherDetailsOfSavedLocations ->
+                _uiState.update {
+                    it.copy(
+                        isLoadingSavedLocations = false,
+                        weatherDetailsOfSavedLocations = weatherDetailsOfSavedLocations
+                    )
                 }
-                _weatherDetailsOfSavedLocations.value = it
+            }
+            .launchIn(viewModelScope)
+
+        @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
+        currentSearchQuery.debounce(250)
+            .distinctUntilChanged()
+            .mapLatest { query ->
+                if (query.isBlank()) return@mapLatest Result.success(emptyList())
+                _uiState.update { it.copy(isLoadingSuggestions = true) }
+                locationServicesRepository.fetchSuggestedPlacesForQuery(query)
+            }
+            .filter { it.isSuccess }
+            .map { it.getOrThrow() }
+            .onEach { autofillSuggestions ->
+                _uiState.update {
+                    it.copy(
+                        isLoadingSuggestions = false,
+                        autofillSuggestions = autofillSuggestions
+                    )
+                }
             }
             .launchIn(viewModelScope)
     }
@@ -77,14 +86,5 @@ class HomeViewModel @Inject constructor(
         recentlyDeletedItem?.let {
             viewModelScope.launch { weatherRepository.tryRestoringDeletedWeatherLocation(it.nameOfLocation) }
         }
-    }
-
-    /**
-     * An enum that contains all possible UI states.
-     */
-    enum class UiState {
-        IDLE,
-        LOADING_SUGGESTIONS,
-        LOADING_SAVED_LOCATIONS
     }
 }
