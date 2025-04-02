@@ -12,7 +12,6 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -38,13 +37,12 @@ class WeatherDetailViewModel @Inject constructor(
 
     init {
         viewModelScope.launch { fetchWeatherDetailsAndUpdateState() }
-        weatherRepository.fetchWeatherStreamForPreviouslySavedLocations()
-            .map { savedWeatherDetails ->
-                savedWeatherDetails.any { it.nameOfLocation == nameOfLocation }
+        weatherRepository.getNamesOfPreviouslySavedLocationsListStream()
+            .map { namesOfSavedLocationList ->
+                namesOfSavedLocationList.any { it == nameOfLocation }
             }
-            .distinctUntilChanged()
-            .onEach { isSavedLocation ->
-                _uiState.update { it.copy(isPreviouslySavedLocation = isSavedLocation) }
+            .onEach { isPreviouslySavedLocation ->
+                _uiState.update { it.copy(isPreviouslySavedLocation = isPreviouslySavedLocation) }
             }
             .launchIn(scope = viewModelScope)
     }
