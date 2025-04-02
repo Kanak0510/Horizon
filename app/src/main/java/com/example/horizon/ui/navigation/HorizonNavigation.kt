@@ -44,8 +44,8 @@ fun HorizonNavigation(navController: NavHostController = rememberNavController()
             onSavedLocationItemClick = {
                 navController.navigateToWeatherDetailScreen(
                     nameOfLocation = it.nameOfLocation,
-                    latitude = it.latitude,
-                    longitude = it.longitude
+                    latitude = it.coordinates.latitude,
+                    longitude = it.coordinates.longitude
                 )
             }
         )
