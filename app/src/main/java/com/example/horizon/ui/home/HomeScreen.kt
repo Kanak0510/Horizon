@@ -163,38 +163,11 @@ fun HomeScreen(
                     }
                 }
             }
-
-            items(
-                items = weatherDetailsOfSavedLocations,
-                key = { it.nameOfLocation } // Swipe-able cards will be buggy without keys
-            ) {
-                // The default "rememberDismissState" uses "rememberSaveable" under the hood.
-                // This is an issue because the swiped state gets restored when the item is removed
-                // and added back to the list.
-                // If an item gets removed (after getting swiped) and is added back to the list,
-                // the item's state would still be set to "swiped" because the state got saved in
-                // savedInstanceState by rememberSaveable.
-                val swipeToDismissBoxState = rememberSwipeToDismissBoxState(
-                    confirmValueChange = { swipeToDismissBoxValue ->
-                        if (swipeToDismissBoxValue == SwipeToDismissBoxValue.EndToStart) {
-                            onSavedLocationDismissed(it)
-                            true
-                        } else {
-                            false
-                        }
-                    }
-                )
-
-                SwipeToDismissCompactWeatherCard(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    nameOfLocation = it.nameOfLocation,
-                    shortDescription = it.shortDescription,
-                    shortDescriptionIcon = it.shortDescriptionIcon,
-                    weatherInDegrees = it.currentTemperatureRoundedToInt.toString(),
-                    onClick = { onSavedLocationItemClick(it) },
-                    swipeToDismissBoxState = swipeToDismissBoxState
-                )
-            }
+            savedLocationItems(
+                savedLocationItemsList = weatherDetailsOfSavedLocations,
+                onSavedLocationItemClick = onSavedLocationItemClick,
+                onSavedLocationDismissed = onSavedLocationDismissed
+            )
         }
         SnackbarHost(
             modifier = Modifier
@@ -358,6 +331,46 @@ private fun LazyListScope.autofillSuggestionItems(
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),
             onClick = { onSuggestionClick(it) }
+        )
+    }
+}
+
+@ExperimentalFoundationApi
+@ExperimentalMaterial3Api
+private fun LazyListScope.savedLocationItems(
+    savedLocationItemsList: List<BriefWeatherDetails>,
+    onSavedLocationItemClick: (BriefWeatherDetails) -> Unit,
+    onSavedLocationDismissed: (BriefWeatherDetails) -> Unit
+) {
+    items(
+        items = savedLocationItemsList,
+        key = { it.nameOfLocation } // Swipe-able cards will be buggy without keys
+    ) {
+        // The default "rememberDismissState" uses "rememberSaveable" under the hood.
+        // This is an issue because the swiped state gets restored when the item is removed
+        // and added back to the list.
+        // If an item gets removed (after getting swiped) and is added back to the list,
+        // the item's state would still be set to "swiped" because the state got saved in
+        // savedInstanceState by rememberSaveable.
+        val swipeToDismissBoxState = rememberSwipeToDismissBoxState(
+            confirmValueChange = { swipeToDismissBoxValue ->
+                if (swipeToDismissBoxValue == SwipeToDismissBoxValue.EndToStart) {
+                    onSavedLocationDismissed(it)
+                    true
+                } else {
+                    false
+                }
+            }
+        )
+
+        SwipeToDismissCompactWeatherCard(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            nameOfLocation = it.nameOfLocation,
+            shortDescription = it.shortDescription,
+            shortDescriptionIcon = it.shortDescriptionIcon,
+            weatherInDegrees = it.currentTemperatureRoundedToInt.toString(),
+            onClick = { onSavedLocationItemClick(it) },
+            swipeToDismissBoxState = swipeToDismissBoxState
         )
     }
 }
