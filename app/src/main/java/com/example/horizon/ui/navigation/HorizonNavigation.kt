@@ -65,37 +65,33 @@ private fun NavGraphBuilder.homeScreen(
     composable(route = route) {
         val viewModel = hiltViewModel<HomeViewModel>()
         val uiState by viewModel.uiState.collectAsState()
-        val suggestionsForCurrentQuery by viewModel.currentSuggestions
-            .collectAsStateWithLifecycle(initialValue = emptyList())
-        val weatherDetailsOfSavedLocations by viewModel.weatherDetailsOfSavedLocations
-            .collectAsStateWithLifecycle()
         val snackbarHostState = remember { SnackbarHostState() }
         val coroutineScope = rememberCoroutineScope()
+        val showSnackbar = { briefWeatherDetails: BriefWeatherDetails ->
+            coroutineScope.launch {
+                snackbarHostState.currentSnackbarData?.dismiss()
+                val snackbarResult = snackbarHostState.showSnackbar(
+                    message = "${briefWeatherDetails.nameOfLocation} has been deleted",
+                    actionLabel = "Undo",
+                    duration = SnackbarDuration.Short
+                )
+                if (snackbarResult == SnackbarResult.ActionPerformed) {
+                    viewModel.restoreRecentlyDeletedItem()
+                }
+            }
+        }
 
         HomeScreen(
             modifier = Modifier.fillMaxSize(),
-            weatherDetailsOfSavedLocations = weatherDetailsOfSavedLocations,
-            suggestionsForSearchQuery = suggestionsForCurrentQuery,
-            isSuggestionsListLoading = uiState == HomeViewModel.UiState.LOADING_SUGGESTIONS,
-            isWeatherForSavedLocationsLoading = uiState == HomeViewModel.UiState.LOADING_SAVED_LOCATIONS,
-            onSuggestionClick = onSuggestionClick,
-            onSearchQueryChange = viewModel::setSearchQueryForSuggestionsGeneration,
-            onSavedLocationItemClick = onSavedLocationItemClick,
+            homeScreenUiState = uiState,
+            snackbarHostState = snackbarHostState,
             onSavedLocationDismissed = {
                 viewModel.deleteSavedWeatherLocation(it)
-                snackbarHostState.currentSnackbarData?.dismiss()
-                coroutineScope.launch {
-                    val snackbarResult = snackbarHostState.showSnackbar(
-                        message = "${it.nameOfLocation} has been deleted",
-                        actionLabel = "Undo",
-                        duration = SnackbarDuration.Short
-                    )
-                    if (snackbarResult == SnackbarResult.ActionPerformed) {
-                        viewModel.restoreRecentlyDeletedItem()
-                    }
-                }
+                showSnackbar
             },
-            snackbarHostState = snackbarHostState
+            onSearchQueryChange = viewModel::setSearchQueryForSuggestionsGeneration,
+            onSuggestionClick = onSuggestionClick,
+            onSavedLocationItemClick = onSavedLocationItemClick
         )
     }
 }
