@@ -54,7 +54,7 @@ fun PrecipitationProbabilitiesCard(
             // resource. See documentation of the Icon composable for more information.
             Icon(
                 modifier = Modifier.size(32.dp),
-                imageVector = ImageVector.vectorResource(id = R.drawable.ic_chance_of_rain), // todo change icon
+                imageVector = ImageVector.vectorResource(id = R.drawable.ic_chance_of_rain),
                 contentDescription = null,
                 tint = Color.Unspecified
             )
