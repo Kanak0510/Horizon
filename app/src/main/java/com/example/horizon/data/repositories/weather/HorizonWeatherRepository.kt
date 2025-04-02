@@ -57,6 +57,11 @@ class HorizonWeatherRepository @Inject constructor(
             }
     }
 
+    override fun getNamesOfPreviouslySavedLocationsListStream(): Flow<List<String>> {
+        return horizonDatabaseDao.getAllWeatherEntitiesMarkedAsNotDeleted()
+            .map { savedLocations -> savedLocations.map { it.nameOfLocation } }
+    }
+
     override suspend fun saveWeatherLocation(
         nameOfLocation: String,
         latitude: String,
