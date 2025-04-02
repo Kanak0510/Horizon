@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.horizon.data.repositories.location.LocationServicesRepository
 import com.example.horizon.data.repositories.weather.WeatherRepository
 import com.example.horizon.domain.models.BriefWeatherDetails
+import com.example.horizon.domain.models.CurrentWeatherDetails
+import com.example.horizon.domain.models.SavedLocation
 import com.example.horizon.domain.models.toBriefWeatherDetails
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -32,21 +34,17 @@ class HomeViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(HomeScreenUiState())
     val uiState = _uiState as StateFlow<HomeScreenUiState>
 
+    private var currentWeatherDetailsCache = mutableMapOf<SavedLocation, CurrentWeatherDetails>()
     private var recentlyDeletedItem: BriefWeatherDetails? = null
 
     init {
         weatherRepository
             .getSavedLocationsListStream()
             .map { savedLocations ->
-                savedLocations.map { savedLocation ->
-                    _uiState.update { it.copy(isLoadingSavedLocations = true) }
-                    weatherRepository.fetchWeatherForLocation(
-                        nameOfLocation = savedLocation.nameOfLocation,
-                        latitude = savedLocation.coordinates.latitude,
-                        longitude = savedLocation.coordinates.longitude
-                    ).getOrThrow().toBriefWeatherDetails() // todo take care of exception
-                }
-
+                _uiState.update { it.copy(isLoadingSavedLocations = true) }
+                fetchCurrentWeatherDetailsWithCache(savedLocations.toSet()) // todo handle exceptions
+            }.map { currentWeatherDetails ->
+                currentWeatherDetails.map { it.toBriefWeatherDetails() }
             }
             .onEach { weatherDetailsOfSavedLocations ->
                 _uiState.update {
@@ -56,7 +54,7 @@ class HomeViewModel @Inject constructor(
                     )
                 }
             }
-            .launchIn(viewModelScope)
+            .launchIn(viewModelScope) // todo take care of exception
 
         @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
         currentSearchQuery.debounce(250)
@@ -97,5 +95,29 @@ class HomeViewModel @Inject constructor(
         recentlyDeletedItem?.let {
             viewModelScope.launch { weatherRepository.tryRestoringDeletedWeatherLocation(it.nameOfLocation) }
         }
+    }
+
+    /**
+     * Used to fetch a list of [CurrentWeatherDetails] for all the [savedLocations] efficiently
+     * using the [currentWeatherDetailsCache]
+     */
+    private suspend fun fetchCurrentWeatherDetailsWithCache(savedLocations: Set<SavedLocation>): List<CurrentWeatherDetails> {
+        // remove locations in the cache that have been deleted
+        val removedLocations = currentWeatherDetailsCache.keys subtract savedLocations
+        for (removedLocation in removedLocations) {
+            currentWeatherDetailsCache.remove(removedLocation)
+        }
+        // only fetch weather details of the items that are not in cache.
+        val locationsNotInCache = savedLocations subtract currentWeatherDetailsCache.keys
+        for (savedLocationNotInCache in locationsNotInCache) {
+            weatherRepository.fetchWeatherForLocation(
+                nameOfLocation = savedLocationNotInCache.nameOfLocation,
+                latitude = savedLocationNotInCache.coordinates.latitude,
+                longitude = savedLocationNotInCache.coordinates.longitude
+            ).getOrThrow().also {
+                currentWeatherDetailsCache[savedLocationNotInCache] = it
+            }
+        }
+        return currentWeatherDetailsCache.values.toList()
     }
 }
