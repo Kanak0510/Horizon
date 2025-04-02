@@ -59,6 +59,33 @@ import com.example.horizon.ui.components.AutofillSuggestion
 import com.example.horizon.ui.components.SwipeToDismissCompactWeatherCard
 
 /**
+ * Overload that uses [HomeScreenUiState].
+ */
+@Composable
+fun HomeScreen(
+    homeScreenUiState: HomeScreenUiState,
+    snackbarHostState: SnackbarHostState,
+    onSavedLocationDismissed: (BriefWeatherDetails) -> Unit,
+    onSearchQueryChange: (String) -> Unit,
+    onSuggestionClick: (LocationAutofillSuggestion) -> Unit,
+    onSavedLocationItemClick: (BriefWeatherDetails) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    HomeScreen(
+        modifier = modifier,
+        snackbarHostState = snackbarHostState,
+        weatherDetailsOfSavedLocations = homeScreenUiState.weatherDetailsOfSavedLocations,
+        suggestionsForSearchQuery = homeScreenUiState.autofillSuggestions,
+        isSuggestionsListLoading = homeScreenUiState.isLoadingSuggestions,
+        isWeatherForSavedLocationsLoading = homeScreenUiState.isLoadingSavedLocations,
+        onSavedLocationDismissed = onSavedLocationDismissed,
+        onSearchQueryChange = onSearchQueryChange,
+        onSuggestionClick = onSuggestionClick,
+        onSavedLocationItemClick = onSavedLocationItemClick
+    )
+}
+
+/**
  * A home screen composable that displays a search bar with a list containing the current weather for
  * saved locations.
  *
