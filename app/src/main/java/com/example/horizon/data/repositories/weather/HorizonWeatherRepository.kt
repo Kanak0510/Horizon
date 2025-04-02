@@ -3,6 +3,7 @@ package com.example.horizon.data.repositories.weather
 import com.example.horizon.data.getBodyOrThrowException
 import com.example.horizon.data.local.weather.HorizonDatabaseDao
 import com.example.horizon.data.local.weather.SavedWeatherLocationEntity
+import com.example.horizon.data.local.weather.toSavedLocation
 import com.example.horizon.data.remote.weather.WeatherClient
 import com.example.horizon.data.remote.weather.models.toCurrentWeatherDetails
 import com.example.horizon.data.remote.weather.models.toHourlyForecasts
@@ -12,8 +13,8 @@ import com.example.horizon.domain.models.BriefWeatherDetails
 import com.example.horizon.domain.models.CurrentWeatherDetails
 import com.example.horizon.domain.models.HourlyForecast
 import com.example.horizon.domain.models.PrecipitationProbability
+import com.example.horizon.domain.models.SavedLocation
 import com.example.horizon.domain.models.SingleWeatherDetail
-import com.example.horizon.domain.models.toBriefWeatherDetails
 import com.example.horizon.domain.models.toSavedWeatherLocationEntity
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
@@ -44,23 +45,9 @@ class HorizonWeatherRepository @Inject constructor(
         Result.failure(exception)
     }
 
-    override fun fetchWeatherStreamForPreviouslySavedLocations(): Flow<List<BriefWeatherDetails>> {
-        return horizonDatabaseDao.getAllWeatherEntitiesMarkedAsNotDeleted()
-            .map { savedWeatherLocationEntities ->
-                savedWeatherLocationEntities.map {
-                    fetchWeatherForLocation(nameOfLocation = it.nameOfLocation, latitude = it.latitude, longitude = it.longitude)
-                }
-            }.map { currentWeatherDetailResults ->
-                currentWeatherDetailResults.mapNotNull { currentWeatherDetailsResult ->
-                    currentWeatherDetailsResult.getOrNull()?.toBriefWeatherDetails()
-                }
-            }
-    }
-
-    override fun getNamesOfPreviouslySavedLocationsListStream(): Flow<List<String>> {
-        return horizonDatabaseDao.getAllWeatherEntitiesMarkedAsNotDeleted()
-            .map { savedLocations -> savedLocations.map { it.nameOfLocation } }
-    }
+    override fun getSavedLocationsListStream(): Flow<List<SavedLocation>> = horizonDatabaseDao
+        .getAllWeatherEntitiesMarkedAsNotDeleted()
+        .map { savedLocationEntitiesList -> savedLocationEntitiesList.map { it.toSavedLocation() } }
 
     override suspend fun saveWeatherLocation(
         nameOfLocation: String,
