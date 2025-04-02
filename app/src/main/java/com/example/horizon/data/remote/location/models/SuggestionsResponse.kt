@@ -1,5 +1,6 @@
 package com.example.horizon.data.remote.location.models
 
+import com.example.horizon.domain.models.Coordinates
 import com.example.horizon.domain.models.LocationAutofillSuggestion
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
@@ -43,7 +44,7 @@ fun List<SuggestionsResponse.Suggestion>.toLocationAutofillSuggestionList(): Lis
                 idOfLocation = it.idOfPlace,
                 nameOfLocation = it.nameOfPlace,
                 addressOfLocation = "${it.state}, ${it.country}",
-                coordinatesOfLocation = LocationAutofillSuggestion.Coordinates(
+                coordinatesOfLocation = Coordinates(
                     latitude = it.latitude,
                     longitude = it.longitude
                 )
