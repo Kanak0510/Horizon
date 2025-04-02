@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -26,7 +25,6 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.example.horizon.R
 import com.example.horizon.domain.hourStringInTwelveHourFormat
 import com.example.horizon.domain.models.HourlyForecast
 import java.time.LocalDateTime
@@ -54,25 +52,8 @@ fun CompactWeatherCardWithHourlyForecast(
     OutlinedCard(modifier = modifier, onClick = onClick) {
         Row(
             modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = ImageVector.vectorResource(id = R.drawable.ic_assistant_navigation),
-                contentDescription = null
-            )
-            Spacer(modifier = modifier.size(8.dp))
-            Text(
-                text = "Current Location",
-                style = MaterialTheme.typography.labelLarge
-            )
-        }
-        Row(
-            modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+                .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
