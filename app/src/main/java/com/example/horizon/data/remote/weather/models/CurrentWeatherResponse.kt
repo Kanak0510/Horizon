@@ -1,6 +1,6 @@
 package com.example.horizon.data.remote.weather.models
 
-import com.example.horizon.R
+import com.example.horizon.domain.models.Coordinates
 import com.example.horizon.domain.models.CurrentWeatherDetails
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
@@ -49,9 +49,14 @@ fun CurrentWeatherResponse.toCurrentWeatherDetails(nameOfLocation: String): Curr
             weatherCode = currentWeather.weatherCode,
             isDay = currentWeather.isDay == 1
         ),
-        imageResId = R.drawable.ic_launcher_background, // todo
-        latitude = latitude,
-        longitude = longitude
+        imageResId = getWeatherImageForCode(
+            weatherCode = currentWeather.weatherCode,
+            isDay = currentWeather.isDay == 1
+        ),
+        coordinates = Coordinates(
+            latitude = latitude,
+            longitude = longitude
+        )
     )
 
 private val weatherCodeToDescriptionMap = mapOf(

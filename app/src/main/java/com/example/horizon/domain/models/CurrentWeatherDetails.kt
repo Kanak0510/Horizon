@@ -12,8 +12,7 @@ data class CurrentWeatherDetails(
     val isDay: Int,
     @DrawableRes val iconResId: Int,
     @DrawableRes val imageResId: Int,
-    val latitude: String,
-    val longitude: String,
+    val coordinates: Coordinates
 )
 
 /**
@@ -24,6 +23,5 @@ fun CurrentWeatherDetails.toBriefWeatherDetails(): BriefWeatherDetails = BriefWe
     currentTemperatureRoundedToInt = temperatureRoundedToInt,
     shortDescription = weatherCondition,
     shortDescriptionIcon = iconResId,
-    latitude = latitude,
-    longitude = longitude
+    coordinates = coordinates
 )
