@@ -1,4 +1,4 @@
-package com.example.horizon
+package com.example.horizon.ui.activities
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -23,5 +23,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
-
