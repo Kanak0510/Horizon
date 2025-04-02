@@ -35,11 +35,11 @@ class HomeViewModel @Inject constructor(
     private var recentlyDeletedItem: BriefWeatherDetails? = null
 
     init {
-        _uiState.update { it.copy(isLoadingSavedLocations = true) }
         weatherRepository
             .getSavedLocationsListStream()
             .map { savedLocations ->
                 savedLocations.map { savedLocation ->
+                    _uiState.update { it.copy(isLoadingSavedLocations = true) }
                     weatherRepository.fetchWeatherForLocation(
                         nameOfLocation = savedLocation.nameOfLocation,
                         latitude = savedLocation.coordinates.latitude,
@@ -67,7 +67,7 @@ class HomeViewModel @Inject constructor(
                 locationServicesRepository.fetchSuggestedPlacesForQuery(query)
             }
             .filter { it.isSuccess }
-            .map { it.getOrThrow() }
+            .map { it.getOrThrow() } // todo exception handling
             .onEach { autofillSuggestions ->
                 _uiState.update {
                     it.copy(
