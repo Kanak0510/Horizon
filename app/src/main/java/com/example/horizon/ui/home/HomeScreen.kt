@@ -168,10 +168,6 @@ fun HomeScreen(
                     swipeToDismissBoxState = swipeToDismissBoxState
                 )
             }
-
-            item {
-
-            }
         }
         SnackbarHost(
             modifier = Modifier
