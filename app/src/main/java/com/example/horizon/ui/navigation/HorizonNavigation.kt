@@ -80,18 +80,15 @@ private fun NavGraphBuilder.homeScreen(
                 }
             }
         }
-        val hourlyForecastsForCurrentUserLocation by viewModel.hourlyForecastsForCurrentLocation.collectAsState()
-        val weatherOfCurrentUserLocation by viewModel.weatherDetailsOfCurrentLocation.collectAsState()
+
         HomeScreen(
             modifier = Modifier.fillMaxSize(),
             homeScreenUiState = uiState,
             snackbarHostState = snackbarHostState,
             onSavedLocationDismissed = {
                 viewModel.deleteSavedWeatherLocation(it)
-                showSnackbar
+                showSnackbar(it)
             },
-            weatherOfCurrentUserLocation = weatherOfCurrentUserLocation,
-            hourlyForecastsOfCurrentUserLocation = hourlyForecastsForCurrentUserLocation,
             onSearchQueryChange = viewModel::setSearchQueryForSuggestionsGeneration,
             onSuggestionClick = onSuggestionClick,
             onSavedLocationItemClick = onSavedLocationItemClick,
