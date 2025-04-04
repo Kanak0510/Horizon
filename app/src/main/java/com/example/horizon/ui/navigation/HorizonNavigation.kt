@@ -24,7 +24,6 @@ import com.example.horizon.ui.home.HomeViewModel
 import com.example.horizon.ui.weatherDetail.WeatherDetailScreen
 import com.example.horizon.ui.weatherDetail.WeatherDetailViewModel
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 @Composable
 fun HorizonNavigation(navController: NavHostController = rememberNavController()) {
@@ -81,7 +80,8 @@ private fun NavGraphBuilder.homeScreen(
                 }
             }
         }
-
+        val hourlyForecastsForCurrentUserLocation by viewModel.hourlyForecastsForCurrentLocation.collectAsState()
+        val weatherOfCurrentUserLocation by viewModel.weatherDetailsOfCurrentLocation.collectAsState()
         HomeScreen(
             modifier = Modifier.fillMaxSize(),
             homeScreenUiState = uiState,
@@ -90,10 +90,12 @@ private fun NavGraphBuilder.homeScreen(
                 viewModel.deleteSavedWeatherLocation(it)
                 showSnackbar
             },
+            weatherOfCurrentUserLocation = weatherOfCurrentUserLocation,
+            hourlyForecastsOfCurrentUserLocation = hourlyForecastsForCurrentUserLocation,
             onSearchQueryChange = viewModel::setSearchQueryForSuggestionsGeneration,
             onSuggestionClick = onSuggestionClick,
             onSavedLocationItemClick = onSavedLocationItemClick,
-            onLocationPermissionGranted = { Timber.d("Location Permission Granted") }
+            onLocationPermissionGranted = viewModel::fetchWeatherForCurrentUserLocation
         )
     }
 }
