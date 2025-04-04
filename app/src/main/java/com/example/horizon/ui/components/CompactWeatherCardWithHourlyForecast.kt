@@ -76,7 +76,6 @@ fun CompactWeatherCardWithHourlyForecast(
             )
         }
         LazyRow(
-            modifier = modifier,
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             contentPadding = PaddingValues(16.dp)
         ) {
