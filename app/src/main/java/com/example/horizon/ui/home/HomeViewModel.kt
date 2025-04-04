@@ -8,7 +8,6 @@ import com.example.horizon.data.repositories.weather.WeatherRepository
 import com.example.horizon.data.repositories.weather.fetchHourlyForecastsForNext24Hours
 import com.example.horizon.domain.location.CurrentLocationProvider
 import com.example.horizon.domain.models.BriefWeatherDetails
-import com.example.horizon.domain.models.Coordinates
 import com.example.horizon.domain.models.CurrentWeatherDetails
 import com.example.horizon.domain.models.SavedLocation
 import com.example.horizon.domain.models.toBriefWeatherDetails
@@ -19,7 +18,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
@@ -37,7 +35,6 @@ class HomeViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val currentSearchQuery = MutableStateFlow("")
-    private val coordinatesOfCurrentLocation = MutableStateFlow<Coordinates?>(null)
 
     private val _uiState = MutableStateFlow(HomeScreenUiState())
     val uiState = _uiState as StateFlow<HomeScreenUiState>
@@ -82,35 +79,6 @@ class HomeViewModel @Inject constructor(
                 }
             }
             .launchIn(viewModelScope)
-
-        // Weather Details of User's Current Location Stream
-        coordinatesOfCurrentLocation.filterNotNull()
-            .onEach { coordinates ->
-                _uiState.update {
-                    it.copy(isLoadingWeatherDetailsOfCurrentLocation = true)
-                }
-                val nameOfLocation = reverseGeocoder.getLocationNameForCoordinates(
-                    coordinates.latitude.toDouble(),
-                    coordinates.longitude.toDouble()
-                ).getOrNull() ?: return@onEach // todo : exception handling
-                val weatherDetailsForCurrentLocation = weatherRepository.fetchWeatherForLocation(
-                    nameOfLocation = nameOfLocation,
-                    latitude = coordinates.latitude,
-                    longitude = coordinates.longitude
-                ).getOrNull()?.toBriefWeatherDetails() // todo : exception handling
-                val hourlyForecastsForCurrentLocation =
-                    weatherRepository.fetchHourlyForecastsForNext24Hours(
-                        latitude = coordinates.latitude,
-                        longitude = coordinates.longitude
-                    ).getOrNull() // todo : exception handling
-                _uiState.update {
-                    it.copy(
-                        isLoadingWeatherDetailsOfCurrentLocation = false,
-                        weatherDetailsOfCurrentLocation = weatherDetailsForCurrentLocation,
-                        hourlyForecastsForCurrentLocation = hourlyForecastsForCurrentLocation
-                    )
-                }
-            }.launchIn(viewModelScope)
     }
 
     /**
@@ -157,10 +125,34 @@ class HomeViewModel @Inject constructor(
 
     fun fetchWeatherForCurrentUserLocation() {
         viewModelScope.launch {
-            val coordinatesResult =
+            _uiState.update { it.copy(isLoadingWeatherDetailsOfCurrentLocation = true) }
+            val coordinates =
                 currentLocationProvider.getCurrentLocation().getOrNull() ?: return@launch
-            coordinatesOfCurrentLocation.value = coordinatesResult
-        }
 
+            val nameOfLocation = reverseGeocoder.getLocationNameForCoordinates(
+                coordinates.latitude.toDouble(),
+                coordinates.longitude.toDouble()
+            ).getOrNull() ?: return@launch // todo : exception handling
+
+            val weatherDetailsForCurrentLocation = weatherRepository.fetchWeatherForLocation(
+                nameOfLocation = nameOfLocation,
+                latitude = coordinates.latitude,
+                longitude = coordinates.longitude
+            ).getOrNull()?.toBriefWeatherDetails() // todo : exception handling
+
+            val hourlyForecastsForCurrentLocation =
+                weatherRepository.fetchHourlyForecastsForNext24Hours(
+                    latitude = coordinates.latitude,
+                    longitude = coordinates.longitude
+                ).getOrNull() // todo : exception handling
+
+            _uiState.update {
+                it.copy(
+                    isLoadingWeatherDetailsOfCurrentLocation = false,
+                    weatherDetailsOfCurrentLocation = weatherDetailsForCurrentLocation,
+                    hourlyForecastsForCurrentLocation = hourlyForecastsForCurrentLocation
+                )
+            }
+        }
     }
 }
