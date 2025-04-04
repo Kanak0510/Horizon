@@ -30,7 +30,7 @@ interface WeatherRepository {
     ): Result<CurrentWeatherDetails>
 
     /**
-     * * Used to get a a [Flow] of [List] of [SavedLocation]s that were previously saved by the user.
+     * Used to get a [Flow] of [List] of [SavedLocation]s that were previously saved by the user.
      */
     fun getSavedLocationsListStream(): Flow<List<SavedLocation>>
 

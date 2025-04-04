@@ -394,7 +394,7 @@ private fun LazyListScope.savedLocationItems(
         )
 
         SwipeToDismissCompactWeatherCard(
-            modifier = Modifier.padding(horizontal = 16.dp),
+            modifier = Modifier.padding(horizontal = 16.dp).animateItemPlacement(),
             nameOfLocation = it.nameOfLocation,
             shortDescription = it.shortDescription,
             shortDescriptionIcon = it.shortDescriptionIcon,

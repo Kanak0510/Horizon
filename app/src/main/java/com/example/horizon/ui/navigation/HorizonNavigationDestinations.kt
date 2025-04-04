@@ -20,7 +20,7 @@ sealed class HorizonNavigationDestinations(val route: String) {
             fun buildRoute(
                 nameOfLocation : String,
                 latitude : String,
-                longitude : String,
+                longitude : String
             ) = "weather_detail/$nameOfLocation/$latitude/$longitude"
     }
 }

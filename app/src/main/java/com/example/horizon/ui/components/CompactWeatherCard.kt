@@ -128,7 +128,7 @@ fun SwipeToDismissCompactWeatherCard(
         modifier = modifier,
         state = swipeToDismissBoxState,
         backgroundContent = {},
-        enableDismissFromEndToStart = true,
+        enableDismissFromStartToEnd = false,
         content = {
             CompactWeatherCard(
                 nameOfLocation = nameOfLocation,

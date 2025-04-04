@@ -98,6 +98,9 @@ private fun HourlyForecastItem(
             contentDescription = null,
             tint = Color.Unspecified
         )
+        // Note: the weather superscript used here is not the default one that
+        // is available on MacOS by using the shortcut option + 0. The one used in
+        // MacOS does not look good in the user interface.
         Text(
             text = "${temperature}°",
             style = MaterialTheme.typography.labelLarge
