@@ -176,7 +176,8 @@ fun HomeScreen(
                 )
                 currentWeatherDetailCardItem(
                     weatherOfCurrentUserLocation = weatherOfCurrentUserLocation,
-                    hourlyForecastsOfCurrentUserLocation = hourlyForecastsOfCurrentUserLocation
+                    hourlyForecastsOfCurrentUserLocation = hourlyForecastsOfCurrentUserLocation,
+                    onClick = { onSavedLocationItemClick(weatherOfCurrentUserLocation) }
                 )
             }
 
@@ -453,7 +454,8 @@ private fun LazyListScope.subHeaderItem(title: String, isLoadingAnimationVisible
 @ExperimentalFoundationApi
 private fun LazyListScope.currentWeatherDetailCardItem(
     weatherOfCurrentUserLocation: BriefWeatherDetails,
-    hourlyForecastsOfCurrentUserLocation: List<HourlyForecast>
+    hourlyForecastsOfCurrentUserLocation: List<HourlyForecast>,
+    onClick: () -> Unit
 ) {
     item {
         CompactWeatherCardWithHourlyForecast(
@@ -464,7 +466,7 @@ private fun LazyListScope.currentWeatherDetailCardItem(
             shortDescription = weatherOfCurrentUserLocation.shortDescription,
             shortDescriptionIcon = weatherOfCurrentUserLocation.shortDescriptionIcon,
             weatherInDegrees = weatherOfCurrentUserLocation.currentTemperatureRoundedToInt.toString(),
-            onClick = { /*TODO*/ },
+            onClick = onClick,
             hourlyForecasts = hourlyForecastsOfCurrentUserLocation
         )
     }
