@@ -11,19 +11,16 @@ import com.example.horizon.domain.models.BriefWeatherDetails
 import com.example.horizon.domain.models.Coordinates
 import com.example.horizon.domain.models.CurrentWeatherDetails
 import com.example.horizon.domain.models.HourlyForecast
-import com.example.horizon.domain.models.LocationAutofillSuggestion
 import com.example.horizon.domain.models.SavedLocation
 import com.example.horizon.domain.models.toBriefWeatherDetails
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -43,8 +40,6 @@ class HomeViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val currentSearchQuery = MutableStateFlow("")
-    private val isLoadingAutofillSuggestions = MutableStateFlow(false)
-    private val isLoadingSavedLocations = MutableStateFlow(false)
     private val coordinatesOfCurrentLocation = MutableStateFlow<Coordinates?>(null)
 
     val weatherDetailsOfCurrentLocation: StateFlow<BriefWeatherDetails?> =
@@ -79,22 +74,6 @@ class HomeViewModel @Inject constructor(
                 initialValue = null
             )
 
-    // To understand why this flow is converted into a state flow, see the explanation above. The UiState Property below.
-    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
-    private val autofillSuggestionsResults: Flow<Result<List<LocationAutofillSuggestion>>> =
-        currentSearchQuery.debounce(250)
-            .distinctUntilChanged()
-            .filter { it.isNotBlank() }
-            .mapLatest { query ->
-                isLoadingAutofillSuggestions.value = true
-                locationServicesRepository.fetchSuggestedPlacesForQuery(query)
-                    .also { isLoadingAutofillSuggestions.value = false }
-            }.stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(300),
-                initialValue = Result.success(emptyList())
-            )
-
     private val _uiState = MutableStateFlow(HomeScreenUiState())
     val uiState = _uiState as StateFlow<HomeScreenUiState>
 
@@ -103,15 +82,10 @@ class HomeViewModel @Inject constructor(
     private var recentlyDeletedItem: BriefWeatherDetails? = null
 
     init {
-        weatherRepository
-            .getSavedLocationsListStream()
+        weatherRepository.getSavedLocationsListStream()
+            .onEach { _uiState.update { it.copy(isLoadingSavedLocations = true) } }
             .map { savedLocations ->
-                _uiState.update { it.copy(isLoadingSavedLocations = true) }
-                fetchCurrentWeatherDetailsWithCache(savedLocations.toSet()) // todo handle exceptions
-            }
-            .map { currentWeatherDetails ->
-                currentWeatherDetails.map { it.toBriefWeatherDetails() }
-                    .sortedBy { it.nameOfLocation }
+                fetchCurrentWeatherDetailsWithCache(savedLocations.toSet()).sortedBy { it.nameOfLocation }
             }
             .onEach { weatherDetailsOfSavedLocations ->
                 _uiState.update {
@@ -127,12 +101,11 @@ class HomeViewModel @Inject constructor(
         currentSearchQuery.debounce(250)
             .distinctUntilChanged()
             .mapLatest { query ->
-                if (query.isBlank()) return@mapLatest Result.success(emptyList())
+                if (query.isBlank()) return@mapLatest emptyList()
                 _uiState.update { it.copy(isLoadingSuggestions = true) }
                 locationServicesRepository.fetchSuggestedPlacesForQuery(query)
+                    .getOrThrow() // todo exception handling
             }
-            .filter { it.isSuccess }
-            .map { it.getOrThrow() } // todo exception handling
             .onEach { autoFillSuggestions ->
                 _uiState.update {
                     it.copy(
@@ -165,10 +138,10 @@ class HomeViewModel @Inject constructor(
     }
 
     /**
-     * Used to fetch a list of [CurrentWeatherDetails] for all the [savedLocations] efficiently
+     * Used to fetch a list of [BriefWeatherDetails] for all the [savedLocations] efficiently
      * using the [currentWeatherDetailsCache]
      */
-    private suspend fun fetchCurrentWeatherDetailsWithCache(savedLocations: Set<SavedLocation>): List<CurrentWeatherDetails> {
+    private suspend fun fetchCurrentWeatherDetailsWithCache(savedLocations: Set<SavedLocation>): List<BriefWeatherDetails> {
         // Remove locations in the cache that have been deleted by the user
         val removedLocations = currentWeatherDetailsCache.keys subtract savedLocations
         for (removedLocation in removedLocations) {
@@ -183,7 +156,7 @@ class HomeViewModel @Inject constructor(
                 longitude = savedLocationNotInCache.coordinates.longitude
             ).getOrThrow().also { currentWeatherDetailsCache[savedLocationNotInCache] = it }
         }
-        return  currentWeatherDetailsCache.values.toList()
+        return  currentWeatherDetailsCache.values.toList().map { it.toBriefWeatherDetails() }
     }
 
     fun fetchWeatherForCurrentUserLocation() {
