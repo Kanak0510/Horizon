@@ -2,10 +2,15 @@ package com.example.horizon.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.horizon.data.remote.location.ReverseGeocoder
 import com.example.horizon.data.repositories.location.LocationServicesRepository
 import com.example.horizon.data.repositories.weather.WeatherRepository
+import com.example.horizon.data.repositories.weather.fetchHourlyForecastsForNext24Hours
+import com.example.horizon.domain.location.CurrentLocationProvider
 import com.example.horizon.domain.models.BriefWeatherDetails
+import com.example.horizon.domain.models.Coordinates
 import com.example.horizon.domain.models.CurrentWeatherDetails
+import com.example.horizon.domain.models.HourlyForecast
 import com.example.horizon.domain.models.LocationAutofillSuggestion
 import com.example.horizon.domain.models.SavedLocation
 import com.example.horizon.domain.models.toBriefWeatherDetails
@@ -15,10 +20,12 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
@@ -27,6 +34,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
+    private val currentLocationProvider: CurrentLocationProvider,
+    private val reverseGeocoder: ReverseGeocoder,
     private val locationServicesRepository: LocationServicesRepository,
     private val weatherRepository: WeatherRepository
 ) : ViewModel() {
@@ -34,6 +43,39 @@ class HomeViewModel @Inject constructor(
     private val currentSearchQuery = MutableStateFlow("")
     private val isLoadingAutofillSuggestions = MutableStateFlow(false)
     private val isLoadingSavedLocations = MutableStateFlow(false)
+    private val coordinatesOfCurrentLocation = MutableStateFlow<Coordinates?>(null)
+
+    val weatherDetailsOfCurrentLocation: StateFlow<BriefWeatherDetails?> =
+        coordinatesOfCurrentLocation.filterNotNull()
+            .map { coordinates ->
+                val nameOfLocation = reverseGeocoder.getLocationNameForCoordinates(
+                    coordinates.latitude.toDouble(),
+                    coordinates.longitude.toDouble()
+                ).getOrNull() ?: return@map null // todo : exception handling
+                weatherRepository.fetchWeatherForLocation(
+                    nameOfLocation = nameOfLocation,
+                    latitude = coordinates.latitude,
+                    longitude = coordinates.longitude
+                ).getOrNull()?.toBriefWeatherDetails() // todo : exception handling
+            }.stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(300),
+                initialValue = null
+            )
+
+    val hourlyForecastsForCurrentLocation: StateFlow<List<HourlyForecast>?> =
+        coordinatesOfCurrentLocation.filterNotNull()
+            .map { coordinates ->
+                weatherRepository.fetchHourlyForecastsForNext24Hours(
+                    latitude = coordinates.latitude,
+                    longitude = coordinates.longitude
+                ).getOrNull() // todo : exception handling
+            }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(300),
+                initialValue = null
+            )
 
     private val weatherDetailsOfSavedLocationsResults: Flow<Result<List<CurrentWeatherDetails>>> =
         weatherRepository.getSavedLocationsListStream()
@@ -136,5 +178,14 @@ class HomeViewModel @Inject constructor(
                 ).getOrElse { return Result.failure(it) }
         }
         return Result.success(currentWeatherDetailsCache.values.toList())
+    }
+
+    fun fetchWeatherForCurrentUserLocation() {
+        viewModelScope.launch {
+            val coordinatesResult =
+                currentLocationProvider.getCurrentLocation().getOrNull() ?: return@launch
+            coordinatesOfCurrentLocation.value = coordinatesResult
+        }
+
     }
 }
