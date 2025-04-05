@@ -44,7 +44,8 @@ class HorizonWeatherRepositoryTest {
         }
         weatherRepository = HorizonWeatherRepository(
             weatherClient = NetworkModule.provideWeatherClient(),
-            horizonDatabaseDao = daoMock
+            horizonDatabaseDao = daoMock,
+            textGeneratorClient = mock()
         )
     }
 
