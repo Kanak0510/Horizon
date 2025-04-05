@@ -76,12 +76,18 @@ class WeatherDetailViewModel @Inject constructor(
                 longitude = longitude
             ).getOrThrow()
         }
+        val summaryMessage = async {
+            weatherRepository.fetchGeneratedSummaryForWeatherDetails(
+                currentWeatherDetails = weatherDetailsOfChosenLocation.await()
+            ).getOrThrow()
+        }
 
         try {
             _uiState.update {
                 it.copy(
                     isLoading = false,
                     weatherDetailsOfChosenLocation = weatherDetailsOfChosenLocation.await(),
+                    weatherSummaryText = summaryMessage.await(),
                     precipitationProbabilities = precipitationProbabilities.await(),
                     hourlyForecasts = hourlyForecasts.await(),
                     additionalWeatherInfoItems = additionalWeatherInfoItems.await()
