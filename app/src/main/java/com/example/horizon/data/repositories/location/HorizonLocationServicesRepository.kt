@@ -2,8 +2,8 @@ package com.example.horizon.data.repositories.location
 
 import com.example.horizon.data.getBodyOrThrowException
 import com.example.horizon.data.remote.location.LocationClient
-import com.example.horizon.data.remote.location.models.toLocationAutofillSuggestionList
 import com.example.horizon.domain.models.LocationAutofillSuggestion
+import com.example.horizon.domain.models.toLocationAutofillSuggestionList
 import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
 
