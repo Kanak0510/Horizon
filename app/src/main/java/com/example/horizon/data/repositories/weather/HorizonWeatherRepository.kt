@@ -4,8 +4,6 @@ import com.example.horizon.data.getBodyOrThrowException
 import com.example.horizon.data.local.weather.HorizonDatabaseDao
 import com.example.horizon.data.local.weather.SavedWeatherLocationEntity
 import com.example.horizon.data.remote.languagemodel.TextGeneratorClient
-import com.example.horizon.data.remote.languagemodel.models.MessageDTO
-import com.example.horizon.data.remote.languagemodel.models.TextGenerationPromptBody
 import com.example.horizon.data.remote.weather.WeatherClient
 import com.example.horizon.domain.models.BriefWeatherDetails
 import com.example.horizon.domain.models.CurrentWeatherDetails
@@ -129,37 +127,5 @@ class HorizonWeatherRepository @Inject constructor(
 
     override suspend fun tryRestoringDeletedWeatherLocation(nameOfLocation: String) {
         horizonDatabaseDao.markWeatherEntityAsUnDeleted(nameOfLocation)
-    }
-
-    override suspend fun fetchGeneratedSummaryForWeatherDetails(currentWeatherDetails: CurrentWeatherDetails): Result<String> {
-        // Prompts
-        val systemPrompt = """
-            You are a weather reporter. Generate a very short, but whimsical description of the weather,
-            based on the given information.
-        """.trimIndent()
-        val userPrompt = """
-            location = ${currentWeatherDetails.nameOfLocation};
-            currentTemperature = ${currentWeatherDetails.temperatureRoundedToInt};
-            weatherCondition = ${currentWeatherDetails.weatherCondition};
-        """.trimIndent()
-        // Prompt Messages
-        val promptMessages = listOf(
-            MessageDTO(role = "system", content = systemPrompt),
-            MessageDTO(role = "user", content = userPrompt)
-        )
-        val textGenerationPrompt = TextGenerationPromptBody(
-            messages = promptMessages,
-            model = "gpt-4o"
-        )
-        // Request to generate text based on prompt body
-        return try {
-            val generatedTextResponse = textGeneratorClient.getModelResponseForConversations(
-                textGenerationPostBody = textGenerationPrompt
-            ).getBodyOrThrowException()
-            Result.success(generatedTextResponse.generatedResponses.first().message.content)
-        } catch (exception: Exception) {
-            if (exception is CancellationException) throw exception
-            Result.failure(exception)
-        }
     }
 }
