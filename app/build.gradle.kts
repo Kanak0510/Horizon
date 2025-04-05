@@ -122,6 +122,12 @@ dependencies {
     implementation(libs.moshi)
     implementation(libs.moshi.kotlin.codegen) // Make's Moshi not depend on Reflection + Generates Kotlin Code using KotlinPoet
 
+    // Splash-Screen
+    implementation(libs.androidx.core.splashscreen)
+
+    // Material Theme - For Adding Dynamic Colors in Splash Screen (Work Around)
+    implementation(libs.material)
+
     // Hilt
     implementation(libs.google.dagger.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
