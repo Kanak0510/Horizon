@@ -15,14 +15,14 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Horizon"
+        android:theme="@style/Theme.Horizon.SplashScreen"
         tools:targetApi="31">
         <activity
             android:name=".ui.activities.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.Horizon">
+            android:theme="@style/Theme.Horizon.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
