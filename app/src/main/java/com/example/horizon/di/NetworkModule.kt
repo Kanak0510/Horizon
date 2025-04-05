@@ -1,5 +1,8 @@
 package com.example.horizon.di
 
+import com.example.horizon.BuildConfig
+import com.example.horizon.data.remote.languagemodel.TextGeneratorClient
+import com.example.horizon.data.remote.languagemodel.TextGeneratorClientConstants
 import com.example.horizon.data.remote.location.LocationClient
 import com.example.horizon.data.remote.location.LocationClientConstants
 import com.example.horizon.data.remote.weather.WeatherClient
@@ -8,6 +11,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton
@@ -31,4 +35,22 @@ object NetworkModule {
         .addConverterFactory(MoshiConverterFactory.create())
         .build()
         .create(LocationClient::class.java)
+
+    @Provides
+    @Singleton
+    fun provideTextGeneratorClient(): TextGeneratorClient = Retrofit.Builder()
+        .client(
+            OkHttpClient.Builder()
+                .addInterceptor { chain ->
+                    val newRequest = chain.request().newBuilder()
+                        .addHeader("Authorization", "Bearer ${BuildConfig.OPEN_AI_API_TOKEN}")
+                        .build()
+                    chain.proceed(newRequest)
+                }
+                .build()
+        )
+        .baseUrl(TextGeneratorClientConstants.BASE_URL)
+        .addConverterFactory(MoshiConverterFactory.create())
+        .build()
+        .create(TextGeneratorClient::class.java)
 }
