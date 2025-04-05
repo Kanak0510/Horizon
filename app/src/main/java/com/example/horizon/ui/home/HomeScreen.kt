@@ -130,6 +130,7 @@ fun HomeScreen(
         currentQueryText = ""
         onSearchQueryChange("")
     }
+    var shouldDisplayCurrentLocationWeatherSubHeader by remember { mutableStateOf(false) }
     val locationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions(),
         onResult = { isPermitted ->
@@ -137,7 +138,10 @@ fun HomeScreen(
                 isPermitted.getOrDefault(android.Manifest.permission.ACCESS_COARSE_LOCATION, false)
             val isFineLocationPermitted =
                 isPermitted.getOrDefault(android.Manifest.permission.ACCESS_FINE_LOCATION, false)
-            if (isCoarseLocationPermitted || isFineLocationPermitted) onLocationPermissionGranted()
+            if (isCoarseLocationPermitted || isFineLocationPermitted) {
+                onLocationPermissionGranted()
+                shouldDisplayCurrentLocationWeatherSubHeader = true
+            }
         }
     )
     LaunchedEffect(Unit) {
@@ -169,10 +173,12 @@ fun HomeScreen(
                 onSuggestionClick = onSuggestionClick
             )
 
-            subHeaderItem(
-                title = "Current Location",
-                isLoadingAnimationVisible = isCurrentWeatherDetailsLoading
-            )
+            if (shouldDisplayCurrentLocationWeatherSubHeader) {
+                subHeaderItem(
+                    title = "Current Location",
+                    isLoadingAnimationVisible = isCurrentWeatherDetailsLoading
+                )
+            }
 
             if (weatherOfCurrentUserLocation != null && hourlyForecastsOfCurrentUserLocation != null) {
                 currentWeatherDetailCardItem(
