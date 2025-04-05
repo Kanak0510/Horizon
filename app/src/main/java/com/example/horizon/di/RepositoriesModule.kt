@@ -2,6 +2,8 @@ package com.example.horizon.di
 
 import com.example.horizon.data.repositories.location.HorizonLocationServicesRepository
 import com.example.horizon.data.repositories.location.LocationServicesRepository
+import com.example.horizon.data.repositories.textgenerator.GenerativeTextRepository
+import com.example.horizon.data.repositories.textgenerator.HorizonGenerativeTextRepository
 import com.example.horizon.data.repositories.weather.HorizonWeatherRepository
 import com.example.horizon.data.repositories.weather.WeatherRepository
 import dagger.Binds
@@ -22,4 +24,9 @@ abstract class RepositoriesModule {
     abstract fun bindWeatherRepository(
         impl: HorizonWeatherRepository
     ): WeatherRepository
+
+    @Binds
+    abstract fun bindGenerativeTextRepository(
+        impl: HorizonGenerativeTextRepository
+    ): GenerativeTextRepository
 }
