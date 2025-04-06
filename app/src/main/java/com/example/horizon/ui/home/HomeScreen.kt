@@ -271,7 +271,6 @@ private fun Header(
     isSearchBarActive: Boolean,
     onSearchQueryChange: (String) -> Unit,
     onSearchBarActiveChange: (Boolean) -> Unit,
-    onSearch: (String) -> Unit,
     searchBarSuggestionsContent: @Composable (ColumnScope.() -> Unit)
 ) {
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
@@ -282,7 +281,9 @@ private fun Header(
                 SearchBarDefaults.InputField(
                     query = currentSearchQuery,
                     onQueryChange = onSearchQueryChange,
-                    onSearch = onSearch,
+                    onSearch = {
+                        // No need for this callback because this app uses instant search
+                    },
                     expanded = isSearchBarActive,
                     onExpandedChange = onSearchBarActiveChange,
                     placeholder = { Text(text = "Search for a location") },
@@ -489,7 +490,6 @@ private fun LazyListScope.searchBarItem(
             isSearchBarActive = isSearchBarActive,
             onSearchQueryChange = onSearchQueryChange,
             onSearchBarActiveChange = onSearchBarActiveChange,
-            onSearch = {/* TODO: handle search */ },
             searchBarSuggestionsContent = {
                 if (errorLoadingSuggestions) errorSearchBarSuggestionsContent()
                 else searchBarSuggestionsContent()
