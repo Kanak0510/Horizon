@@ -1,4 +1,4 @@
-package com.example.horizon.ui.weatherDetail
+package com.example.horizon.ui.weatherdetail
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel

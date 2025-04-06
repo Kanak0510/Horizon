@@ -1,4 +1,4 @@
-package com.example.horizon.ui.weatherDetail
+package com.example.horizon.ui.weatherdetail
 
 import com.example.horizon.domain.models.CurrentWeatherDetails
 import com.example.horizon.domain.models.HourlyForecast

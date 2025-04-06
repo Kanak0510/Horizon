@@ -1,4 +1,4 @@
-package com.example.horizon.ui.weatherDetail
+package com.example.horizon.ui.weatherdetail
 
 import android.os.Build.VERSION.SDK_INT
 import androidx.annotation.DrawableRes
