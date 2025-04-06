@@ -7,10 +7,10 @@ import com.example.horizon.data.repositories.location.LocationServicesRepository
 import com.example.horizon.data.repositories.weather.WeatherRepository
 import com.example.horizon.data.repositories.weather.fetchHourlyForecastsForNext24Hours
 import com.example.horizon.domain.location.CurrentLocationProvider
-import com.example.horizon.domain.models.BriefWeatherDetails
-import com.example.horizon.domain.models.CurrentWeatherDetails
 import com.example.horizon.domain.models.SavedLocation
-import com.example.horizon.domain.models.toBriefWeatherDetails
+import com.example.horizon.domain.models.weather.BriefWeatherDetails
+import com.example.horizon.domain.models.weather.CurrentWeatherDetails
+import com.example.horizon.domain.models.weather.toBriefWeatherDetails
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview

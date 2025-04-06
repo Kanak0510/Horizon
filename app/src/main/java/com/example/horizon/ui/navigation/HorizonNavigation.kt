@@ -17,8 +17,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.horizon.domain.models.BriefWeatherDetails
 import com.example.horizon.domain.models.LocationAutofillSuggestion
+import com.example.horizon.domain.models.weather.BriefWeatherDetails
 import com.example.horizon.ui.home.HomeScreen
 import com.example.horizon.ui.home.HomeViewModel
 import com.example.horizon.ui.weatherdetail.WeatherDetailScreen

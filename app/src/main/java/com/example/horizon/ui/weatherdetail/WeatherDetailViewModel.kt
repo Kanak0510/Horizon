@@ -7,7 +7,7 @@ import com.example.horizon.data.repositories.textgenerator.GenerativeTextReposit
 import com.example.horizon.data.repositories.weather.WeatherRepository
 import com.example.horizon.data.repositories.weather.fetchHourlyForecastsForNext24Hours
 import com.example.horizon.data.repositories.weather.fetchPrecipitationProbabilitiesForNext24hours
-import com.example.horizon.domain.models.CurrentWeatherDetails
+import com.example.horizon.domain.models.weather.CurrentWeatherDetails
 import com.example.horizon.ui.navigation.HorizonNavigationDestinations.WeatherDetailScreen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException

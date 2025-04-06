@@ -1,8 +1,8 @@
 package com.example.horizon.ui.home
 
-import com.example.horizon.domain.models.BriefWeatherDetails
-import com.example.horizon.domain.models.HourlyForecast
 import com.example.horizon.domain.models.LocationAutofillSuggestion
+import com.example.horizon.domain.models.weather.BriefWeatherDetails
+import com.example.horizon.domain.models.weather.HourlyForecast
 
 /**
  * A UI state class that represents the current UI state of the [HomeScreen].

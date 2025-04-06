@@ -1,9 +1,10 @@
-package com.example.horizon.domain.models
+package com.example.horizon.domain.models.weather
 
 import androidx.annotation.DrawableRes
 import com.example.horizon.data.remote.weather.models.CurrentWeatherResponse
 import com.example.horizon.data.remote.weather.models.getWeatherIconResForCode
 import com.example.horizon.data.remote.weather.models.getWeatherImageForCode
+import com.example.horizon.domain.models.Coordinates
 import kotlin.math.roundToInt
 
 /**

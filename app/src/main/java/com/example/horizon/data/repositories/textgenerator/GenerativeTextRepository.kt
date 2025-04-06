@@ -1,6 +1,6 @@
 package com.example.horizon.data.repositories.textgenerator
 
-import com.example.horizon.domain.models.CurrentWeatherDetails
+import com.example.horizon.domain.models.weather.CurrentWeatherDetails
 
 /**
  * A repository that contains methods that can be used to generate text based on the provided

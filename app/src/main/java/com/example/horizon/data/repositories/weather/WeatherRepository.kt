@@ -1,11 +1,11 @@
 package com.example.horizon.data.repositories.weather
 
-import com.example.horizon.domain.models.BriefWeatherDetails
-import com.example.horizon.domain.models.CurrentWeatherDetails
-import com.example.horizon.domain.models.HourlyForecast
-import com.example.horizon.domain.models.PrecipitationProbability
 import com.example.horizon.domain.models.SavedLocation
-import com.example.horizon.domain.models.SingleWeatherDetail
+import com.example.horizon.domain.models.weather.BriefWeatherDetails
+import com.example.horizon.domain.models.weather.CurrentWeatherDetails
+import com.example.horizon.domain.models.weather.HourlyForecast
+import com.example.horizon.domain.models.weather.PrecipitationProbability
+import com.example.horizon.domain.models.weather.SingleWeatherDetail
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 

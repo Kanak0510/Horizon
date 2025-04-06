@@ -1,7 +1,7 @@
 package com.example.horizon.data.repositories.weather
 
-import com.example.horizon.domain.models.HourlyForecast
-import com.example.horizon.domain.models.PrecipitationProbability
+import com.example.horizon.domain.models.weather.HourlyForecast
+import com.example.horizon.domain.models.weather.PrecipitationProbability
 import kotlinx.coroutines.CancellationException
 import java.time.LocalDate
 import java.time.LocalDateTime

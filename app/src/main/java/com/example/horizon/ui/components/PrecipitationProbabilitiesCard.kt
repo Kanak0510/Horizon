@@ -33,7 +33,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.example.horizon.R
 import com.example.horizon.domain.hourStringInTwelveHourFormat
-import com.example.horizon.domain.models.PrecipitationProbability
+import com.example.horizon.domain.models.weather.PrecipitationProbability
 
 /**
  * A card composable that displays precipitation probabilities in a "vertical progress bar" styled manner.

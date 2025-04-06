@@ -1,7 +1,8 @@
-package com.example.horizon.domain.models
+package com.example.horizon.domain.models.weather
 
 import androidx.annotation.DrawableRes
 import com.example.horizon.data.local.weather.SavedWeatherLocationEntity
+import com.example.horizon.domain.models.Coordinates
 
 /**
  * A data class that holds brief weather details of a particular location.
@@ -10,7 +11,7 @@ import com.example.horizon.data.local.weather.SavedWeatherLocationEntity
  * @param currentTemperatureRoundedToInt The current temperature (without superscript).
  * @param shortDescription A short description of the weather.
  * @param shortDescriptionIcon An icon representing the weather.
- * @param coordinates The [Coordinates] of the location.
+ * @param coordinates The [com.example.horizon.domain.models.Coordinates] of the location.
  */
 data class BriefWeatherDetails(
     val nameOfLocation: String,

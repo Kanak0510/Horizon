@@ -1,9 +1,9 @@
 package com.example.horizon.ui.weatherdetail
 
-import com.example.horizon.domain.models.CurrentWeatherDetails
-import com.example.horizon.domain.models.HourlyForecast
-import com.example.horizon.domain.models.PrecipitationProbability
-import com.example.horizon.domain.models.SingleWeatherDetail
+import com.example.horizon.domain.models.weather.CurrentWeatherDetails
+import com.example.horizon.domain.models.weather.HourlyForecast
+import com.example.horizon.domain.models.weather.PrecipitationProbability
+import com.example.horizon.domain.models.weather.SingleWeatherDetail
 
 /**
  * A UI state class that represents the current UI state of the [WeatherDetailScreen].

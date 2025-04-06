@@ -26,7 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.horizon.domain.hourStringInTwelveHourFormat
-import com.example.horizon.domain.models.HourlyForecast
+import com.example.horizon.domain.models.weather.HourlyForecast
 import java.time.LocalDateTime
 
 /**

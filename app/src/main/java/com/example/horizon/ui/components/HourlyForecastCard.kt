@@ -23,7 +23,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.example.horizon.R
 import com.example.horizon.domain.hourStringInTwelveHourFormat
-import com.example.horizon.domain.models.HourlyForecast
+import com.example.horizon.domain.models.weather.HourlyForecast
 import java.time.LocalDateTime
 
 /**

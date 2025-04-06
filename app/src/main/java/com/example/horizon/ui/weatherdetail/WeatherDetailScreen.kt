@@ -57,9 +57,9 @@ import coil.decode.ImageDecoderDecoder
 import coil.request.ImageRequest
 import coil.size.Size
 import com.example.horizon.R
-import com.example.horizon.domain.models.HourlyForecast
-import com.example.horizon.domain.models.PrecipitationProbability
-import com.example.horizon.domain.models.SingleWeatherDetail
+import com.example.horizon.domain.models.weather.HourlyForecast
+import com.example.horizon.domain.models.weather.PrecipitationProbability
+import com.example.horizon.domain.models.weather.SingleWeatherDetail
 import com.example.horizon.ui.components.HourlyForecastCard
 import com.example.horizon.ui.components.PrecipitationProbabilitiesCard
 import com.example.horizon.ui.components.SingleWeatherDetailCard

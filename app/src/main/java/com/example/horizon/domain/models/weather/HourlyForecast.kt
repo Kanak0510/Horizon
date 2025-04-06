@@ -1,4 +1,4 @@
-package com.example.horizon.domain.models
+package com.example.horizon.domain.models.weather
 
 import androidx.annotation.DrawableRes
 import com.example.horizon.data.remote.weather.models.HourlyWeatherInfoResponse

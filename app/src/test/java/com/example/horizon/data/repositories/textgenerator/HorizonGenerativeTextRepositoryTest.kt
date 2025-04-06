@@ -6,7 +6,7 @@ import com.example.horizon.data.remote.languagemodel.TextGeneratorClient
 import com.example.horizon.data.remote.languagemodel.models.GeneratedTextResponse
 import com.example.horizon.data.remote.languagemodel.models.MessageDTO
 import com.example.horizon.domain.models.Coordinates
-import com.example.horizon.domain.models.CurrentWeatherDetails
+import com.example.horizon.domain.models.weather.CurrentWeatherDetails
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Before

@@ -56,9 +56,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.horizon.domain.models.BriefWeatherDetails
-import com.example.horizon.domain.models.HourlyForecast
 import com.example.horizon.domain.models.LocationAutofillSuggestion
+import com.example.horizon.domain.models.weather.BriefWeatherDetails
+import com.example.horizon.domain.models.weather.HourlyForecast
 import com.example.horizon.ui.components.AutofillSuggestion
 import com.example.horizon.ui.components.CompactWeatherCardWithHourlyForecast
 import com.example.horizon.ui.components.SwipeToDismissCompactWeatherCard

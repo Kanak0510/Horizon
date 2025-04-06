@@ -1,4 +1,4 @@
-package com.example.horizon.domain.models
+package com.example.horizon.domain.models.weather
 
 import com.example.horizon.data.remote.weather.models.HourlyWeatherInfoResponse
 import java.time.Instant
