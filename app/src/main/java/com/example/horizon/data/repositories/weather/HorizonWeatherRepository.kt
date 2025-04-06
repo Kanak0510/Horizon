@@ -3,7 +3,6 @@ package com.example.horizon.data.repositories.weather
 import com.example.horizon.data.getBodyOrThrowException
 import com.example.horizon.data.local.weather.HorizonDatabaseDao
 import com.example.horizon.data.local.weather.SavedWeatherLocationEntity
-import com.example.horizon.data.remote.languagemodel.TextGeneratorClient
 import com.example.horizon.data.remote.weather.WeatherClient
 import com.example.horizon.domain.models.SavedLocation
 import com.example.horizon.domain.models.toSavedLocation
@@ -28,7 +27,6 @@ import javax.inject.Inject
  */
 class HorizonWeatherRepository @Inject constructor(
     private val weatherClient: WeatherClient,
-    private val textGeneratorClient: TextGeneratorClient,
     private val horizonDatabaseDao: HorizonDatabaseDao
 ) : WeatherRepository {
 
