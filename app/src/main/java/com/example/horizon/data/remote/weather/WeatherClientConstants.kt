@@ -17,7 +17,7 @@ object WeatherClientConstants {
      * The endpoints of the OpenWeatherMap API
      */
     object EndPoints {
-        const val GET_WEATHER_ENDPOINT = "forecast" // todo rename
+        const val FORECAST = "forecast"
     }
 
     /**
