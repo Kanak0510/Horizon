@@ -7,7 +7,6 @@ import com.example.horizon.data.repositories.textgenerator.GenerativeTextReposit
 import com.example.horizon.data.repositories.weather.WeatherRepository
 import com.example.horizon.data.repositories.weather.fetchHourlyForecastsForNext24Hours
 import com.example.horizon.data.repositories.weather.fetchPrecipitationProbabilitiesForNext24hours
-import com.example.horizon.domain.models.weather.CurrentWeatherDetails
 import com.example.horizon.ui.navigation.HorizonNavigationDestinations.WeatherDetailScreen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
@@ -20,7 +19,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.supervisorScope
 import javax.inject.Inject
 
 @HiltViewModel
@@ -48,13 +46,18 @@ class WeatherDetailViewModel @Inject constructor(
                 _uiState.update { it.copy(isPreviouslySavedLocation = isPreviouslySavedLocation) }
             }
             .launchIn(scope = viewModelScope)
-        viewModelScope.launch { fetchWeatherDetailsAndUpdateState() }
+        viewModelScope.launch {
+            try {
+                fetchWeatherDetailsAndUpdateState()
+            } catch (exception: Exception) {
+                if (exception is CancellationException) throw exception
+                _uiState.update { it.copy(isLoading = false, errorMessage = DEFAULT_ERROR_MESSAGE) }
+            }
+        }
     }
 
-    // todo stopship - using supervisor scope doesnt reset the ui state is loading to false
-    // and also using coroutineScope crashes the entire app.
-    private suspend fun fetchWeatherDetailsAndUpdateState(): Unit = supervisorScope {
-        _uiState.update { it.copy(isLoading = true) }
+    private suspend fun fetchWeatherDetailsAndUpdateState(): Unit = coroutineScope {
+        _uiState.update { it.copy(isLoading = true, isWeatherSummaryTextLoading = true) }
         val weatherDetailsOfChosenLocation = async {
             weatherRepository.fetchWeatherForLocation(
                 nameOfLocation = nameOfLocation,
@@ -62,10 +65,11 @@ class WeatherDetailViewModel @Inject constructor(
                 longitude = longitude
             ).getOrThrow()
         }
-        launch {
-            // This request, relatively takes a while before returning.
-            // Hence launch it in a separate coroutine.
-            fetchAiGeneratedTextAndUpdateState(weatherDetailsOfChosenLocation.await())
+
+        val summaryMessage = async {
+            generativeTextRepository.generateTextForWeatherDetails(
+                weatherDetails = weatherDetailsOfChosenLocation.await()
+            ).getOrNull()
         }
 
         val precipitationProbabilities = async {
@@ -74,12 +78,14 @@ class WeatherDetailViewModel @Inject constructor(
                 longitude = longitude
             ).getOrThrow()
         }
+
         val hourlyForecasts = async {
             weatherRepository.fetchHourlyForecastsForNext24Hours(
                 latitude = latitude,
                 longitude = longitude
             ).getOrThrow()
         }
+
         val additionalWeatherInfoItems = async {
             weatherRepository.fetchAdditionalWeatherInfoItemsListForCurrentDay(
                 latitude = latitude,
@@ -87,41 +93,24 @@ class WeatherDetailViewModel @Inject constructor(
             ).getOrThrow()
         }
 
-        try {
-            _uiState.update {
-                it.copy(
-                    isLoading = false,
-                    weatherDetailsOfChosenLocation = weatherDetailsOfChosenLocation.await(),
-                    precipitationProbabilities = precipitationProbabilities.await(),
-                    hourlyForecasts = hourlyForecasts.await(),
-                    additionalWeatherInfoItems = additionalWeatherInfoItems.await()
-                )
-            }
-        } catch (exception: Exception) {
-            if (exception is CancellationException) throw exception
-            _uiState.update {
-                it.copy(
-                    isLoading = false,
-                    errorMessage = DEFAULT_ERROR_MESSAGE
-                )
-            }
+        _uiState.update {
+            it.copy(
+                isLoading = false,
+                weatherDetailsOfChosenLocation = weatherDetailsOfChosenLocation.await(),
+                precipitationProbabilities = precipitationProbabilities.await(),
+                hourlyForecasts = hourlyForecasts.await(),
+                additionalWeatherInfoItems = additionalWeatherInfoItems.await()
+            )
         }
-    }
 
-    private suspend fun fetchAiGeneratedTextAndUpdateState(weatherDetailsOfChosenLocation: CurrentWeatherDetails) {
-        coroutineScope {
-            _uiState.update { it.copy(isWeatherSummaryTextLoading = true) }
-            val summaryMessage = async {
-                generativeTextRepository.generateTextForWeatherDetails(
-                    weatherDetails = weatherDetailsOfChosenLocation
-                ).getOrThrow()
-            }
-            _uiState.update {
-                it.copy(
-                    isWeatherSummaryTextLoading = false,
-                    weatherSummaryText = summaryMessage.await()
-                )
-            }
+        // The summary message will relatively take a longer amount of time to return
+        // back, when compared to other fetch operations. Hence update the ui state
+        // separately after the summary message successfully fetched.
+        _uiState.update {
+            it.copy(
+                isWeatherSummaryTextLoading = false,
+                weatherSummaryText = summaryMessage.await()
+            )
         }
     }
 
