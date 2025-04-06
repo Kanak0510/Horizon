@@ -102,7 +102,7 @@ class WeatherDetailViewModel @Inject constructor(
             _uiState.update {
                 it.copy(
                     isLoading = false,
-                    errorMessage = "Oops! An error occurred while fetching the weather details."
+                    errorMessage = DEFAULT_ERROR_MESSAGE
                 )
             }
         }
@@ -133,5 +133,11 @@ class WeatherDetailViewModel @Inject constructor(
                 longitude = longitude
             )
         }
+    }
+
+    companion object {
+        private const val DEFAULT_ERROR_MESSAGE =
+            "Oops! An error occurred when trying to fetch the " +
+                    "weather details. Please try again."
     }
 }
