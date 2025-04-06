@@ -26,6 +26,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -78,6 +79,19 @@ fun WeatherDetailScreen(
     if (uiState.weatherDetailsOfChosenLocation == null) {
         Box(modifier = Modifier.fillMaxSize()) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+        }
+    } else if (uiState.errorMessage != null) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                modifier = Modifier.padding(16.dp),
+                textAlign = TextAlign.Center,
+                text = uiState.errorMessage
+            )
+            Button(onClick = onBackButtonClick, content =  { Text("Go Back") })
         }
     } else {
         WeatherDetailScreen(
