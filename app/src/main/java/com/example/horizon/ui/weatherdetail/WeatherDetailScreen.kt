@@ -76,10 +76,11 @@ fun WeatherDetailScreen(
     onSaveButtonClick: () -> Unit,
     onBackButtonClick: () -> Unit,
 ) {
-    if (uiState.weatherDetailsOfChosenLocation == null) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-        }
+    if (uiState.isLoading) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            content = { CircularProgressIndicator(modifier = Modifier.align(Alignment.Center)) }
+        )
     } else if (uiState.errorMessage != null) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -96,14 +97,13 @@ fun WeatherDetailScreen(
     } else {
         WeatherDetailScreen(
             snackbarHostState = snackbarHostState,
-            nameOfLocation = uiState.weatherDetailsOfChosenLocation.nameOfLocation,
+            nameOfLocation = uiState.weatherDetailsOfChosenLocation!!.nameOfLocation,
             weatherConditionImage = uiState.weatherDetailsOfChosenLocation.imageResId,
             weatherConditionIconId = uiState.weatherDetailsOfChosenLocation.iconResId,
             weatherInDegrees = uiState.weatherDetailsOfChosenLocation.temperatureRoundedToInt,
             weatherCondition = uiState.weatherDetailsOfChosenLocation.weatherCondition,
             aiGeneratedWeatherSummaryText = uiState.weatherSummaryText,
             isPreviouslySavedLocation = uiState.isPreviouslySavedLocation,
-            isLoading = uiState.isLoading,
             isWeatherSummaryLoading = uiState.isWeatherSummaryTextLoading,
             singleWeatherDetails = uiState.additionalWeatherInfoItems,
             hourlyForecasts = uiState.hourlyForecasts,
@@ -123,7 +123,6 @@ fun WeatherDetailScreen(
     weatherCondition: String,
     onBackButtonClick: () -> Unit,
     aiGeneratedWeatherSummaryText: String?,
-    isLoading: Boolean,
     isWeatherSummaryLoading: Boolean,
     isPreviouslySavedLocation: Boolean,
     onSaveButtonClick: () -> Unit,
@@ -190,15 +189,6 @@ fun WeatherDetailScreen(
                 .navigationBarsPadding(),
             hostState = snackbarHostState
         )
-        if (isLoading) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.4f))
-            ) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            }
-        }
     }
 }
 
