@@ -33,11 +33,21 @@ android {
         val properties = Properties().apply {
             load(project.rootProject.file("local.properties").inputStream())
         }
+
+        // Open-AI API Key
         val openAiApiToken = properties.getProperty("OPEN_AI_API_TOKEN")
         buildConfigField(
             type = "String",
             name = "OPEN_AI_API_TOKEN",
             value = "\"$openAiApiToken\""
+        )
+
+        // Google Gemini API Key
+        val geminiApiKey = properties.getProperty("GOOGLE_GEMINI_API_KEY")
+        buildConfigField(
+            type = "String",
+            name = "GOOGLE_GEMINI_API_KEY",
+            value = "\"$geminiApiKey\""
         )
     }
 
@@ -142,6 +152,9 @@ dependencies {
 
     // Logging
     implementation(libs.jakewharton.timber)
+
+    // SDK for Google Gemini Models
+    implementation(libs.generativeai)
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -5,6 +5,7 @@ converterMoshi = "2.11.0"
 core = "1.6.1"
 coreSplashscreen = "1.0.1"
 desugar_jdk_libs = "2.1.5"
+generativeai = "0.9.0"
 hiltWork = "1.2.0"
 kotlin = "2.0.21"
 coreKtx = "1.15.0"
@@ -49,6 +50,7 @@ coil-gif = { module = "io.coil-kt:coil-gif", version.ref = "coilGif" }
 coil-svg = { module = "io.coil-kt:coil-svg", version.ref = "coilGif" }
 converter-moshi = { module = "com.squareup.retrofit2:converter-moshi", version.ref = "converterMoshi" }
 desugar_jdk_libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
+generativeai = { module = "com.google.ai.client.generativeai:generativeai", version.ref = "generativeai" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
