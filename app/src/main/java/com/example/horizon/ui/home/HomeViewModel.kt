@@ -14,6 +14,8 @@ import com.example.horizon.domain.models.toBriefWeatherDetails
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.debounce
@@ -134,24 +136,29 @@ class HomeViewModel @Inject constructor(
                 coordinates.longitude.toDouble()
             ).getOrNull() ?: return@launch // todo : exception handling
 
-            val weatherDetailsForCurrentLocation = weatherRepository.fetchWeatherForLocation(
-                nameOfLocation = nameOfLocation,
-                latitude = coordinates.latitude,
-                longitude = coordinates.longitude
-            ).getOrNull()?.toBriefWeatherDetails() // todo : exception handling
+            coroutineScope {
+                val weatherDetailsForCurrentLocation = async {
+                    weatherRepository.fetchWeatherForLocation(
+                        nameOfLocation = nameOfLocation,
+                        latitude = coordinates.latitude,
+                        longitude = coordinates.longitude
+                    ).getOrNull()?.toBriefWeatherDetails() // todo : exception handling
+                }
 
-            val hourlyForecastsForCurrentLocation =
-                weatherRepository.fetchHourlyForecastsForNext24Hours(
-                    latitude = coordinates.latitude,
-                    longitude = coordinates.longitude
-                ).getOrNull() // todo : exception handling
+                val hourlyForecastsForCurrentLocation = async {
+                    weatherRepository.fetchHourlyForecastsForNext24Hours(
+                        latitude = coordinates.latitude,
+                        longitude = coordinates.longitude
+                    ).getOrNull() // todo : exception handling
+                }
 
-            _uiState.update {
-                it.copy(
-                    isLoadingWeatherDetailsOfCurrentLocation = false,
-                    weatherDetailsOfCurrentLocation = weatherDetailsForCurrentLocation,
-                    hourlyForecastsForCurrentLocation = hourlyForecastsForCurrentLocation
-                )
+                _uiState.update {
+                    it.copy(
+                        isLoadingWeatherDetailsOfCurrentLocation = false,
+                        weatherDetailsOfCurrentLocation = weatherDetailsForCurrentLocation.await(),
+                        hourlyForecastsForCurrentLocation = hourlyForecastsForCurrentLocation.await()
+                    )
+                }
             }
         }
     }
