@@ -3,13 +3,11 @@ package com.example.horizon.data.local.textgeneration
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class HorizonGeneratedTextCacheDatabaseTest {
     private lateinit var database: HorizonGeneratedTextCacheDatabase
     private lateinit var dao: GeneratedTextCacheDatabaseDao
@@ -38,7 +36,13 @@ class HorizonGeneratedTextCacheDatabaseTest {
             generatedDescription = "Clear Day"
         )
         dao.addGeneratedTextForLocation(entityToBeInserted)
-        assert(dao.getGeneratedTextForLocation("Seattle") == entityToBeInserted)
+        assert(
+            dao.getSavedGeneratedTextForDetails(
+                nameOfLocation = entityToBeInserted.nameOfLocation,
+                temperature = entityToBeInserted.temperature,
+                conciseWeatherDescription = entityToBeInserted.conciseWeatherDescription
+            ) == entityToBeInserted
+        )
     }
 
     @Test
@@ -60,8 +64,20 @@ class HorizonGeneratedTextCacheDatabaseTest {
 
         dao.deleteAllSavedText()
 
-        assert(dao.getGeneratedTextForLocation("Seattle") == null)
-        assert(dao.getGeneratedTextForLocation("New York") == null)
+        assert(
+            dao.getSavedGeneratedTextForDetails(
+                nameOfLocation = generatedTextForLocationEntity1.nameOfLocation,
+                temperature = generatedTextForLocationEntity1.temperature,
+                conciseWeatherDescription = generatedTextForLocationEntity1.conciseWeatherDescription
+            ) == null
+        )
+        assert(
+            dao.getSavedGeneratedTextForDetails(
+                nameOfLocation = generatedTextForLocationEntity2.nameOfLocation,
+                temperature = generatedTextForLocationEntity2.temperature,
+                conciseWeatherDescription = generatedTextForLocationEntity2.conciseWeatherDescription
+            ) == null
+        )
     }
 
 
