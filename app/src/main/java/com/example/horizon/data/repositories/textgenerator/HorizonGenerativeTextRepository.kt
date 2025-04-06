@@ -28,6 +28,7 @@ class HorizonGenerativeTextRepository @Inject constructor(
             location = ${weatherDetails.nameOfLocation};
             currentTemperature = ${weatherDetails.temperatureRoundedToInt};
             weatherCondition = ${weatherDetails.weatherCondition};
+            isNight = ${weatherDetails.isDay != 1}
         """.trimIndent()
         // Prompt Messages
         val promptMessages = listOf(
