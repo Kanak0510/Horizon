@@ -1,6 +1,7 @@
 package com.example.horizon.domain.models
 
 import com.example.horizon.data.remote.location.models.SuggestionsResponse
+import com.example.horizon.data.remote.location.models.circularCountryFlagUrl
 
 /**
  * This is a data class that models an auto-fill suggestion for a location query.
@@ -13,7 +14,8 @@ data class LocationAutofillSuggestion(
     val idOfLocation: String,
     val nameOfLocation: String,
     val addressOfLocation: String,
-    val coordinatesOfLocation: Coordinates
+    val coordinatesOfLocation: Coordinates,
+    val countryFlagUrl: String
 )
 
 /**
@@ -33,6 +35,8 @@ fun List<SuggestionsResponse.Suggestion>.toLocationAutofillSuggestionList(): Lis
                 coordinatesOfLocation = Coordinates(
                     latitude = it.latitude,
                     longitude = it.longitude
-                )
+                ),
+                countryFlagUrl = it.circularCountryFlagUrl
+
             )
         }
