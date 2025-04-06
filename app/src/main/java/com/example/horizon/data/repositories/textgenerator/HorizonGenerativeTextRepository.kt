@@ -17,7 +17,11 @@ class HorizonGenerativeTextRepository @Inject constructor(
 
     override suspend fun generateTextForWeatherDetails(weatherDetails: CurrentWeatherDetails): Result<String> {
         val generatedTextEntity =
-            generatedTextCacheDatabaseDao.getGeneratedTextForLocation(weatherDetails.nameOfLocation)
+            generatedTextCacheDatabaseDao.getSavedGeneratedTextForDetails(
+                nameOfLocation = weatherDetails.nameOfLocation,
+                temperature = weatherDetails.temperatureRoundedToInt,
+                conciseWeatherDescription = weatherDetails.weatherCondition
+            )
         if (generatedTextEntity != null) return Result.success(generatedTextEntity.generatedDescription)
         // Prompts
         val systemPrompt = """
