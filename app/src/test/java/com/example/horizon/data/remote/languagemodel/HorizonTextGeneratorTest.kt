@@ -18,17 +18,17 @@ class JustWeatherTextGeneratorTest {
         runTest {
             val messages = listOf(
                 MessageDTO(
-                    role = "system",
+                    role = MessageDTO.Roles.SYSTEM,
                     content = "Generate a short and funny summary of the weather, based on the given details."
                 ),
                 MessageDTO(
-                    role = "user",
+                    role = MessageDTO.Roles.USER,
                     content = "location:New York; max temp = 32 degrees; chance of rain = 30%;"
                 )
             )
             val generatedTextResponse = textGeneratorClient.getModelResponseForConversations(
                 textGenerationPostBody = TextGenerationPromptBody(
-                    model = "gpt-3.5-turbo-0613",
+                    model = "gpt-4o",
                     messages = messages
                 )
             ).also { println(it.body()) }

@@ -36,8 +36,8 @@ class HorizonGenerativeTextRepository @Inject constructor(
         """.trimIndent()
         // Prompt Messages
         val promptMessages = listOf(
-            MessageDTO(role = "system", content = systemPrompt),
-            MessageDTO(role = "user", content = userPrompt)
+            MessageDTO(role = MessageDTO.Roles.SYSTEM, content = systemPrompt),
+            MessageDTO(role = MessageDTO.Roles.USER, content = userPrompt)
         )
         val textGenerationPrompt = TextGenerationPromptBody(
             messages = promptMessages,

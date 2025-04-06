@@ -29,7 +29,7 @@ class HorizonGenerativeTextRepositoryTest {
         textGeneratorClientMock = mock {
             val fakeResponses = listOf(
                 GeneratedTextResponse.GeneratedResponse(
-                    message = MessageDTO(role = "", content = "")
+                    message = MessageDTO(role = MessageDTO.Roles.USER, content = "")
                 )
             )
             val fakeGeneratedTextResponse = GeneratedTextResponse(
