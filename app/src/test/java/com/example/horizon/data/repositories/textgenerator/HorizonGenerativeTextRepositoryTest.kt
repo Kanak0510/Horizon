@@ -1,5 +1,7 @@
 package com.example.horizon.data.repositories.textgenerator
 
+import com.example.horizon.data.local.textgeneration.GeneratedTextCacheDatabaseDao
+import com.example.horizon.data.local.textgeneration.GeneratedTextForLocationEntity
 import com.example.horizon.data.remote.languagemodel.TextGeneratorClient
 import com.example.horizon.data.remote.languagemodel.models.GeneratedTextResponse
 import com.example.horizon.data.remote.languagemodel.models.MessageDTO
@@ -38,7 +40,10 @@ class HorizonGenerativeTextRepositoryTest {
             onBlocking { getModelResponseForConversations(any()) }
                 .doReturn(Response.success(fakeGeneratedTextResponse))
         }
-        generativeTextRepository = HorizonGenerativeTextRepository(textGeneratorClientMock)
+        generativeTextRepository = HorizonGenerativeTextRepository(
+            textGeneratorClient = textGeneratorClientMock,
+            generatedTextCacheDatabaseDao = TestGeneratedTextCacheDatabaseDao()
+        )
     }
 
     @Test
@@ -62,5 +67,20 @@ class HorizonGenerativeTextRepositoryTest {
         // The repository must not reach out to the client and make a request.
         // Instead, it should return the originally generated string from the cache.
         verifyNoMoreInteractions(textGeneratorClientMock)
+    }
+}
+
+private class TestGeneratedTextCacheDatabaseDao : GeneratedTextCacheDatabaseDao {
+    private val savedItems = mutableListOf<GeneratedTextForLocationEntity>()
+    override suspend fun addGeneratedTextForLocation(generatedTextForLocationEntity: GeneratedTextForLocationEntity) {
+        savedItems.add(generatedTextForLocationEntity)
+    }
+
+    override suspend fun getGeneratedTextForLocation(nameOfLocation: String): GeneratedTextForLocationEntity? {
+        return savedItems.firstOrNull { it.nameOfLocation == nameOfLocation }
+    }
+
+    override suspend fun deleteAllSavedText() {
+        savedItems.clear()
     }
 }
