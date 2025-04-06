@@ -7,7 +7,7 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.horizon.BuildConfig
-import com.example.horizon.data.workers.DeleteMarkedItemsWorker
+import com.example.horizon.data.workers.CleanupWorker
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
@@ -30,7 +30,7 @@ class Horizon : Application(), Configuration.Provider {
             .build()
 
     private fun enqueueDeleteMarkedItemsWorker() {
-        val periodicWorkRequest = PeriodicWorkRequestBuilder<DeleteMarkedItemsWorker>(
+        val periodicWorkRequest = PeriodicWorkRequestBuilder<CleanupWorker>(
             repeatInterval = 7, // repeat every week
             repeatIntervalTimeUnit = TimeUnit.DAYS
         ).build()
