@@ -309,7 +309,7 @@ private fun AnimatedSearchBarLeadingIcon(
                 if (isActive) AnimatedContentTransitionScope.SlideDirection.Start
                 else AnimatedContentTransitionScope.SlideDirection.End
             )
-            slideIn.togetherWith(slideOut)
+            slideIn togetherWith slideOut
         }
     ) { isActive ->
         if (isActive) {
