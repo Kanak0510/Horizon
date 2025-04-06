@@ -117,8 +117,9 @@ dependencies {
     implementation(libs.moshi.kotlin.codegen) // Make's Moshi not depend on Reflection + Generates Kotlin Code using KotlinPoet
 
     // Image Loading
-    implementation(libs.coil.gif)
     implementation(libs.coil.compose)
+    implementation(libs.coil.gif)
+    implementation(libs.coil.svg)
 
     // Splash-Screen
     implementation(libs.androidx.core.splashscreen)
