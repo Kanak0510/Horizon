@@ -6,12 +6,13 @@ import com.example.horizon.data.local.textgeneration.GeneratedTextForLocationEnt
 import com.example.horizon.data.remote.languagemodel.TextGeneratorClient
 import com.example.horizon.data.remote.languagemodel.models.MessageDTO
 import com.example.horizon.data.remote.languagemodel.models.TextGenerationPromptBody
+import com.example.horizon.di.GeminiClient
 import com.example.horizon.domain.models.weather.CurrentWeatherDetails
 import kotlinx.coroutines.CancellationException
 import javax.inject.Inject
 
 class HorizonGenerativeTextRepository @Inject constructor(
-    private val textGeneratorClient: TextGeneratorClient,
+    @GeminiClient private val textGeneratorClient: TextGeneratorClient,
     private val generatedTextCacheDatabaseDao: GeneratedTextCacheDatabaseDao
 ) : GenerativeTextRepository {
 

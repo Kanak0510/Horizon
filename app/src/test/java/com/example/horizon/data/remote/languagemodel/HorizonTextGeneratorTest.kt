@@ -11,7 +11,7 @@ import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class JustWeatherTextGeneratorTest {
 
-    private val textGeneratorClient = NetworkModule.provideTextGeneratorClient()
+    private val textGeneratorClient = NetworkModule.provideOpenAITextGeneratorClient()
 
     @Test
     fun `Given a valid system & user prompt, the API must return a response with the generated text`() =
