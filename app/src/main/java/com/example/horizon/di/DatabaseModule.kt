@@ -2,6 +2,8 @@ package com.example.horizon.di
 
 import android.content.Context
 import androidx.room.Room
+import com.example.horizon.data.local.textgeneration.GeneratedTextCacheDatabaseDao
+import com.example.horizon.data.local.textgeneration.HorizonGeneratedTextCacheDatabase
 import com.example.horizon.data.local.weather.HorizonDatabase
 import com.example.horizon.data.local.weather.HorizonDatabaseDao
 import dagger.Module
@@ -23,5 +25,15 @@ object DatabaseModule {
         context = context,
         klass = HorizonDatabase::class.java,
         name = HorizonDatabase.DATABASE_NAME
+    ).build().getDao()
+
+    @Provides
+    @Singleton
+    fun provideGeneratedTextCacheDatabaseDao(
+        @ApplicationContext context: Context
+    ): GeneratedTextCacheDatabaseDao = Room.databaseBuilder(
+        context = context,
+        klass = HorizonGeneratedTextCacheDatabase::class.java,
+        name = HorizonGeneratedTextCacheDatabase.DATABASE_NAME
     ).build().getDao()
 }
