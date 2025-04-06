@@ -1,5 +1,6 @@
 package com.example.horizon.ui.weatherDetail
 
+import android.os.Build.VERSION.SDK_INT
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -42,12 +43,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.ImageLoader
+import coil.compose.rememberAsyncImagePainter
+import coil.decode.GifDecoder
+import coil.decode.ImageDecoderDecoder
+import coil.request.ImageRequest
+import coil.size.Size
 import com.example.horizon.R
 import com.example.horizon.domain.models.HourlyForecast
 import com.example.horizon.domain.models.PrecipitationProbability
@@ -82,6 +90,7 @@ fun WeatherDetailScreen(
             aiGeneratedWeatherSummaryText = uiState.weatherSummaryText,
             isPreviouslySavedLocation = uiState.isPreviouslySavedLocation,
             isLoading = uiState.isLoading,
+            isWeatherSummaryLoading = uiState.isWeatherSummaryTextLoading,
             singleWeatherDetails = uiState.additionalWeatherInfoItems,
             hourlyForecasts = uiState.hourlyForecasts,
             precipitationProbabilities = uiState.precipitationProbabilities,
@@ -101,6 +110,7 @@ fun WeatherDetailScreen(
     onBackButtonClick: () -> Unit,
     aiGeneratedWeatherSummaryText: String?,
     isLoading: Boolean,
+    isWeatherSummaryLoading: Boolean,
     isPreviouslySavedLocation: Boolean,
     onSaveButtonClick: () -> Unit,
     singleWeatherDetails: List<SingleWeatherDetail>,
@@ -133,9 +143,12 @@ fun WeatherDetailScreen(
                 )
             }
 
-            if (aiGeneratedWeatherSummaryText != null) {
+            if (aiGeneratedWeatherSummaryText != null || isWeatherSummaryLoading) {
                 item(span = { GridItemSpan(maxLineSpan) }) {
-                    WeatherSummaryTextCard(summaryText = aiGeneratedWeatherSummaryText)
+                    WeatherSummaryTextCard(
+                        summaryText = aiGeneratedWeatherSummaryText ?: "",
+                        isWeatherSummaryLoading = isWeatherSummaryLoading
+                    )
                 }
             }
 
@@ -275,19 +288,52 @@ private fun Header(
 @Composable
 private fun WeatherSummaryTextCard(
     modifier: Modifier = Modifier,
+    isWeatherSummaryLoading: Boolean,
     summaryText: String,
 ) {
     Card(modifier = modifier) {
+        val context = LocalContext.current
+        val imageLoader = remember {
+            ImageLoader.Builder(context = context)
+                .components {
+                    if (SDK_INT >= 28) {
+                        add(ImageDecoderDecoder.Factory())
+                    } else {
+                        add(GifDecoder.Factory())
+                    }
+                }
+                .build()
+        }
+        val imageRequest = remember {
+            ImageRequest.Builder(context = context)
+                .data(R.drawable.bard_sparkle_thinking_anim)
+                .size(Size.ORIGINAL)
+                .build()
+        }
+        val asyncImagePainter = rememberAsyncImagePainter(
+            model = imageRequest,
+            imageLoader = imageLoader
+        )
+
         Row(
             modifier = Modifier.padding(top = 8.dp, start = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Icon(
-                modifier = Modifier.size(16.dp),
-                imageVector = ImageVector.vectorResource(R.drawable.ic_bard_logo),
-                contentDescription = null
-            )
+            if (isWeatherSummaryLoading) {
+                Image(
+                    modifier = Modifier.size(16.dp),
+                    painter = asyncImagePainter,
+                    contentDescription = null
+                )
+            } else {
+                Icon(
+                    modifier = Modifier.size(16.dp),
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_bard_logo),
+                    tint = Color.Unspecified,
+                    contentDescription = null
+                )
+            }
             Text(
                 text = "Summary",
                 style = MaterialTheme.typography.titleMedium
