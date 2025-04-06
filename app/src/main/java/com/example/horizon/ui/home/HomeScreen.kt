@@ -102,7 +102,9 @@ fun HomeScreen(
         weatherOfCurrentUserLocation = homeScreenUiState.weatherDetailsOfCurrentLocation,
         hourlyForecastsOfCurrentUserLocation = homeScreenUiState.hourlyForecastsForCurrentLocation,
         errorFetchingWeatherForCurrentLocation = homeScreenUiState.errorFetchingWeatherForCurrentLocation,
+        errorFetchingWeatherForSavedLocations = homeScreenUiState.errorFetchingWeatherForSavedLocations,
         onRetryFetchingWeatherForCurrentLocation = onRetryFetchingWeatherForCurrentLocation,
+        onRetryFetchingWeatherForSavedLocations = {/**/ },
         onSavedLocationDismissed = onSavedLocationDismissed,
         onSearchQueryChange = onSearchQueryChange,
         onSuggestionClick = onSuggestionClick,
@@ -137,6 +139,8 @@ fun HomeScreen(
     onSavedLocationItemClick: (BriefWeatherDetails) -> Unit,
     onSavedLocationDismissed: (BriefWeatherDetails) -> Unit,
     errorFetchingWeatherForCurrentLocation: Boolean,
+    errorFetchingWeatherForSavedLocations: Boolean,
+    onRetryFetchingWeatherForSavedLocations: () -> Unit,
     onRetryFetchingWeatherForCurrentLocation: () -> Unit,
     onSearchQueryChange: (String) -> Unit,
     onLocationPermissionGranted: () -> Unit,
@@ -218,6 +222,15 @@ fun HomeScreen(
                 title = "Saved Locations",
                 isLoadingAnimationVisible = isWeatherForSavedLocationsLoading
             )
+
+            if (errorFetchingWeatherForSavedLocations) {
+                errorCardItem(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp),
+                    errorMessage = "An error occurred when fetching the current weather details of saved locations.",
+                    onRetryButtonClick = {}
+                )
+            }
 
             savedLocationItems(
                 savedLocationItemsList = weatherDetailsOfSavedLocations,
