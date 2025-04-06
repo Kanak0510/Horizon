@@ -8,7 +8,7 @@ import com.example.horizon.domain.models.weather.HourlyForecast
  * A UI state class that represents the current UI state of the [HomeScreen].
  */
 data class HomeScreenUiState(
-    val isLoadingSuggestions: Boolean = false,
+    val isLoadingAutofillSuggestions: Boolean = false,
     val isLoadingSavedLocations: Boolean = false,
     val isLoadingWeatherDetailsOfCurrentLocation: Boolean = false,
     val errorFetchingWeatherForCurrentLocation: Boolean = false,

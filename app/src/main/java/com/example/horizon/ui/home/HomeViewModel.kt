@@ -83,16 +83,13 @@ class HomeViewModel @Inject constructor(
             .distinctUntilChanged()
             .mapLatest { query ->
                 if (query.isBlank()) return@mapLatest emptyList()
-                _uiState.update { it.copy(isLoadingSuggestions = true) }
+                _uiState.update { it.copy(isLoadingAutofillSuggestions = true) }
                 locationServicesRepository.fetchSuggestedPlacesForQuery(query)
                     .getOrThrow() // todo exception handling
             }
-            .onEach { autoFillSuggestions ->
+            .onEach { autofillSuggestions ->
                 _uiState.update {
-                    it.copy(
-                        isLoadingSuggestions = false,
-                        autofillSuggestions = autoFillSuggestions
-                    )
+                    it.copy(isLoadingAutofillSuggestions = false, autofillSuggestions = autofillSuggestions)
                 }
             }
             .launchIn(viewModelScope)
