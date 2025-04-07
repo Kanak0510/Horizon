@@ -125,7 +125,7 @@ fun HomeScreen(
 @OptIn(
     ExperimentalMaterial3Api::class,
     ExperimentalAnimationApi::class,
-    ExperimentalFoundationApi::class,
+    ExperimentalFoundationApi::class
 )
 @Composable
 fun HomeScreen(
@@ -164,8 +164,8 @@ fun HomeScreen(
             val isFineLocationPermitted =
                 isPermitted.getOrDefault(android.Manifest.permission.ACCESS_FINE_LOCATION, false)
             if (isCoarseLocationPermitted || isFineLocationPermitted) {
-                onLocationPermissionGranted()
                 shouldDisplayCurrentLocationWeatherSubHeader = true
+                onLocationPermissionGranted()
             }
         }
     )
