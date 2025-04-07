@@ -65,7 +65,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
 
-        // To enable the use of java.time api's with minSdk < 26
+        // To enable the use of java.time API's with minSdk < 26
         isCoreLibraryDesugaringEnabled = true
     }
 

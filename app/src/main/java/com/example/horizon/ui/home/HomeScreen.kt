@@ -33,7 +33,7 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
@@ -359,7 +359,7 @@ private fun AnimatedSearchBarLeadingIcon(
         if (isActive) {
             IconButton(
                 onClick = onBackIconClick,
-                content = { Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = null) }
+                content = { Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null) }
             )
         } else {
             IconButton(
