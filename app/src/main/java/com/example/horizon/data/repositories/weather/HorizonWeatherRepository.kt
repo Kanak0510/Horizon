@@ -4,8 +4,8 @@ import com.example.horizon.data.getBodyOrThrowException
 import com.example.horizon.data.local.weather.HorizonDatabaseDao
 import com.example.horizon.data.local.weather.SavedWeatherLocationEntity
 import com.example.horizon.data.remote.weather.WeatherClient
-import com.example.horizon.domain.models.SavedLocation
-import com.example.horizon.domain.models.toSavedLocation
+import com.example.horizon.domain.models.location.SavedLocation
+import com.example.horizon.domain.models.location.toSavedLocation
 import com.example.horizon.domain.models.weather.BriefWeatherDetails
 import com.example.horizon.domain.models.weather.CurrentWeatherDetails
 import com.example.horizon.domain.models.weather.HourlyForecast

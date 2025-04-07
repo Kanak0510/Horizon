@@ -69,7 +69,7 @@ import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
-import com.example.horizon.domain.models.LocationAutofillSuggestion
+import com.example.horizon.domain.models.location.LocationAutofillSuggestion
 import com.example.horizon.domain.models.weather.BriefWeatherDetails
 import com.example.horizon.domain.models.weather.HourlyForecast
 import com.example.horizon.ui.components.AutofillSuggestion
@@ -439,7 +439,7 @@ private fun LazyListScope.savedLocationItems(
         )
 
         SwipeToDismissCompactWeatherCard(
-            modifier = Modifier.padding(horizontal = 16.dp).animateItemPlacement(),
+            modifier = Modifier.padding(horizontal = 16.dp).animateItem(),
             nameOfLocation = it.nameOfLocation,
             shortDescription = it.shortDescription,
             shortDescriptionIcon = it.shortDescriptionIcon,
@@ -529,7 +529,7 @@ private fun LazyListScope.currentWeatherDetailCardItem(
         CompactWeatherCardWithHourlyForecast(
             modifier = Modifier
                 .padding(horizontal = 16.dp)
-                .animateItemPlacement(),
+                .animateItem(),
             nameOfLocation = weatherOfCurrentUserLocation.nameOfLocation,
             shortDescription = weatherOfCurrentUserLocation.shortDescription,
             shortDescriptionIcon = weatherOfCurrentUserLocation.shortDescriptionIcon,
@@ -585,7 +585,7 @@ private fun LazyListScope.errorCardItem(
     onRetryButtonClick: () -> Unit
 ) {
     item {
-        OutlinedCard(modifier = modifier.animateItemPlacement()) {
+        OutlinedCard(modifier = modifier.animateItem()) {
             Column(
                 modifier = Modifier.padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,

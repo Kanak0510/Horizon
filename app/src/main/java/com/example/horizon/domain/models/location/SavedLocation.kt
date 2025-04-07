@@ -1,4 +1,4 @@
-package com.example.horizon.domain.models
+package com.example.horizon.domain.models.location
 
 import com.example.horizon.data.local.weather.SavedWeatherLocationEntity
 

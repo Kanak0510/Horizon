@@ -1,6 +1,6 @@
 package com.example.horizon.data.repositories.location
 
-import com.example.horizon.domain.models.LocationAutofillSuggestion
+import com.example.horizon.domain.models.location.LocationAutofillSuggestion
 
 /**
  * A repository that is responsible for managing all location related operations.

@@ -31,7 +31,7 @@ class Horizon : Application(), Configuration.Provider {
 
     private fun enqueueDeleteMarkedItemsWorker() {
         val periodicWorkRequest = PeriodicWorkRequestBuilder<CleanupWorker>(
-            repeatInterval = 7, // repeat every week
+            repeatInterval = 7, // Repeat Every Week
             repeatIntervalTimeUnit = TimeUnit.DAYS
         ).build()
         WorkManager.getInstance(this)
@@ -43,7 +43,6 @@ class Horizon : Application(), Configuration.Provider {
     }
 
     companion object {
-        private const val DELETE_MARKED_ITEMS_WORK_ID =
-            "com.example.justweather.data.workers.DeleteMarkedItemsWorker"
+        private const val DELETE_MARKED_ITEMS_WORK_ID = "com.example.horizon.data.workers.CleanupWorker"
     }
 }

@@ -1,6 +1,6 @@
 package com.example.horizon.domain.location
 
-import com.example.horizon.domain.models.Coordinates
+import com.example.horizon.domain.models.location.Coordinates
 
 /**
  * A provider that provides the current location of the device.

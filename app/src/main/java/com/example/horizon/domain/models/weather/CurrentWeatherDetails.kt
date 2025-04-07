@@ -4,7 +4,7 @@ import androidx.annotation.DrawableRes
 import com.example.horizon.data.remote.weather.models.CurrentWeatherResponse
 import com.example.horizon.data.remote.weather.models.getWeatherIconResForCode
 import com.example.horizon.data.remote.weather.models.getWeatherImageForCode
-import com.example.horizon.domain.models.Coordinates
+import com.example.horizon.domain.models.location.Coordinates
 import kotlin.math.roundToInt
 
 /**

@@ -1,6 +1,6 @@
 package com.example.horizon.data.repositories.weather
 
-import com.example.horizon.domain.models.SavedLocation
+import com.example.horizon.domain.models.location.SavedLocation
 import com.example.horizon.domain.models.weather.BriefWeatherDetails
 import com.example.horizon.domain.models.weather.CurrentWeatherDetails
 import com.example.horizon.domain.models.weather.HourlyForecast

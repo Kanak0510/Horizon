@@ -1,6 +1,6 @@
 package com.example.horizon.ui.home
 
-import com.example.horizon.domain.models.LocationAutofillSuggestion
+import com.example.horizon.domain.models.location.LocationAutofillSuggestion
 import com.example.horizon.domain.models.weather.BriefWeatherDetails
 import com.example.horizon.domain.models.weather.HourlyForecast
 

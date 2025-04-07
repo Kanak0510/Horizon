@@ -1,4 +1,4 @@
-package com.example.horizon.domain.models
+package com.example.horizon.domain.models.location
 
 /**
  * A data class that contains the coordinates of a location.

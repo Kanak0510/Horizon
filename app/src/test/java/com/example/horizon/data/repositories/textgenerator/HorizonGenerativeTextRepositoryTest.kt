@@ -5,7 +5,7 @@ import com.example.horizon.data.local.textgeneration.GeneratedTextForLocationEnt
 import com.example.horizon.data.remote.languagemodel.TextGeneratorClient
 import com.example.horizon.data.remote.languagemodel.models.GeneratedTextResponse
 import com.example.horizon.data.remote.languagemodel.models.MessageDTO
-import com.example.horizon.domain.models.Coordinates
+import com.example.horizon.domain.models.location.Coordinates
 import com.example.horizon.domain.models.weather.CurrentWeatherDetails
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest

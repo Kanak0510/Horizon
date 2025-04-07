@@ -7,7 +7,7 @@ import com.example.horizon.data.repositories.location.LocationServicesRepository
 import com.example.horizon.data.repositories.weather.WeatherRepository
 import com.example.horizon.data.repositories.weather.fetchHourlyForecastsForNext24Hours
 import com.example.horizon.domain.location.CurrentLocationProvider
-import com.example.horizon.domain.models.SavedLocation
+import com.example.horizon.domain.models.location.SavedLocation
 import com.example.horizon.domain.models.weather.BriefWeatherDetails
 import com.example.horizon.domain.models.weather.CurrentWeatherDetails
 import com.example.horizon.domain.models.weather.toBriefWeatherDetails

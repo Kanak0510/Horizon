@@ -9,6 +9,6 @@ abstract class HorizonDatabase : RoomDatabase() {
     abstract fun getDao(): HorizonDatabaseDao
 
     companion object {
-        const val DATABASE_NAME = "Just_Weather_Database"
+        const val DATABASE_NAME = "Weather_Database"
     }
 }
