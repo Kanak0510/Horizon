@@ -35,15 +35,3 @@ data class SuggestionsResponse(
         val longitude: String
     )
 }
-
-/**
- * Extension property that generates a URL pointing to a circular SVG image of the country's flag.
- *
- * This can be used for UI elements where you want to display a flag next to a suggested place.
- *
- * @return A full URL string to the flag image, or null if [countryCode] is not available.
- */
-val SuggestionsResponse.Suggestion.circularCountryFlagUrl: String?
-    get() = countryCode?.let {
-        "https://open-meteo.com/images/country-flags/$countryCode.svg"
-    }

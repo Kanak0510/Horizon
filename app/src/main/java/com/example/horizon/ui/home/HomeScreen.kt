@@ -65,7 +65,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImagePainter
+import coil.ImageLoader
 import coil.compose.rememberAsyncImagePainter
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
@@ -417,7 +417,7 @@ private fun LazyListScope.autofillSuggestionItems(
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),
             onClick = { onSuggestionClick(it) },
-            leadingIcon = { AutofillSuggestionLeadingIcon(countryFlagUrl = it.countryFlagUrl) }
+            leadingIcon = { AutofillSuggestionLeadingIcon(countryCode = it.countryCode) }
         )
     }
 }
@@ -553,41 +553,43 @@ private fun LazyListScope.currentWeatherDetailCardItem(
 }
 
 @Composable
-private fun AutofillSuggestionLeadingIcon(countryFlagUrl: String) {
+private fun AutofillSuggestionLeadingIcon(countryCode: String) {
     val context = LocalContext.current
-    val imageRequest = remember(countryFlagUrl) {
-        ImageRequest.Builder(context)
-            .data(countryFlagUrl)
-            .decoderFactory(SvgDecoder.Factory())
-            .crossfade(true)
+
+    // Build the local asset path
+    val assetPath = "file:///android_asset/flags/${countryCode.lowercase()}.svg"
+
+    val imageLoader = remember {
+        ImageLoader.Builder(context)
+            .components {
+                add(SvgDecoder.Factory())
+            }
             .build()
     }
 
-    val painter = rememberAsyncImagePainter(model = imageRequest)
-    val isLoading = painter.state is AsyncImagePainter.State.Loading
+    val imageRequest = remember(assetPath) {
+        ImageRequest.Builder(context)
+            .data(assetPath)
+            .build()
+    }
+
+    val painter = rememberAsyncImagePainter(model = imageRequest, imageLoader = imageLoader)
 
     Box(
         modifier = Modifier
             .size(40.dp)
             .clip(CircleShape)
-            .background(Color.LightGray), // Background for shimmer/placeholder feel
+            .background(Color.LightGray),
         contentAlignment = Alignment.Center
     ) {
-        if (isLoading) {
-            // Simple shimmer-like placeholder (or use actual shimmer lib)
-            CircularProgressIndicator(
-                modifier = Modifier.size(20.dp),
-                strokeWidth = 2.dp
-            )
-        } else {
-            Image(
-                painter = painter,
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize()
-            )
-        }
+        Image(
+            painter = painter,
+            contentDescription = "Flag of $countryCode",
+            modifier = Modifier.fillMaxSize()
+        )
     }
 }
+
 
 @ExperimentalFoundationApi
 private fun LazyListScope.errorCardItem(

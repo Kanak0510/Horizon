@@ -1,0 +1,1 @@
+<svg data-name="Layer 1" height="512" width="512" xmlns="http://www.w3.org/2000/svg"><defs><mask height="512" id="a" maskUnits="userSpaceOnUse" width="512" x="0" y="0"><circle cx="256" cy="256" fill="#fff" r="256"/></mask></defs><g mask="url(#a)"><path d="M0 0h256l64 256-64 256H0V0Z" fill="#333"/><path d="M256 0h256v512H256V0Z" fill="#d80027"/></g></svg>

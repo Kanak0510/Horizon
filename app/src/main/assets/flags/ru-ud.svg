@@ -1,0 +1,1 @@
+<svg height="512" viewBox="0 0 512 512" width="512" xmlns="http://www.w3.org/2000/svg"><mask id="a"><circle cx="256" cy="256" fill="#fff" r="256"/></mask><g mask="url(#a)"><path d="M160 0h192l32 256-32 256H160l-32-256Z" fill="#eee"/><path d="M0 0h160v512H0Z" fill="#333"/><path d="M352 0h160v512H352ZM229 176l107 107H176l107-107v160L176 229h160L229 336Z" fill="#d80027"/></g></svg>
