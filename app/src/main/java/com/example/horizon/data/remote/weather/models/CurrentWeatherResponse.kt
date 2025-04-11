@@ -1,34 +1,40 @@
 package com.example.horizon.data.remote.weather.models
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 /**
- * A data class that models the response that would be received when a request to get the current
- * weather of a location is made.
+ * A data class that models the response received when requesting the current
+ * weather of a location, using Kotlinx Serialization.
  *
- * Note: All response classes are annotated with @JsonClass in order to make Moshi use code-gen.
- * Making Moshi use code-gen is useful for mainly two reasons:
- * 1) Moshi, by default uses reflection. This creates overhead during runtime. Using code-gen
- * makes moshi take advantage of kapt during compile time. This removes the overhead that is
- * associated with reflection.
+ * Kotlinx Serialization Notes:
+ * - It is a multiplatform, compile-time JSON parser and serializer.
+ * - It avoids reflection, resulting in better runtime performance.
+ * - Fully supports Kotlin-specific features like nullability, default values, and data classes.
+ * - No need for additional annotation processors such as KAPT.
  *
- * 2) Using code-gen makes moshi use Kotlin Poet under the hood. This makes moshi generate
- * actual Kotlin classes instead of the Java equivalents of Kotlin classes. This ensures that
- * Moshi fully understands Kotlin constructs. The best example of this, is nullability.
- * When Moshi doesn't use codegen, then non-null properties in Kotlin can be assigned null values!
- * This is because, Moshi generates the Java equivalent of the Kotlin data class.
+ * @property currentWeather The current weather data for the requested location.
+ * @property latitude The latitude of the queried location.
+ * @property longitude The longitude of the queried location.
  */
-@JsonClass(generateAdapter = true)
+@Serializable
 data class CurrentWeatherResponse(
-    @Json(name = "current_weather") val currentWeather: CurrentWeather,
+    @SerialName("current_weather") val currentWeather: CurrentWeather,
     val latitude: String,
     val longitude: String
 ) {
-    @JsonClass(generateAdapter = true)
+    /**
+     * A data class representing the current weather conditions at a specific location.
+     *
+     * @property temperature The current temperature in degrees Celsius.
+     * @property isDay Indicator of whether it's day (1) or night (0) at the location.
+     * @property weatherCode Numeric code that represents the current weather condition
+     *                        (e.g., clear, rain, snow — based on a predefined code set).
+     */
+    @Serializable
     data class CurrentWeather(
         val temperature: Double,
-        @Json(name = "is_day") val isDay: Int,
-        @Json(name = "weathercode") val weatherCode: Int,
+        @SerialName("is_day") val isDay: Int,
+        @SerialName("weathercode") val weatherCode: Int
     )
 }

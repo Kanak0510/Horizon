@@ -21,12 +21,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
 /**
- * An autofill suggestion composable function.
- * @param title The title of the suggestion.
- * @param subText The subtext of the suggestion.
- * @param modifier The modifier to be applied to the composable.
- * @param leadingIcon The leading icon of the suggestion. By default the composable displays
- * [Icons.Filled.LocationOn].
+ * A composable used to show location autofill suggestions.
+ *
+ * @param title The main text, typically a location or place name.
+ * @param subText A secondary line, such as an address or region.
+ * @param onClick Callback invoked when the suggestion is selected.
+ * @param modifier Modifier to apply to the suggestion row.
+ * @param leadingIcon Optional leading icon composable. Defaults to a styled location icon.
  */
 @Composable
 fun AutofillSuggestion(
@@ -37,13 +38,14 @@ fun AutofillSuggestion(
     leadingIcon: @Composable () -> Unit = { DefaultLeadingIcon() }
 ) {
     Row(
-        modifier = Modifier
-            .clickable(onClick = onClick)
-            .then(modifier),
+        modifier = modifier
+            .clickable(onClick = onClick),
         verticalAlignment = Alignment.CenterVertically
     ) {
         leadingIcon()
+
         Spacer(modifier = Modifier.size(16.dp))
+
         Column(modifier = Modifier.padding(vertical = 16.dp)) {
             Text(
                 text = title,
@@ -54,8 +56,8 @@ fun AutofillSuggestion(
             )
             Text(
                 text = subText,
-                fontWeight = FontWeight.Normal,
                 style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Normal,
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1
             )
@@ -64,7 +66,8 @@ fun AutofillSuggestion(
 }
 
 /**
- * The default leading icon used in [AutofillSuggestion].
+ * Default location icon used for autofill suggestions.
+ * Draws a soft white background circle behind the icon for visual enhancement.
  */
 @Composable
 private fun DefaultLeadingIcon() {

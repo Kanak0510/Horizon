@@ -4,14 +4,16 @@ import androidx.annotation.DrawableRes
 import com.example.horizon.R
 import com.example.horizon.data.remote.weather.models.AdditionalDailyForecastVariablesResponse
 import java.time.Instant
-import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import kotlin.math.roundToInt
 
 /**
- * A data class that holds information about a single weather detail such as wind speed, pressure,
- * humidity, etc.
+ * Represents a single piece of weather detail (e.g., min temp, sunrise time).
+ *
+ * @property name The name/label of the weather detail.
+ * @property value The corresponding value, formatted as a string.
+ * @property iconResId The drawable resource ID for the associated icon.
  */
 data class SingleWeatherDetail(
     val name: String,
@@ -20,8 +22,9 @@ data class SingleWeatherDetail(
 )
 
 /**
- * Used to convert an instance of [AdditionalDailyForecastVariablesResponse] to a list of
- * [SingleWeatherDetail] items.
+ * Maps an instance of [AdditionalDailyForecastVariablesResponse] to a list of [SingleWeatherDetail].
+ *
+ * @param timeFormat Optional formatter for sunrise and sunset times. Default is "hh : mm a".
  */
 fun AdditionalDailyForecastVariablesResponse.toSingleWeatherDetailList(
     timeFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("hh : mm a")
@@ -31,74 +34,42 @@ fun AdditionalDailyForecastVariablesResponse.toSingleWeatherDetailList(
 )
 
 /**
- * Used to convert an instance of [AdditionalDailyForecastVariablesResponse.AdditionalForecastedVariables]
- * to a list of [SingleWeatherDetail] items. All timestamps will be converted based on the
- * [timezone] passed to this method.
+ * Maps an instance of [AdditionalDailyForecastVariablesResponse.AdditionalForecastedVariables]
+ * to a list of [SingleWeatherDetail], using the given [timezone] and [timeFormat].
  *
- * Note: The best way to do this mapping would be to allow the caller to customize the units.
- * Since this is just a hobby project, this detail has been left out.
+ * ⚠️ Assumes each list inside this class contains exactly one value.
  */
 private fun AdditionalDailyForecastVariablesResponse.AdditionalForecastedVariables.toSingleWeatherDetailList(
     timezone: String,
     timeFormat: DateTimeFormatter
 ): List<SingleWeatherDetail> {
     require(minTemperatureForTheDay.size == 1) {
-        "This mapper method will only consider the first value of each list" +
-                "Make sure you request the details for only one day."
+        "Only one day's data is supported. Ensure each list has exactly one element."
     }
-    val apparentTemperature =
-        (minApparentTemperature.first().roundToInt() + maxApparentTemperature.first()
-            .roundToInt()) / 2
-    val sunriseTimeString = LocalDateTime.ofInstant(
-        Instant.ofEpochSecond(sunrise.first()),
-        ZoneId.of(timezone)
-    ).toLocalTime().format(timeFormat)
-    val sunsetTimeString = LocalDateTime.ofInstant(
-        Instant.ofEpochSecond(sunset.first()),
-        ZoneId.of(timezone)
-    ).format(timeFormat)
-    // Since these single weather detail items are displayed in smaller cards, the default mac OS
-    // 'º' character is used instead of the other degree superscript used in other parts of the app.
+
+    val apparentTemperature = (
+            minApparentTemperature.first().roundToInt() +
+                    maxApparentTemperature.first().roundToInt()
+            ) / 2
+
+    val sunriseTime = Instant.ofEpochSecond(sunrise.first())
+        .atZone(ZoneId.of(timezone))
+        .toLocalTime()
+        .format(timeFormat)
+
+    val sunsetTime = Instant.ofEpochSecond(sunset.first())
+        .atZone(ZoneId.of(timezone))
+        .toLocalTime()
+        .format(timeFormat)
+
     return listOf(
-        SingleWeatherDetail(
-            name = "Min Temp",
-            value = "${minTemperatureForTheDay.first().roundToInt()}º",
-            iconResId = R.drawable.ic_thermometer
-        ),
-        SingleWeatherDetail(
-            name = "Max Temp",
-            value = "${maxTemperatureForTheDay.first().roundToInt()}º",
-            iconResId = R.drawable.ic_thermometer
-        ),
-        SingleWeatherDetail(
-            name = "Sunrise",
-            value = sunriseTimeString,
-            iconResId = R.drawable.ic_sunrise
-        ),
-        SingleWeatherDetail(
-            name = "Sunset",
-            value = sunsetTimeString,
-            iconResId = R.drawable.ic_sunset
-        ),
-        SingleWeatherDetail(
-            name = "Feels Like",
-            value = "${apparentTemperature}º",
-            iconResId = R.drawable.ic_thermometer //
-        ),
-        SingleWeatherDetail(
-            name = "Max UV Index",
-            value = maxUvIndex.first().toString(),
-            iconResId = R.drawable.ic_uv_index
-        ),
-        SingleWeatherDetail(
-            name = "Wind Direction",
-            value = "${dominantWindDirection.first()}º",
-            iconResId = R.drawable.ic_wind_direction
-        ),
-        SingleWeatherDetail(
-            name = "Wind Speed",
-            value = "${windSpeed.first()} Km/h",
-            iconResId = R.drawable.ic_wind_speed
-        )
+        SingleWeatherDetail("Min Temp", "${minTemperatureForTheDay.first().roundToInt()}º", R.drawable.ic_thermometer),
+        SingleWeatherDetail("Max Temp", "${maxTemperatureForTheDay.first().roundToInt()}º", R.drawable.ic_thermometer),
+        SingleWeatherDetail("Sunrise", sunriseTime, R.drawable.ic_sunrise),
+        SingleWeatherDetail("Sunset", sunsetTime, R.drawable.ic_sunset),
+        SingleWeatherDetail("Feels Like", "${apparentTemperature}º", R.drawable.ic_thermometer),
+        SingleWeatherDetail("Max UV Index", maxUvIndex.first().toString(), R.drawable.ic_uv_index),
+        SingleWeatherDetail("Wind Direction", "${dominantWindDirection.first()}º", R.drawable.ic_wind_direction),
+        SingleWeatherDetail("Wind Speed", "${windSpeed.first()} Km/h", R.drawable.ic_wind_speed)
     )
 }

@@ -27,9 +27,10 @@ import com.example.horizon.domain.models.weather.HourlyForecast
 import java.time.LocalDateTime
 
 /**
- * A Card composable that contains a horizontally scrolling list of [hourlyForecasts].
- * @param hourlyForecasts list of hourly forecasts
- * @param modifier modifier for the card
+ * Displays a horizontally scrollable card of hourly weather forecasts.
+ *
+ * @param hourlyForecasts List of [HourlyForecast] items to display.
+ * @param modifier Modifier to customize layout of the card.
  */
 @Composable
 fun HourlyForecastCard(
@@ -37,49 +38,57 @@ fun HourlyForecastCard(
     modifier: Modifier = Modifier
 ) {
     Card(modifier = modifier) {
-        Row(
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .padding(top = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            // Explicitly set tint to Color.Unspecified to ensure that no tint is applied to the vector
-            // resource. See documentation of the Icon composable for more information.
-            Icon(
-                modifier = Modifier.size(24.dp),
-                imageVector = ImageVector.vectorResource(id = R.drawable.ic_schedule_24),
-                contentDescription = null,
-                tint = Color.Unspecified
-            )
-            Text(
-                text = "Hourly Forecast",
-                style = MaterialTheme.typography.titleMedium
-            )
-        }
-
-        LazyRow(
-            modifier = Modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            items(hourlyForecasts) {
-                HourlyForecastItem(
-                    dateTime = it.dateTime,
-                    iconResId = it.weatherIconResId,
-                    temperature = it.temperature
+        Column {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Icon(
+                    modifier = Modifier.size(24.dp),
+                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_schedule_24),
+                    contentDescription = null,
+                    tint = Color.Unspecified // preserve original color
+                )
+                Text(
+                    text = "Hourly Forecast",
+                    style = MaterialTheme.typography.titleMedium
                 )
             }
-        }
 
+            LazyRow(
+                modifier = Modifier.fillMaxWidth(),
+                contentPadding = PaddingValues(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                items(hourlyForecasts) { forecast ->
+                    HourlyForecastItem(
+                        dateTime = forecast.dateTime,
+                        iconResId = forecast.weatherIconResId,
+                        temperature = forecast.temperature
+                    )
+                }
+            }
+        }
     }
 }
 
+/**
+ * A single item in the hourly forecast list.
+ *
+ * @param dateTime Time for the forecasted weather.
+ * @param iconResId Drawable resource for the forecast weather icon.
+ * @param temperature Temperature value to display.
+ * @param modifier Modifier to customize layout.
+ */
 @Composable
 private fun HourlyForecastItem(
-    modifier: Modifier = Modifier,
     dateTime: LocalDateTime,
     @DrawableRes iconResId: Int,
-    temperature: Int
+    temperature: Int,
+    modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier,
@@ -90,21 +99,17 @@ private fun HourlyForecastItem(
             text = dateTime.hourStringInTwelveHourFormat,
             style = MaterialTheme.typography.labelLarge
         )
-        // Explicitly set tint to Color.Unspecified to ensure that no tint is applied to the vector
-        // resource. See documentation of the Icon composable for more information.
+
         Icon(
             modifier = Modifier.size(40.dp),
             imageVector = ImageVector.vectorResource(id = iconResId),
             contentDescription = null,
             tint = Color.Unspecified
         )
-        // Note: the weather superscript used here is not the default one that
-        // is available on MacOS by using the shortcut option + 0. The one used in
-        // MacOS does not look good in the user interface.
+
         Text(
-            text = "${temperature}°",
+            text = "$temperature°",
             style = MaterialTheme.typography.labelLarge
         )
     }
-
 }

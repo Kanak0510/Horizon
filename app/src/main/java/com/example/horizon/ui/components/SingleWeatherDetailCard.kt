@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -19,13 +20,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
 /**
- * A [Card] composable, that is used to display a single weather detail such as wind speed,
- * humidity, precipitation etc..
+ * A compact [Card] displaying a single weather detail like wind speed, humidity, or precipitation.
  *
- * @param iconResId The drawable resource ID for the icon.
- * @param name The name of the weather detail.
- * @param value The value of the weather detail.
- * @param modifier The modifier for the card.
+ * @param iconResId Resource ID for the icon to display.
+ * @param name Label for the weather detail (e.g., "Humidity").
+ * @param value Value of the weather detail (e.g., "60%").
+ * @param modifier Modifier for layout customization.
  */
 @Composable
 fun SingleWeatherDetailCard(
@@ -36,29 +36,31 @@ fun SingleWeatherDetailCard(
 ) {
     Card(modifier = modifier) {
         Row(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier
+                .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                modifier = Modifier.size(24.dp),
                 imageVector = ImageVector.vectorResource(id = iconResId),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                contentDescription = null
+                contentDescription = null,
+                modifier = Modifier.size(24.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            Spacer(modifier = Modifier.size(16.dp))
+
+            Spacer(modifier = Modifier.width(16.dp))
+
             Column {
                 Text(
                     text = name,
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
-                    minLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
                     text = value,
                     style = MaterialTheme.typography.titleSmall,
                     maxLines = 1,
-                    minLines = 1
+                    overflow = TextOverflow.Ellipsis
                 )
             }
         }

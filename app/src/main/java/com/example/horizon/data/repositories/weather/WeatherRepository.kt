@@ -10,18 +10,18 @@ import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 
 /**
- * A repository that is responsible for containing all methods related with fetching weather
- * information.
+ * A repository interface responsible for managing all weather-related operations including
+ * data fetching, storage, and retrieval of saved locations.
  */
 interface WeatherRepository {
 
     /**
-     * Retrieves the [CurrentWeatherDetails] for the specified location.
+     * Fetches current weather details for the specified location.
      *
-     * @param nameOfLocation The name of the location.
-     * @param latitude The latitude of the location.
-     * @param longitude The longitude of the location.
-     * @return A [Result] object containing the weather details if successful, or an exception if not.
+     * @param nameOfLocation A user-defined label for the location.
+     * @param latitude Latitude coordinate of the location.
+     * @param longitude Longitude coordinate of the location.
+     * @return A [Result] containing [CurrentWeatherDetails] on success, or an exception on failure.
      */
     suspend fun fetchWeatherForLocation(
         nameOfLocation: String,
@@ -30,48 +30,50 @@ interface WeatherRepository {
     ): Result<CurrentWeatherDetails>
 
     /**
-     * Used to get a [Flow] of [List] of [SavedLocation]s that were previously saved by the user.
+     * Returns a reactive [Flow] emitting the list of [SavedLocation]s stored locally
+     * that are not marked as deleted.
      */
     fun getSavedLocationsListStream(): Flow<List<SavedLocation>>
 
     /**
-     * Saves the weather location with the provided [nameOfLocation], [latitude] and [longitude].
+     * Saves a weather location with the given parameters to local storage.
+     *
+     * @param nameOfLocation A user-defined name for the location.
+     * @param latitude Latitude of the location.
+     * @param longitude Longitude of the location.
      */
     suspend fun saveWeatherLocation(nameOfLocation: String, latitude: String, longitude: String)
 
     /**
-     * Deletes a weather location from the saved items. Deleting an item using this method will
-     * allow it to be restored using [tryRestoringDeletedWeatherLocation]. If an item is needed to be
-     * permanently deleted, use [permanentlyDeleteWeatherLocationFromSavedItems].
-     * @param briefWeatherLocation The [BriefWeatherDetails] object representing the item to delete.
+     * Soft-deletes a saved weather location, marking it as deleted without removing it
+     * from the database. This allows for potential restoration.
+     *
+     * @param briefWeatherLocation The [BriefWeatherDetails] of the location to delete.
      */
     suspend fun deleteWeatherLocationFromSavedItems(briefWeatherLocation: BriefWeatherDetails)
 
     /**
-     * Used to permanently delete a weather location from the saved items. If an item is needed to be
-     * deleted, with a chance of it getting restored using [tryRestoringDeletedWeatherLocation], then
-     * use [deleteWeatherLocationFromSavedItems].
+     * Permanently deletes a saved weather location from the database.
+     * Use [deleteWeatherLocationFromSavedItems] instead if you want the option to restore later.
      *
-     * @param briefWeatherLocation The [BriefWeatherDetails] object representing the item
-     * to permanently delete.
+     * @param briefWeatherLocation The [BriefWeatherDetails] representing the location to delete.
      */
     suspend fun permanentlyDeleteWeatherLocationFromSavedItems(briefWeatherLocation: BriefWeatherDetails)
 
     /**
-     * Used to try restoring a recently deleted weather location with the provided [nameOfLocation].
-     * This method doesn't guarantee that the item would be restored. As the name indicates, it only
-     * tries to restore the item.
+     * Attempts to restore a location that was previously soft-deleted.
+     *
+     * @param nameOfLocation The name of the location to restore.
      */
     suspend fun tryRestoringDeletedWeatherLocation(nameOfLocation: String)
 
     /**
-     * Returns a [Result] containing a list of [PrecipitationProbability] objects for the specified
-     * location and date range.
+     * Fetches hourly precipitation probabilities for the given coordinates and date range.
      *
-     * @param latitude The latitude of the location to retrieve precipitation probabilities for.
-     * @param longitude The longitude of the location to retrieve precipitation probabilities for.
-     * @param dateRange The date range to retrieve precipitation probabilities for. Defaults to
-     * today and tomorrow.
+     * @param latitude Latitude of the location.
+     * @param longitude Longitude of the location.
+     * @param dateRange The range of dates to retrieve data for. Defaults to today and tomorrow.
+     * @return A [Result] containing a list of [PrecipitationProbability] or an error.
      */
     suspend fun fetchHourlyPrecipitationProbabilities(
         latitude: String,
@@ -80,9 +82,12 @@ interface WeatherRepository {
     ): Result<List<PrecipitationProbability>>
 
     /**
-     * Fetches hourly forecasts for the given [latitude] and [longitude] within the specified
-     * [dateRange]. It returns a [Result] object containing a list of [HourlyForecast] objects if
-     * the fetch operation was successful, else an error message.
+     * Retrieves hourly weather forecasts for the specified location and date range.
+     *
+     * @param latitude Latitude of the location.
+     * @param longitude Longitude of the location.
+     * @param dateRange Range of dates for which forecasts are required.
+     * @return A [Result] containing a list of [HourlyForecast]s or an exception.
      */
     suspend fun fetchHourlyForecasts(
         latitude: String,
@@ -91,9 +96,11 @@ interface WeatherRepository {
     ): Result<List<HourlyForecast>>
 
     /**
-     * Used to fetch a list of [SingleWeatherDetail] items for the current day encapsulated in a
-     * [Result] type. These items represent additional weather information for the given location at
-     * the specified [latitude] and [longitude].
+     * Fetches additional weather details such as UV index, dew point, and visibility for the current day.
+     *
+     * @param latitude Latitude of the location.
+     * @param longitude Longitude of the location.
+     * @return A [Result] containing a list of [SingleWeatherDetail] objects or an error.
      */
     suspend fun fetchAdditionalWeatherInfoItemsListForCurrentDay(
         latitude: String,

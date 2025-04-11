@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
@@ -36,9 +37,10 @@ import com.example.horizon.domain.hourStringInTwelveHourFormat
 import com.example.horizon.domain.models.weather.PrecipitationProbability
 
 /**
- * A card composable that displays precipitation probabilities in a "vertical progress bar" styled manner.
- * @param precipitationProbabilities The list of precipitation probabilities.
- * @param modifier The modifier to apply to the card.
+ * Displays a card showing precipitation probabilities using vertical progress indicators.
+ *
+ * @param precipitationProbabilities List of [PrecipitationProbability] data.
+ * @param modifier Modifier to apply to the card.
  */
 @Composable
 fun PrecipitationProbabilitiesCard(
@@ -46,37 +48,47 @@ fun PrecipitationProbabilitiesCard(
     modifier: Modifier = Modifier,
 ) {
     Card(modifier = modifier) {
-        Row(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Explicitly set tint to Color.Unspecified to ensure that no tint is applied to the vector
-            // resource. See documentation of the Icon composable for more information.
-            Icon(
-                modifier = Modifier.size(32.dp),
-                imageVector = ImageVector.vectorResource(id = R.drawable.ic_chance_of_rain),
-                contentDescription = null,
-                tint = Color.Unspecified
-            )
-            Text(
-                text = "Chance of Rain",
-                style = MaterialTheme.typography.titleMedium
-            )
-        }
-        LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(horizontal = 16.dp)
-        ) {
-            items(precipitationProbabilities) {
-                ProbabilityProgressColumn(
-                    modifier = Modifier.padding(bottom = 16.dp),
-                    precipitationProbability = it
+        Column {
+            Row(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_chance_of_rain),
+                    contentDescription = null,
+                    modifier = Modifier.size(32.dp),
+                    tint = Color.Unspecified
                 )
+                Text(
+                    text = "Chance of Rain",
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
+
+            LazyRow(
+                modifier = Modifier.fillMaxWidth(),
+                contentPadding = PaddingValues(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                items(precipitationProbabilities) { probability ->
+                    ProbabilityProgressColumn(
+                        precipitationProbability = probability,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                }
             }
         }
     }
 }
 
+/**
+ * A single vertical progress bar with time and percentage for precipitation probability.
+ *
+ * @param precipitationProbability The data representing one forecasted precipitation value.
+ * @param modifier Modifier for layout adjustments.
+ */
 @Composable
 private fun ProbabilityProgressColumn(
     precipitationProbability: PrecipitationProbability,
@@ -84,49 +96,43 @@ private fun ProbabilityProgressColumn(
 ) {
     var progressValue by remember { mutableStateOf(0f) }
     val animatedProgressValue by animateFloatAsState(targetValue = progressValue)
+
     LaunchedEffect(precipitationProbability) {
-        // dividing a percentage value by 100 will yield a value that is between 0.0f..1.0f
         progressValue = precipitationProbability.probabilityPercentage / 100f
     }
-    val (heightOfProgressBarWhenVertical, widthOfProgressBarWhenVertical) = remember {
-        Pair(120.dp, 16.dp)
-    }
+
+    val height = 120.dp
+    val width = 16.dp
+
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text(
-            text = precipitationProbability.dateTime.hourStringInTwelveHourFormat.padStart(length = 5),
+            text = precipitationProbability.dateTime.hourStringInTwelveHourFormat.padStart(5),
             style = MaterialTheme.typography.labelLarge
         )
-        // Since Modifier.rotate() rotates the composable in a separate graphics layer,
-        // other contents of the column will overlap with the progress bar.
-        // In order to accommodate for that, use a Box as a spacer for the other
-        // composables.
+
         Box(
-            modifier = Modifier.size(
-                height = heightOfProgressBarWhenVertical,
-                width = widthOfProgressBarWhenVertical
-            )
+            modifier = Modifier.size(height = height, width = width)
         ) {
-            // Since Modifier.rotate() will rotate the composable with it's center point as the
-            // pivot, center the progress bar composable to correctly fit the Box composable.
             LinearProgressIndicator(
-            progress = { animatedProgressValue },
-            modifier = Modifier
-                                .align(Alignment.Center)
-                                .requiredSize(
-                                    height = widthOfProgressBarWhenVertical, // after rotating, the width will be the height and vice-versa
-                                    width = heightOfProgressBarWhenVertical
-                                )
-                                .rotate(-90f),
-            trackColor = ProgressIndicatorDefaults.linearColor.copy(alpha = 0.5f),
-            strokeCap = StrokeCap.Round,
+                progress = { animatedProgressValue },
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .requiredSize(
+                        height = width,
+                        width = height
+                    )
+                    .rotate(-90f),
+                trackColor = ProgressIndicatorDefaults.linearColor.copy(alpha = 0.5f),
+                strokeCap = StrokeCap.Round
             )
         }
+
         Text(
-            text = "${precipitationProbability.probabilityPercentage}%".padStart(length = 4),
+            text = "${precipitationProbability.probabilityPercentage}%" .padStart(4),
             style = MaterialTheme.typography.labelLarge
         )
     }

@@ -77,7 +77,19 @@ import com.example.horizon.ui.components.CompactWeatherCardWithHourlyForecast
 import com.example.horizon.ui.components.SwipeToDismissCompactWeatherCard
 
 /**
- * Overload that uses [HomeScreenUiState].
+ * Displays the Home screen using the provided [HomeScreenUiState] to drive its content.
+ * This is an overload that bridges ViewModel state to UI-level composable.
+ *
+ * @param homeScreenUiState The state that represents the UI of the Home screen.
+ * @param snackbarHostState Host state to show Snackbars.
+ * @param onSavedLocationDismissed Called when a saved location is swiped to dismiss.
+ * @param onSearchQueryChange Callback when the user types into the search bar.
+ * @param onSuggestionClick Called when an autofill suggestion is selected.
+ * @param onSavedLocationItemClick Called when a saved location is clicked.
+ * @param onLocationPermissionGranted Called when location permission is granted.
+ * @param onRetryFetchingWeatherForSavedLocations Callback when retrying saved locations' weather.
+ * @param modifier Modifier to be applied to the layout.
+ * @param onRetryFetchingWeatherForCurrentLocation Optional callback for retrying current location fetch.
  */
 @Composable
 fun HomeScreen(

@@ -76,8 +76,12 @@ private class TestGeneratedTextCacheDatabaseDao : GeneratedTextCacheDatabaseDao 
         savedItems.add(generatedTextForLocationEntity)
     }
 
-    override suspend fun getGeneratedTextForLocation(nameOfLocation: String): GeneratedTextForLocationEntity? {
-        return savedItems.firstOrNull { it.nameOfLocation == nameOfLocation }
+    override suspend fun getSavedGeneratedTextForDetails(
+        nameOfLocation: String,
+        temperature: Int,
+        conciseWeatherDescription: String
+    ): GeneratedTextForLocationEntity? {
+        TODO("Not yet implemented")
     }
 
     override suspend fun deleteAllSavedText() {

@@ -4,6 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -26,17 +27,16 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
 /**
- * A Composable that displays the provided weather information in a compact manner. The information
- * is mainly displayed in a row-wise manner, within the column.
+ * A compact weather card UI that shows the location, a brief description, and temperature.
  *
- * @param nameOfLocation The name of the location.
- * @param shortDescription A short description of the weather.
- * @param shortDescriptionIcon The icon for the short description.
- * @param weatherInDegrees The temperature in degrees (without the superscript).
- * @param onClick A callback that is called when this card is clicked.
- * @param modifier The modifier for the card.
+ * @param nameOfLocation The name of the location (e.g., "New York").
+ * @param shortDescription A short weather description (e.g., "Sunny").
+ * @param shortDescriptionIcon Drawable resource representing the weather condition.
+ * @param weatherInDegrees Temperature value in string format (e.g., "27").
+ * @param onClick Callback invoked when the card is clicked.
+ * @param modifier Modifier to apply to the entire card.
  */
-@ExperimentalMaterial3Api
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CompactWeatherCard(
     nameOfLocation: String,
@@ -46,15 +46,15 @@ fun CompactWeatherCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val weatherWithDegreesSuperscript = remember(weatherInDegrees) {
-        /**
-        * Note: the weather superscript used here is not the default one that
-        * is available on Macs by using the shortcut option + 0. The one used in
-        * MacOS does not look good in the user interface.
-        */
+    val weatherWithDegreeSymbol = remember(weatherInDegrees) {
+        // Use a visually appropriate degree symbol (°)
         "$weatherInDegrees°"
     }
-    OutlinedCard(modifier = modifier, onClick = onClick) {
+
+    OutlinedCard(
+        modifier = modifier,
+        onClick = onClick
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -76,13 +76,20 @@ fun CompactWeatherCard(
                 )
             }
             Text(
-                text = weatherWithDegreesSuperscript,
+                text = weatherWithDegreeSymbol,
                 style = MaterialTheme.typography.displayMedium
             )
         }
     }
 }
 
+/**
+ * Displays the weather description alongside an icon.
+ *
+ * @param shortDescription Weather condition description.
+ * @param iconRes Drawable resource for the icon.
+ * @param modifier Modifier to apply to the row.
+ */
 @Composable
 private fun ShortWeatherDescriptionWithIconRow(
     shortDescription: String,
@@ -93,14 +100,13 @@ private fun ShortWeatherDescriptionWithIconRow(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Explicitly set tint to Color.Unspecified to ensure that no tint is applied to the vector
-        // resource. See documentation of the Icon composable for more information.
         Icon(
             modifier = Modifier.size(24.dp),
             imageVector = ImageVector.vectorResource(id = iconRes),
             contentDescription = null,
-            tint = Color.Unspecified
+            tint = Color.Unspecified // Ensures the original icon color is preserved
         )
+        Spacer(modifier = Modifier.size(8.dp))
         Text(
             text = shortDescription,
             maxLines = 1,
@@ -111,9 +117,17 @@ private fun ShortWeatherDescriptionWithIconRow(
 }
 
 /**
- * A swipe-to-dismiss version of [CompactWeatherCard]
+ * A [CompactWeatherCard] wrapped with swipe-to-dismiss behavior.
+ *
+ * @param swipeToDismissBoxState State used to control the swipe gesture.
+ * @param nameOfLocation Location name for the card.
+ * @param shortDescription Description of the weather.
+ * @param shortDescriptionIcon Icon for the weather.
+ * @param weatherInDegrees Temperature in degrees (as a string).
+ * @param onClick Callback when the card is tapped.
+ * @param modifier Modifier to apply to the swipe box.
  */
-@ExperimentalMaterial3Api
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SwipeToDismissCompactWeatherCard(
     nameOfLocation: String,

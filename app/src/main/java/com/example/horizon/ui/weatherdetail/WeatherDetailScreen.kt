@@ -67,7 +67,8 @@ import com.example.horizon.ui.components.SingleWeatherDetailCard
 import com.example.horizon.ui.components.TypingAnimatedText
 
 /**
- * An overload that uses [WeatherDetailScreenUiState].
+ * A top-level composable that displays the content of the Weather Detail screen based on the
+ * provided [uiState]. Shows either a loading spinner, error state, or the main weather content.
  */
 @Composable
 fun WeatherDetailScreen(
@@ -76,44 +77,52 @@ fun WeatherDetailScreen(
     onSaveButtonClick: () -> Unit,
     onBackButtonClick: () -> Unit,
 ) {
-    if (uiState.isLoading) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            content = { CircularProgressIndicator(modifier = Modifier.align(Alignment.Center)) }
-        )
-    } else if (uiState.errorMessage != null) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                modifier = Modifier.padding(16.dp),
-                textAlign = TextAlign.Center,
-                text = uiState.errorMessage
-            )
-            Button(onClick = onBackButtonClick, content =  { Text("Go Back") })
+    when {
+        uiState.isLoading -> {
+            Box(modifier = Modifier.fillMaxSize()) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            }
         }
-    } else {
-        WeatherDetailScreen(
-            snackbarHostState = snackbarHostState,
-            nameOfLocation = uiState.weatherDetailsOfChosenLocation!!.nameOfLocation,
-            weatherConditionImage = uiState.weatherDetailsOfChosenLocation.imageResId,
-            weatherConditionIconId = uiState.weatherDetailsOfChosenLocation.iconResId,
-            weatherInDegrees = uiState.weatherDetailsOfChosenLocation.temperatureRoundedToInt,
-            weatherCondition = uiState.weatherDetailsOfChosenLocation.weatherCondition,
-            aiGeneratedWeatherSummaryText = uiState.weatherSummaryText,
-            isPreviouslySavedLocation = uiState.isPreviouslySavedLocation,
-            isWeatherSummaryLoading = uiState.isWeatherSummaryTextLoading,
-            singleWeatherDetails = uiState.additionalWeatherInfoItems,
-            hourlyForecasts = uiState.hourlyForecasts,
-            precipitationProbabilities = uiState.precipitationProbabilities,
-            onBackButtonClick = onBackButtonClick,
-            onSaveButtonClick = onSaveButtonClick,
-        )
+        uiState.errorMessage != null -> {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = uiState.errorMessage,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(16.dp)
+                )
+                Button(onClick = onBackButtonClick) {
+                    Text("Go Back")
+                }
+            }
+        }
+        else -> {
+            WeatherDetailScreen(
+                snackbarHostState = snackbarHostState,
+                nameOfLocation = uiState.weatherDetailsOfChosenLocation!!.nameOfLocation,
+                weatherConditionImage = uiState.weatherDetailsOfChosenLocation.imageResId,
+                weatherConditionIconId = uiState.weatherDetailsOfChosenLocation.iconResId,
+                weatherInDegrees = uiState.weatherDetailsOfChosenLocation.temperatureRoundedToInt,
+                weatherCondition = uiState.weatherDetailsOfChosenLocation.weatherCondition,
+                aiGeneratedWeatherSummaryText = uiState.weatherSummaryText,
+                isWeatherSummaryLoading = uiState.isWeatherSummaryTextLoading,
+                isPreviouslySavedLocation = uiState.isPreviouslySavedLocation,
+                singleWeatherDetails = uiState.additionalWeatherInfoItems,
+                hourlyForecasts = uiState.hourlyForecasts,
+                precipitationProbabilities = uiState.precipitationProbabilities,
+                onBackButtonClick = onBackButtonClick,
+                onSaveButtonClick = onSaveButtonClick
+            )
+        }
     }
 }
 
+/**
+ * The actual Weather Detail screen content that lays out all weather components.
+ */
 @Composable
 fun WeatherDetailScreen(
     nameOfLocation: String,
@@ -132,14 +141,16 @@ fun WeatherDetailScreen(
     snackbarHostState: SnackbarHostState
 ) {
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+
     Box {
         LazyVerticalGrid(
             modifier = Modifier.fillMaxSize(),
-            columns = GridCells.Fixed(count = 2),
+            columns = GridCells.Fixed(2),
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            // Header
             item(span = { GridItemSpan(maxLineSpan) }) {
                 Header(
                     modifier = Modifier
@@ -156,6 +167,7 @@ fun WeatherDetailScreen(
                 )
             }
 
+            // AI Summary
             if (aiGeneratedWeatherSummaryText != null || isWeatherSummaryLoading) {
                 item(span = { GridItemSpan(maxLineSpan) }) {
                     WeatherSummaryTextCard(
@@ -165,12 +177,15 @@ fun WeatherDetailScreen(
                 }
             }
 
+            // Forecast and Precipitation
             item(span = { GridItemSpan(maxLineSpan) }) {
                 HourlyForecastCard(hourlyForecasts = hourlyForecasts)
             }
             item(span = { GridItemSpan(maxLineSpan) }) {
                 PrecipitationProbabilitiesCard(precipitationProbabilities = precipitationProbabilities)
             }
+
+            // Additional weather info
             items(singleWeatherDetails) {
                 SingleWeatherDetailCard(
                     name = it.name,
@@ -178,11 +193,14 @@ fun WeatherDetailScreen(
                     iconResId = it.iconResId
                 )
             }
+
+            // Spacer
             item {
                 Spacer(modifier = Modifier.navigationBarsPadding())
             }
         }
 
+        // Snackbar
         SnackbarHost(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -192,6 +210,9 @@ fun WeatherDetailScreen(
     }
 }
 
+/**
+ * Header section with background image, location, and main weather info.
+ */
 @Composable
 private fun Header(
     modifier: Modifier = Modifier,
@@ -202,55 +223,42 @@ private fun Header(
     onSaveButtonClick: () -> Unit,
     nameOfLocation: String,
     currentWeatherInDegrees: Int,
-    weatherCondition: String,
+    weatherCondition: String
 ) {
     Box(modifier = modifier) {
-        val iconButtonContainerColor = remember {
-            Color.Black.copy(0.4f)
-        }
+        val iconBgColor = remember { Color.Black.copy(alpha = 0.4f) }
+
         Image(
-            modifier = Modifier.fillMaxSize(),
             painter = painterResource(id = headerImageResId),
+            contentDescription = null,
             contentScale = ContentScale.Crop,
-            contentDescription = null
+            modifier = Modifier.fillMaxSize()
         )
-        // Scrim for image
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.3f)),
-        )
+
+        Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(0.3f))) // Image scrim
 
         IconButton(
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .statusBarsPadding(),
-            colors = IconButtonDefaults.filledIconButtonColors(
-                containerColor = iconButtonContainerColor
-            ),
-            onClick = onBackButtonClick
+            onClick = onBackButtonClick,
+            colors = IconButtonDefaults.filledIconButtonColors(containerColor = iconBgColor)
         ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = null
-            )
+            Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
         }
+
         if (shouldDisplaySaveButton) {
             IconButton(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .statusBarsPadding(),
-                colors = IconButtonDefaults.filledIconButtonColors(
-                    containerColor = iconButtonContainerColor
-                ),
-                onClick = onSaveButtonClick
+                onClick = onSaveButtonClick,
+                colors = IconButtonDefaults.filledIconButtonColors(containerColor = iconBgColor)
             ) {
-                Icon(
-                    imageVector = Icons.Filled.Add,
-                    contentDescription = null
-                )
+                Icon(imageVector = Icons.Filled.Add, contentDescription = null)
             }
         }
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -258,30 +266,25 @@ private fun Header(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp),
                 text = nameOfLocation,
                 style = MaterialTheme.typography.displayMedium,
                 textAlign = TextAlign.Center,
                 maxLines = 2,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp)
             )
             Text(
                 text = "$currentWeatherInDegrees°",
                 style = MaterialTheme.typography.displayLarge.copy(fontSize = 80.sp)
             )
-            Row(
-                modifier = Modifier.offset(x = (-8).dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Explicitly set tint to Color.Unspecified to ensure that no tint is applied to the vector
-                // resource. See documentation of the Icon composable for more information.
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.offset(x = (-8).dp)) {
                 Icon(
-                    modifier = Modifier.size(32.dp),
-                    imageVector = ImageVector.vectorResource(id = weatherConditionIconId),
+                    imageVector = ImageVector.vectorResource(weatherConditionIconId),
                     contentDescription = null,
-                    tint = Color.Unspecified
+                    tint = Color.Unspecified,
+                    modifier = Modifier.size(32.dp)
                 )
                 Text(text = weatherCondition)
             }
@@ -289,35 +292,32 @@ private fun Header(
     }
 }
 
+/**
+ * Card that displays the AI-generated summary for current weather conditions.
+ */
 @Composable
 private fun WeatherSummaryTextCard(
     modifier: Modifier = Modifier,
     isWeatherSummaryLoading: Boolean,
-    summaryText: String,
+    summaryText: String
 ) {
     Card(modifier = modifier) {
         val context = LocalContext.current
+
         val imageLoader = remember {
-            ImageLoader.Builder(context = context)
-                .components {
-                    if (SDK_INT >= 28) {
-                        add(ImageDecoderDecoder.Factory())
-                    } else {
-                        add(GifDecoder.Factory())
-                    }
-                }
-                .build()
+            ImageLoader.Builder(context).components {
+                if (SDK_INT >= 28) add(ImageDecoderDecoder.Factory()) else add(GifDecoder.Factory())
+            }.build()
         }
+
         val imageRequest = remember {
-            ImageRequest.Builder(context = context)
+            ImageRequest.Builder(context)
                 .data(R.drawable.bard_sparkle_thinking_anim)
                 .size(Size.ORIGINAL)
                 .build()
         }
-        val asyncImagePainter = rememberAsyncImagePainter(
-            model = imageRequest,
-            imageLoader = imageLoader
-        )
+
+        val aiIconPainter = rememberAsyncImagePainter(model = imageRequest, imageLoader = imageLoader)
 
         Row(
             modifier = Modifier.padding(top = 8.dp, start = 16.dp),
@@ -325,27 +325,21 @@ private fun WeatherSummaryTextCard(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             if (isWeatherSummaryLoading) {
-                Image(
-                    modifier = Modifier.size(16.dp),
-                    painter = asyncImagePainter,
-                    contentDescription = null
-                )
+                Image(painter = aiIconPainter, contentDescription = null, modifier = Modifier.size(16.dp))
             } else {
                 Icon(
-                    modifier = Modifier.size(16.dp),
                     imageVector = ImageVector.vectorResource(R.drawable.ic_bard_logo),
+                    contentDescription = null,
                     tint = Color.Unspecified,
-                    contentDescription = null
+                    modifier = Modifier.size(16.dp)
                 )
             }
-            Text(
-                text = "Summary",
-                style = MaterialTheme.typography.titleMedium
-            )
+            Text("Summary", style = MaterialTheme.typography.titleMedium)
         }
+
         TypingAnimatedText(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-            text = summaryText
+            text = summaryText,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
         )
     }
 }

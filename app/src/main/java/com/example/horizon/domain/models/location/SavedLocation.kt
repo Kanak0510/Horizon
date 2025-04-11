@@ -3,7 +3,10 @@ package com.example.horizon.domain.models.location
 import com.example.horizon.data.local.weather.SavedWeatherLocationEntity
 
 /**
- * A domain object that represents a location saved by the user.
+ * A domain model that represents a location saved by the user.
+ *
+ * @property nameOfLocation The display name of the saved location.
+ * @property coordinates The [Coordinates] representing the latitude and longitude of the location.
  */
 data class SavedLocation(
     val nameOfLocation: String,
@@ -11,9 +14,14 @@ data class SavedLocation(
 )
 
 /**
- * Used to map an instance of [SavedWeatherLocationEntity] to an instance of [SavedLocation].
+ * Maps a [SavedWeatherLocationEntity] from the local database to the [SavedLocation] domain model.
+ *
+ * @return A [SavedLocation] object with the mapped name and coordinates.
  */
-fun SavedWeatherLocationEntity.toSavedLocation() = SavedLocation(
+fun SavedWeatherLocationEntity.toSavedLocation(): SavedLocation = SavedLocation(
     nameOfLocation = nameOfLocation,
-    coordinates = Coordinates(latitude = latitude, longitude = longitude)
+    coordinates = Coordinates(
+        latitude = latitude,
+        longitude = longitude
+    )
 )

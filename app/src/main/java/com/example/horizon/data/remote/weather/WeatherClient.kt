@@ -8,19 +8,22 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 import java.time.LocalDate
 
-// An interface representing a network based weather client
+/**
+ * An interface representing a remote weather data provider.
+ * Defines methods for fetching current weather, hourly forecast, and daily forecast variables.
+ */
 interface WeatherClient {
 
     /**
-     * Get the current weather for the given coordinates.
+     * Fetches the current weather for a given geographic location.
+     *
      * @param latitude The latitude of the location.
      * @param longitude The longitude of the location.
-     * @param temperatureUnit The unit of temperature to use.
-     * @param windSpeedUnit The unit of wind speed to use.
-     * @param precipitationUnit The unit of precipitation to use.
-     * @param shouldIncludeCurrentWeatherInformation Whether or not to include current weather information.
-     * **MUST ALWAYS BE SET TO TRUE!**
-     * @return A [Response] object containing the current weather information.
+     * @param temperatureUnit Unit for representing temperature values.
+     * @param windSpeedUnit Unit for representing wind speed values.
+     * @param precipitationUnit Unit for representing precipitation values.
+     * @param shouldIncludeCurrentWeatherInformation Must be set to `true` to include current weather data.
+     * @return A [Response] containing the [CurrentWeatherResponse].
      */
     @GET(WeatherClientConstants.EndPoints.FORECAST)
     suspend fun getWeatherForCoordinates(
@@ -29,20 +32,21 @@ interface WeatherClient {
         @Query("temperature_unit") temperatureUnit: WeatherClientConstants.TemperatureUnits = WeatherClientConstants.TemperatureUnits.CELSIUS,
         @Query("windspeed_unit") windSpeedUnit: WeatherClientConstants.WindSpeedUnit = WeatherClientConstants.WindSpeedUnit.KILOMETERS_PER_HOUR,
         @Query("precipitation_unit") precipitationUnit: WeatherClientConstants.PrecipitationUnit = WeatherClientConstants.PrecipitationUnit.INCHES,
-        @Query("current_weather") shouldIncludeCurrentWeatherInformation: Boolean = true // Must always be set to true
+        @Query("current_weather") shouldIncludeCurrentWeatherInformation: Boolean = true
     ): Response<CurrentWeatherResponse>
 
     /**
-     * Get the [HourlyWeatherInfoResponse] for the given coordinates.
+     * Retrieves hourly weather forecast data for the specified location and time range.
+     *
      * @param latitude The latitude of the location.
      * @param longitude The longitude of the location.
-     * @param startDate The start date for the hourly forecast in YYYY-MM-DD format.
-     * @param endDate The end date for the hourly forecast in YYYY-MM-DD format.
-     * @param timezoneConfiguration The [WeatherClientConstants.TimeZoneConfiguration] to use for the hourly forecast.
-     * @param precipitationUnit The unit of precipitation to use.
-     * @param timeFormat The time format to use for the hourly forecast.
-     * @param hourlyForecastsToReturn The number of hourly forecasts to return.
-     * @return A [Response] object containing the hourly forecast information.
+     * @param startDate The start date of the forecast range (format: YYYY-MM-DD).
+     * @param endDate The end date of the forecast range (format: YYYY-MM-DD).
+     * @param timezoneConfiguration The timezone to apply to the forecast timestamps.
+     * @param precipitationUnit Unit for representing precipitation values.
+     * @param timeFormat The format used for the time values in the response.
+     * @param hourlyForecastsToReturn Specifies which hourly forecast fields to include.
+     * @return A [Response] containing the [HourlyWeatherInfoResponse].
      */
     @GET(WeatherClientConstants.EndPoints.FORECAST)
     suspend fun getHourlyForecast(
@@ -57,19 +61,16 @@ interface WeatherClient {
     ): Response<HourlyWeatherInfoResponse>
 
     /**
-     * Used to get additional daily forecast variables for the given coordinates.
+     * Fetches additional daily weather forecast variables for a given location and date range.
      *
      * @param latitude The latitude of the location.
      * @param longitude The longitude of the location.
-     * @param startDate The start date of the forecast.
-     * @param endDate The end date of the forecast.
-     * @param timezoneConfiguration The [WeatherClientConstants.TimeZoneConfiguration] to be used while
-     * fetching the information of the location. Default is
-     * [WeatherClientConstants.TimeZoneConfiguration.DEFAULT_FOR_GIVEN_COORDINATES].
-     * @param timeFormat The time format of the forecast. Default is UNIX epoch time in seconds.
-     * @param dailyForecastsToReturn The daily forecasts to return. Default is all forecasts.
-     *
-     * @return Response<AdditionalDailyForecastVariablesResponse>
+     * @param startDate Start date of the forecast range (format: YYYY-MM-DD).
+     * @param endDate End date of the forecast range (format: YYYY-MM-DD).
+     * @param timezoneConfiguration Timezone for aligning forecast timestamps.
+     * @param timeFormat The format of time values in the response.
+     * @param dailyForecastsToReturn Specifies which daily forecast fields to include.
+     * @return A [Response] containing the [AdditionalDailyForecastVariablesResponse].
      */
     @GET(WeatherClientConstants.EndPoints.FORECAST)
     suspend fun getAdditionalDailyForecastVariables(

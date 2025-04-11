@@ -1,39 +1,42 @@
 package com.example.horizon.data.remote.weather.models
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 /**
- * A response object that contains [AdditionalForecastedVariables] for a specific location.
+ * A response object that contains additional daily weather forecast variables for a specific location.
+ *
+ * @property timezone The timezone associated with the forecast data.
+ * @property additionalForecastedVariables A collection of forecasted weather variables.
  */
-@JsonClass(generateAdapter = true)
+@Serializable
 data class AdditionalDailyForecastVariablesResponse(
-    @Json(name = "timezone") val timezone: String,
-    @Json(name = "daily") val additionalForecastedVariables: AdditionalForecastedVariables
+    @SerialName("timezone") val timezone: String,
+    @SerialName("daily") val additionalForecastedVariables: AdditionalForecastedVariables
 ) {
     /**
-     * Data class containing additional forecasted variables.
+     * A data class containing various additional weather variables forecasted for each day.
      *
-     * @property minTemperatureForTheDay The minimum temperature for the day.
-     * @property maxTemperatureForTheDay The maximum temperature for the day.
-     * @property maxApparentTemperature The maximum apparent temperature.
-     * @property minApparentTemperature The minimum apparent temperature.
-     * @property sunrise The sunrise time.
-     * @property sunset The sunset time.
-     * @property maxUvIndex The maximum UV index.
-     * @property dominantWindDirection The dominant wind direction.
-     * @property windSpeed The wind speed.
+     * @property minTemperatureForTheDay List of minimum temperatures (°C) for each forecasted day.
+     * @property maxTemperatureForTheDay List of maximum temperatures (°C) for each forecasted day.
+     * @property maxApparentTemperature List of maximum "feels like" temperatures (°C) for each day.
+     * @property minApparentTemperature List of minimum "feels like" temperatures (°C) for each day.
+     * @property sunrise List of sunrise times represented as epoch timestamps.
+     * @property sunset List of sunset times represented as epoch timestamps.
+     * @property maxUvIndex List of maximum UV index values for each day.
+     * @property dominantWindDirection List of dominant wind directions (in degrees) for each day.
+     * @property windSpeed List of maximum wind speeds (km/h or m/s depending on source) for each day.
      */
-    @JsonClass(generateAdapter = true)
+    @Serializable
     data class AdditionalForecastedVariables(
-        @Json(name = "temperature_2m_min") val minTemperatureForTheDay: List<Double>,
-        @Json(name = "temperature_2m_max") val maxTemperatureForTheDay: List<Double>,
-        @Json(name = "apparent_temperature_max") val maxApparentTemperature: List<Double>,
-        @Json(name = "apparent_temperature_min") val minApparentTemperature: List<Double>,
-        @Json(name = "sunrise") val sunrise: List<Long>,
-        @Json(name = "sunset") val sunset: List<Long>,
-        @Json(name = "uv_index_max") val maxUvIndex: List<Double>,
-        @Json(name = "winddirection_10m_dominant") val dominantWindDirection: List<Int>,
-        @Json(name = "windspeed_10m_max") val windSpeed: List<Double>
+        @SerialName("temperature_2m_min") val minTemperatureForTheDay: List<Double>,
+        @SerialName("temperature_2m_max") val maxTemperatureForTheDay: List<Double>,
+        @SerialName("apparent_temperature_max") val maxApparentTemperature: List<Double>,
+        @SerialName("apparent_temperature_min") val minApparentTemperature: List<Double>,
+        @SerialName("sunrise") val sunrise: List<Long>,
+        @SerialName("sunset") val sunset: List<Long>,
+        @SerialName("uv_index_max") val maxUvIndex: List<Double>,
+        @SerialName("winddirection_10m_dominant") val dominantWindDirection: List<Int>,
+        @SerialName("windspeed_10m_max") val windSpeed: List<Double>
     )
 }

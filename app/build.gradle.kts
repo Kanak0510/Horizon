@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlin.plugin.serialization)
 }
 
 android {
@@ -128,9 +129,9 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.moshi)
 
-    // Moshi
-    implementation(libs.moshi)
-    implementation(libs.moshi.kotlin.codegen) // Make's Moshi not depend on Reflection + Generates Kotlin Code using KotlinPoet
+    // Serialization (Replaces Moshi)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.retrofit2.kotlinx.serialization.converter)
 
     // Image Loading
     implementation(libs.coil.compose)

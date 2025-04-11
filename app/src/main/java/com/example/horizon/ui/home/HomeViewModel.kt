@@ -30,6 +30,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * ViewModel responsible for managing and exposing UI state for the Home screen.
+ * Handles saved locations, weather data, current user location, and location-based suggestions.
+ */
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val currentLocationProvider: CurrentLocationProvider,
@@ -42,44 +46,57 @@ class HomeViewModel @Inject constructor(
     private val isCurrentlyRetryingToFetchSavedLocation = MutableStateFlow(false)
 
     private val _uiState = MutableStateFlow(HomeScreenUiState())
-    val uiState = _uiState as StateFlow<HomeScreenUiState>
+    val uiState: StateFlow<HomeScreenUiState> = _uiState
 
-    // A Cache that stores the CurrentWeatherDetails of a specific SavedLocation
-    private var currentWeatherDetailsCache = mutableMapOf<SavedLocation, CurrentWeatherDetails>()
+    // Cache to store weather details of saved locations to avoid redundant fetches
+    private val currentWeatherDetailsCache = mutableMapOf<SavedLocation, CurrentWeatherDetails>()
+
     private var recentlyDeletedItem: BriefWeatherDetails? = null
 
     init {
-        // Saved Location Stream
+        observeSavedLocations()
+        observeSearchQuerySuggestions()
+    }
+
+    /**
+     * Observes the saved locations list and updates weather data using caching.
+     */
+    private fun observeSavedLocations() {
         combine(
             weatherRepository.getSavedLocationsListStream(),
             isCurrentlyRetryingToFetchSavedLocation
-        ) { savedLocations, _ ->
-            savedLocations
-        }.onEach {
-            _uiState.update {
-                it.copy(
-                    isLoadingSavedLocations = true,
-                    errorFetchingWeatherForSavedLocations = false
-                )
+        ) { savedLocations, _ -> savedLocations }
+            .onEach {
+                _uiState.update {
+                    it.copy(
+                        isLoadingSavedLocations = true,
+                        errorFetchingWeatherForSavedLocations = false
+                    )
+                }
             }
-        }.map { savedLocations ->
-            fetchCurrentWeatherDetailsWithCache(savedLocations)
-        }.onEach { weatherDetailsOfSavedLocationsResult ->
-            val weatherDetailsOfSavedLocations =
-                weatherDetailsOfSavedLocationsResult.getOrNull()
-            _uiState.update {
-                it.copy(
-                    isLoadingSavedLocations = false,
-                    weatherDetailsOfSavedLocations = weatherDetailsOfSavedLocations ?: emptyList(),
-                    errorFetchingWeatherForSavedLocations = weatherDetailsOfSavedLocations == null
-                )
+            .map { fetchCurrentWeatherDetailsWithCache(it) }
+            .onEach { result ->
+                val details = result.getOrNull()
+                _uiState.update {
+                    it.copy(
+                        isLoadingSavedLocations = false,
+                        weatherDetailsOfSavedLocations = details ?: emptyList(),
+                        errorFetchingWeatherForSavedLocations = details == null
+                    )
+                }
+                isCurrentlyRetryingToFetchSavedLocation.update { false }
             }
-            isCurrentlyRetryingToFetchSavedLocation.update { false }
-        }.launchIn(viewModelScope)
+            .launchIn(viewModelScope)
+    }
 
-        // Suggestion for Current Search Query Stream
-        @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
-        currentSearchQuery.debounce(250)
+    /**
+     * Observes and debounces user input for location search queries.
+     * Triggers suggestion fetch from the repository.
+     */
+    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
+    private fun observeSearchQuerySuggestions() {
+        currentSearchQuery
+            .debounce(250)
             .distinctUntilChanged()
             .mapLatest { query ->
                 if (query.isBlank()) return@mapLatest Result.success(emptyList())
@@ -91,32 +108,42 @@ class HomeViewModel @Inject constructor(
                 }
                 locationServicesRepository.fetchSuggestedPlacesForQuery(query)
             }
-            .onEach { autofillSuggestionsResult ->
-                val autofillSuggestions = autofillSuggestionsResult.getOrNull()
+            .onEach { result ->
+                val suggestions = result.getOrNull()
                 _uiState.update {
                     it.copy(
                         isLoadingAutofillSuggestions = false,
-                        autofillSuggestions = autofillSuggestions ?: emptyList(),
-                        errorFetchingAutofillSuggestions = autofillSuggestions == null
+                        autofillSuggestions = suggestions ?: emptyList(),
+                        errorFetchingAutofillSuggestions = suggestions == null
                     )
                 }
             }
             .launchIn(viewModelScope)
     }
 
-    fun retryFetchingSavedLocations() {
-        val isCurrentlyRetrying = isCurrentlyRetryingToFetchSavedLocation.value
-        if (isCurrentlyRetrying) return
-        isCurrentlyRetryingToFetchSavedLocation.update { true }
-    }
-
     /**
-     * Used to set the [searchQuery] for which the suggestions should be generated.
+     * Sets the user input query for location suggestion fetching.
+     *
+     * @param searchQuery User's search input string
      */
     fun setSearchQueryForSuggestionsGeneration(searchQuery: String) {
         currentSearchQuery.value = searchQuery
     }
 
+    /**
+     * Retries loading saved location weather data if a previous attempt failed.
+     */
+    fun retryFetchingSavedLocations() {
+        if (!isCurrentlyRetryingToFetchSavedLocation.value) {
+            isCurrentlyRetryingToFetchSavedLocation.update { true }
+        }
+    }
+
+    /**
+     * Deletes a weather location and temporarily stores it for undo functionality.
+     *
+     * @param briefWeatherDetails The location to delete
+     */
     fun deleteSavedWeatherLocation(briefWeatherDetails: BriefWeatherDetails) {
         recentlyDeletedItem = briefWeatherDetails
         viewModelScope.launch {
@@ -124,41 +151,20 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Attempts to restore the most recently deleted weather location, if available.
+     */
     fun restoreRecentlyDeletedItem() {
         recentlyDeletedItem?.let {
-            viewModelScope.launch { weatherRepository.tryRestoringDeletedWeatherLocation(it.nameOfLocation) }
+            viewModelScope.launch {
+                weatherRepository.tryRestoringDeletedWeatherLocation(it.nameOfLocation)
+            }
         }
     }
 
     /**
-     * Used to fetch a list of [BriefWeatherDetails] for all the [savedLocations] efficiently
-     * using the [currentWeatherDetailsCache]
+     * Fetches and updates the weather information for the user's current device location.
      */
-    private suspend fun fetchCurrentWeatherDetailsWithCache(savedLocations: List<SavedLocation>): Result<List<BriefWeatherDetails>?> {
-        val savedLocationsSet = savedLocations.toSet()
-        // Remove locations in the cache that have been deleted by the user
-        val removedLocations = currentWeatherDetailsCache.keys subtract savedLocationsSet
-        for (removedLocation in removedLocations) {
-            currentWeatherDetailsCache.remove(removedLocation)
-        }
-        // Only fetch weather details of the items that are not in cache
-        val locationsNotInCache = savedLocationsSet subtract currentWeatherDetailsCache.keys
-        for (savedLocationNotInCache in locationsNotInCache) {
-            try {
-                weatherRepository.fetchWeatherForLocation(
-                    nameOfLocation = savedLocationNotInCache.nameOfLocation,
-                    latitude = savedLocationNotInCache.coordinates.latitude,
-                    longitude = savedLocationNotInCache.coordinates.longitude
-                ).getOrThrow().also { currentWeatherDetailsCache[savedLocationNotInCache] = it }
-            } catch (exception: Exception) {
-                if (exception is CancellationException) throw exception
-                return Result.failure(exception)
-            }
-        }
-        return Result.success(
-            currentWeatherDetailsCache.values.toList().map { it.toBriefWeatherDetails() })
-    }
-
     fun fetchWeatherForCurrentUserLocation() {
         val exceptionHandler = CoroutineExceptionHandler { _, _ ->
             _uiState.update {
@@ -168,8 +174,8 @@ class HomeViewModel @Inject constructor(
                 )
             }
         }
-        viewModelScope.launch(exceptionHandler) {
 
+        viewModelScope.launch(exceptionHandler) {
             _uiState.update {
                 it.copy(
                     isLoadingWeatherDetailsOfCurrentLocation = true,
@@ -178,34 +184,67 @@ class HomeViewModel @Inject constructor(
             }
 
             val coordinates = currentLocationProvider.getCurrentLocation().getOrThrow()
-
             val nameOfLocation = reverseGeocoder.getLocationNameForCoordinates(
                 coordinates.latitude.toDouble(),
                 coordinates.longitude.toDouble()
             ).getOrThrow()
 
-            val weatherDetailsForCurrentLocation = async {
+            val weatherDeferred = async {
                 weatherRepository.fetchWeatherForLocation(
-                    nameOfLocation = nameOfLocation,
-                    latitude = coordinates.latitude,
-                    longitude = coordinates.longitude
+                    nameOfLocation,
+                    coordinates.latitude,
+                    coordinates.longitude
                 ).getOrThrow().toBriefWeatherDetails()
             }
 
-            val hourlyForecastsForCurrentLocation = async {
+            val forecastDeferred = async {
                 weatherRepository.fetchHourlyForecastsForNext24Hours(
                     latitude = coordinates.latitude,
                     longitude = coordinates.longitude
                 ).getOrThrow()
             }
+
             _uiState.update {
                 it.copy(
                     isLoadingWeatherDetailsOfCurrentLocation = false,
                     errorFetchingWeatherForCurrentLocation = false,
-                    weatherDetailsOfCurrentLocation = weatherDetailsForCurrentLocation.await(),
-                    hourlyForecastsForCurrentLocation = hourlyForecastsForCurrentLocation.await(),
+                    weatherDetailsOfCurrentLocation = weatherDeferred.await(),
+                    hourlyForecastsForCurrentLocation = forecastDeferred.await()
                 )
             }
         }
+    }
+
+    /**
+     * Efficiently fetches weather details for each saved location using cache.
+     *
+     * @param savedLocations The list of saved user locations
+     * @return A [Result] containing a list of [BriefWeatherDetails] if successful
+     */
+    private suspend fun fetchCurrentWeatherDetailsWithCache(
+        savedLocations: List<SavedLocation>
+    ): Result<List<BriefWeatherDetails>?> {
+        val savedLocationsSet = savedLocations.toSet()
+        val removedLocations = currentWeatherDetailsCache.keys - savedLocationsSet
+        removedLocations.forEach { currentWeatherDetailsCache.remove(it) }
+
+        val locationsToFetch = savedLocationsSet - currentWeatherDetailsCache.keys
+        for (location in locationsToFetch) {
+            try {
+                val details = weatherRepository.fetchWeatherForLocation(
+                    nameOfLocation = location.nameOfLocation,
+                    latitude = location.coordinates.latitude,
+                    longitude = location.coordinates.longitude
+                ).getOrThrow()
+                currentWeatherDetailsCache[location] = details
+            } catch (e: Exception) {
+                if (e is CancellationException) throw e
+                return Result.failure(e)
+            }
+        }
+
+        return Result.success(
+            currentWeatherDetailsCache.values.map { it.toBriefWeatherDetails() }
+        )
     }
 }

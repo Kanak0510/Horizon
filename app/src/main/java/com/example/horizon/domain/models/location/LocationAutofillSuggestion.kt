@@ -4,11 +4,13 @@ import com.example.horizon.data.remote.location.models.SuggestionsResponse
 import com.example.horizon.data.remote.location.models.circularCountryFlagUrl
 
 /**
- * This is a data class that models an auto-fill suggestion for a location query.
- * @param idOfLocation The id of the location.
- * @param nameOfLocation The name of the location.
- * @param addressOfLocation The address of the location.
- * @param coordinatesOfLocation The [Coordinates] of the location.
+ * Represents a single suggestion for location auto-fill functionality.
+ *
+ * @property idOfLocation The unique identifier of the location.
+ * @property nameOfLocation The display name of the location.
+ * @property addressOfLocation The formatted address, typically "State, Country".
+ * @property coordinatesOfLocation The [Coordinates] of the location.
+ * @property countryFlagUrl A URL pointing to a circular version of the country's flag.
  */
 data class LocationAutofillSuggestion(
     val idOfLocation: String,
@@ -19,14 +21,17 @@ data class LocationAutofillSuggestion(
 )
 
 /**
- * A mapper function used to map a list of type [SuggestionsResponse.Suggestion] to a list of
- * of type [LocationAutofillSuggestion].
+ * Converts a list of [SuggestionsResponse.Suggestion] into a list of [LocationAutofillSuggestion].
  *
- * Note: This method **filters out all instances of [SuggestionsResponse.Suggestion] that have
- * the [SuggestionsResponse.Suggestion.state] set to null.**
+ * This function filters out any suggestions missing essential fields:
+ * - `state`
+ * - `country`
+ * - `circularCountryFlagUrl`
+ *
+ * @return A list of [LocationAutofillSuggestion] objects derived from valid suggestions.
  */
 fun List<SuggestionsResponse.Suggestion>.toLocationAutofillSuggestionList(): List<LocationAutofillSuggestion> =
-    this.filter { it.state != null && it.country != null && it.circularCountryFlagUrl != null }
+    filter { it.state != null && it.country != null && it.circularCountryFlagUrl != null }
         .map {
             LocationAutofillSuggestion(
                 idOfLocation = it.idOfPlace,
@@ -37,6 +42,5 @@ fun List<SuggestionsResponse.Suggestion>.toLocationAutofillSuggestionList(): Lis
                     longitude = it.longitude
                 ),
                 countryFlagUrl = it.circularCountryFlagUrl!!
-
             )
         }

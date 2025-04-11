@@ -12,44 +12,62 @@ import java.util.UUID
 import javax.inject.Inject
 
 /**
- * An instance of [TextGeneratorClient] that uses Google's Gemini model under the hood.
+ * A concrete implementation of [TextGeneratorClient] that uses Google's Gemini model
+ * to generate text responses based on a sequence of user/system messages.
+ *
+ * This client converts structured prompt messages into a plain text prompt and sends
+ * it to the Gemini API, returning a formatted [GeneratedTextResponse].
  */
 class GeminiTextGeneratorClient @Inject constructor() : TextGeneratorClient {
 
+    // Instance of the Gemini generative model initialized with model name and API key
     private val generativeModel = GenerativeModel(
         modelName = "gemini-2.0-flash",
         apiKey = BuildConfig.GOOGLE_GEMINI_API_KEY
     )
 
-    override suspend fun getModelResponseForConversations(textGenerationPostBody: TextGenerationPromptBody): Response<GeneratedTextResponse> {
+    /**
+     * Generates a response from the Gemini model based on the given conversation prompt.
+     *
+     * @param textGenerationPostBody The structured prompt body containing conversation history and model config.
+     * @return A successful [Response] containing [GeneratedTextResponse] if the generation succeeds,
+     *         or an error response if an exception occurs.
+     */
+    override suspend fun getModelResponseForConversations(
+        textGenerationPostBody: TextGenerationPromptBody
+    ): Response<GeneratedTextResponse> {
         return try {
-            // Creating a list of type <Content>  always resulted in the
-            // following exception to be thrown - ServerException with the message
-            // "please ensure that multi-turn requests ends with a user role or a function response."
-            // Creating a list of type <Content>  always resulted in the
-            // following exception to be thrown - ServerException with the message
-            // "please ensure that multi-turn requests ends with a user role or a function response."
+            // Concatenates all prompt message contents into a single string to feed to Gemini
             val prompt = textGenerationPostBody.messages.fold("") { acc, messageDTO ->
                 acc + " ${messageDTO.content}"
             }
-            val defaultErrorMessage =
-                "Sorry, I'm having trouble responding to you. Please try again."
+
+            val defaultErrorMessage = "Sorry, I'm having trouble responding to you. Please try again."
+
+            // Generate content from the Gemini model using the constructed prompt
             val generatedResponse = GeneratedTextResponse.GeneratedResponse(
                 message = MessageDTO(
-                    role = "",
+                    role = "", // Role isn't used in the response here
                     content = generativeModel.generateContent(prompt).text ?: defaultErrorMessage
                 )
             )
+
+            // Wrap the generated result with metadata into a full response object
             val currentTimeInSeconds = (System.currentTimeMillis() / 1000).toInt()
             val generatedTextResponse = GeneratedTextResponse(
                 id = UUID.randomUUID().toString(),
                 created = currentTimeInSeconds,
                 generatedResponses = listOf(generatedResponse)
             )
+
+            // Return a successful Retrofit response
             Response.success(generatedTextResponse)
+
         } catch (exception: Exception) {
             println(exception)
+            // If coroutine was cancelled, propagate the exception
             if (exception is CancellationException) throw exception
+            // Return a 400 error response in case of failure
             Response.error(400, EMPTY_RESPONSE)
         }
     }

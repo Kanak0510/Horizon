@@ -1,31 +1,38 @@
 package com.example.horizon.data.remote.weather.models
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 /**
- * A data class representing the response of hourly weather information.
- * @property hourlyForecast The hourly forecast data.
+ * A data class representing the response containing hourly weather forecast information
+ * for a specific location.
+ *
+ * @property latitude The latitude of the queried location.
+ * @property longitude The longitude of the queried location.
+ * @property hourlyForecast The [HourlyForecast] data which includes temperature, weather code,
+ * and precipitation probability for each hour.
  */
-@JsonClass(generateAdapter = true)
+@Serializable
 data class HourlyWeatherInfoResponse(
     val latitude: String,
     val longitude: String,
-    @Json(name = "hourly") val hourlyForecast: HourlyForecast
+    @SerialName("hourly") val hourlyForecast: HourlyForecast
 ) {
     /**
-     * A data class representing the hourly forecast data.
-     * @property timestamps The list of timestamps representing the hours.
-     * @property precipitationProbabilityPercentages A list of precipitation probability percentages
-     * for the [timestamps].
-     * @property weatherCodes A list of weather codes for the [timestamps].
-     * @property temperatureForecasts A list of forecasted temperatures for the [timestamps].
+     * A data class representing hourly forecast details for a location.
+     *
+     * @property timestamps The list of timestamps (ISO 8601 format) representing the forecasted hours.
+     * @property precipitationProbabilityPercentages A list of precipitation probability values (in percentage)
+     * corresponding to each [timestamp].
+     * @property weatherCodes A list of weather condition codes representing different weather states
+     * (e.g., clear, rain, snow) for each hour.
+     * @property temperatureForecasts A list of forecasted temperatures (in degrees Celsius) for each hour.
      */
-    @JsonClass(generateAdapter = true)
+    @Serializable
     data class HourlyForecast(
-        @Json(name = "time") val timestamps: List<String>,
-        @Json(name = "precipitation_probability") val precipitationProbabilityPercentages: List<Int> = emptyList(),
-        @Json(name = "weathercode") val weatherCodes: List<Int> = emptyList(),
-        @Json(name = "temperature_2m") val temperatureForecasts: List<Float> = emptyList()
+        @SerialName("time") val timestamps: List<String>,
+        @SerialName("precipitation_probability") val precipitationProbabilityPercentages: List<Int> = emptyList(),
+        @SerialName("weathercode") val weatherCodes: List<Int> = emptyList(),
+        @SerialName("temperature_2m") val temperatureForecasts: List<Float> = emptyList()
     )
 }

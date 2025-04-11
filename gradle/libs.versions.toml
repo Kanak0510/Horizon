@@ -8,20 +8,19 @@ desugar_jdk_libs = "2.1.5"
 generativeai = "0.9.0"
 hiltWork = "1.2.0"
 kotlin = "2.1.20"
-coreKtx = "1.15.0"
+coreKtx = "1.16.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 kotlinxCoroutinesPlayServices = "1.10.1"
 kotlinxCoroutinesTest = "1.10.1"
+kotlinxSerializationJson = "1.8.1"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.10.1"
-composeBom = "2025.03.01"
+composeBom = "2025.04.00"
 lifecycleViewModelCompose = "2.8.7"
 material = "1.12.0"
 mockitoKotlin = "5.4.0"
-moshi = "1.15.2"
-moshiKotlinCodegen = "1.15.2"
 navigationCompose = "2.8.9"
 daggerHiltAndroid = "2.55"
 daggerHiltCompiler = "2.55"
@@ -29,7 +28,8 @@ hiltNavigationCompose = "1.2.0"
 library = "8.9.1"
 playServicesLocation = "21.3.0"
 retrofit = "2.11.0"
-roomRuntime = "2.6.1"
+retrofit2KotlinxSerializationConverter = "1.0.0"
+roomRuntime = "2.7.0"
 timber = "5.0.1"
 ksp = "2.1.20-1.0.32"
 workRuntimeKtx = "2.10.0"
@@ -72,12 +72,12 @@ androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navig
 jakewharton-timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 kotlinx-coroutines-play-services = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "kotlinxCoroutinesPlayServices" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
 mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockitoKotlin" }
-moshi = { module = "com.squareup.moshi:moshi", version.ref = "moshi" }
-moshi-kotlin-codegen = { module = "com.squareup.moshi:moshi-kotlin-codegen", version.ref = "moshiKotlinCodegen" }
 play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+retrofit2-kotlinx-serialization-converter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "retrofit2KotlinxSerializationConverter" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -86,4 +86,4 @@ kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "ko
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 android-library = { id = "com.android.library", version.ref = "library" }
 google-dagger-hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "daggerHiltAndroid" }
-
+kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

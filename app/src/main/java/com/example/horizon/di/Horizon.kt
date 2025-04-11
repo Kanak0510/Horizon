@@ -13,36 +13,55 @@ import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
+/**
+ * Application class for the Horizon app. Sets up Hilt, Timber, and periodic cleanup work.
+ */
 @HiltAndroidApp
 class Horizon : Application(), Configuration.Provider {
 
+    /**
+     * Injected [HiltWorkerFactory] used to provide custom Worker instances.
+     */
     @Inject
     lateinit var hiltWorkerFactory: HiltWorkerFactory
+
     override fun onCreate() {
         super.onCreate()
-        if (BuildConfig.DEBUG) Timber.plant(Timber.DebugTree())
+
+        // Initialize Timber for logging in debug builds.
+        if (BuildConfig.DEBUG) {
+            Timber.plant(Timber.DebugTree())
+        }
+
+        // Schedule periodic cleanup task to delete marked items from the database.
         enqueueDeleteMarkedItemsWorker()
     }
 
+    /**
+     * Configures WorkManager to use Hilt for Worker dependency injection.
+     */
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder()
             .setWorkerFactory(hiltWorkerFactory)
             .build()
 
+    /**
+     * Enqueues a [CleanupWorker] to run weekly, cleaning up deleted or unused database entries.
+     */
     private fun enqueueDeleteMarkedItemsWorker() {
         val periodicWorkRequest = PeriodicWorkRequestBuilder<CleanupWorker>(
-            repeatInterval = 7, // Repeat Every Week
-            repeatIntervalTimeUnit = TimeUnit.DAYS
+            7, TimeUnit.DAYS // Repeat every 7 days
         ).build()
-        WorkManager.getInstance(this)
-            .enqueueUniquePeriodicWork(
-                DELETE_MARKED_ITEMS_WORK_ID,
-                ExistingPeriodicWorkPolicy.KEEP,
-                periodicWorkRequest
-            )
+
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+            DELETE_MARKED_ITEMS_WORK_ID,
+            ExistingPeriodicWorkPolicy.KEEP,
+            periodicWorkRequest
+        )
     }
 
     companion object {
-        private const val DELETE_MARKED_ITEMS_WORK_ID = "com.example.horizon.data.workers.CleanupWorker"
+        private const val DELETE_MARKED_ITEMS_WORK_ID =
+            "com.example.horizon.data.workers.CleanupWorker"
     }
 }

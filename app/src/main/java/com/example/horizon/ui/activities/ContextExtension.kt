@@ -2,20 +2,25 @@ package com.example.horizon.ui.activities
 
 import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
 
 /**
- * Returns true if either [Manifest.permission.ACCESS_COARSE_LOCATION] or [Manifest.permission.ACCESS_FINE_LOCATION]
- * permission is granted. Otherwise, returns false.
+ * Checks whether the app has either coarse or fine location permission.
+ *
+ * @return `true` if either [Manifest.permission.ACCESS_COARSE_LOCATION] or
+ * [Manifest.permission.ACCESS_FINE_LOCATION] is granted, `false` otherwise.
  */
 fun Context.hasLocationPermission(): Boolean {
-    val isCoarseLocationPermissionGranted = ContextCompat.checkSelfPermission(
+    val coarseGranted = ContextCompat.checkSelfPermission(
         this,
         Manifest.permission.ACCESS_COARSE_LOCATION
-    ) == 1
-    val isFineLocationPermissionGranted = ContextCompat.checkSelfPermission(
+    ) == PackageManager.PERMISSION_GRANTED
+
+    val fineGranted = ContextCompat.checkSelfPermission(
         this,
         Manifest.permission.ACCESS_FINE_LOCATION
-    ) == 1
-    return isCoarseLocationPermissionGranted || isFineLocationPermissionGranted
+    ) == PackageManager.PERMISSION_GRANTED
+
+    return coarseGranted || fineGranted
 }

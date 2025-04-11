@@ -14,7 +14,16 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 
 /**
- * A worker that deletes all non-required items in the database.
+ * [CleanupWorker] is responsible for performing background cleanup operations
+ * in the database, such as removing soft-deleted weather entries and clearing
+ * cached generated texts.
+ *
+ * This worker ensures that unnecessary or obsolete data is removed periodically
+ * to maintain app performance and data relevance.
+ *
+ * @property savedWeatherDetailsDao DAO to interact with saved weather data.
+ * @property generatedTextCacheDao DAO to interact with cached text generations.
+ * @property ioDispatcher Dispatcher for performing I/O-bound operations.
  */
 @HiltWorker
 class CleanupWorker @AssistedInject constructor(
@@ -25,8 +34,14 @@ class CleanupWorker @AssistedInject constructor(
     @IODispatcher private val ioDispatcher: CoroutineDispatcher
 ) : CoroutineWorker(context, workerParameters) {
 
+    /**
+     * Executes the cleanup tasks on the I/O dispatcher.
+     *
+     * @return [Result.success] if cleanup was successful,
+     *         [Result.failure] if an error occurred (excluding cancellation).
+     */
     override suspend fun doWork(): Result = withContext(ioDispatcher) {
-        try {
+        return@withContext try {
             savedWeatherDetailsDao.deleteAllItemsMarkedAsDeleted()
             generatedTextCacheDao.deleteAllSavedText()
             Result.success()

@@ -1,37 +1,47 @@
 package com.example.horizon.data.remote.location.models
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 /**
- * This data class represents a response containing a list of place [suggestions] for a specific
- * query.
+ * Represents a response from a location suggestion API, typically used for autocomplete or search.
+ *
+ * @property suggestions A list of [Suggestion] objects that match the search query.
  */
-@JsonClass(generateAdapter = true)
-data class SuggestionsResponse(@Json(name = "results") val suggestions: List<Suggestion> = emptyList()) {
+@Serializable
+data class SuggestionsResponse(
+    @SerialName("results") val suggestions: List<Suggestion> = emptyList()
+) {
 
     /**
-     * This data class represents a single place suggestion for a specific query.
+     * Represents a single suggestion result returned by the location suggestion API.
      *
-     * @property idOfPlace The ID of the place.
-     * @property nameOfPlace The name of the place.
-     * @property country The country that the place is situated in.
+     * @property idOfPlace The unique identifier of the suggested place.
+     * @property nameOfPlace The name of the place (e.g., city or town).
+     * @property country The country where the place is located.
+     * @property state The administrative division or state (nullable).
+     * @property countryCode The ISO 3166-1 alpha-2 country code (nullable).
+     * @property latitude The latitude coordinate of the place.
+     * @property longitude The longitude coordinate of the place.
      */
-    @JsonClass(generateAdapter = true)
+    @Serializable
     data class Suggestion(
-        @Json(name = "id") val idOfPlace: String,
-        @Json(name = "name") val nameOfPlace: String,
-        @Json(name = "country") val country: String?,
-        @Json(name = "admin1") val state: String?,
-        @Json(name = "country_code") val countryCode: String?,
+        @SerialName("id") val idOfPlace: String,
+        @SerialName("name") val nameOfPlace: String,
+        @SerialName("country") val country: String?,
+        @SerialName("admin1") val state: String?,
+        @SerialName("country_code") val countryCode: String?,
         val latitude: String,
         val longitude: String
     )
 }
 
 /**
- * An extension property that contains a url pointing to an svg file containing a circular image
- * of a country's flag.
+ * Extension property that generates a URL pointing to a circular SVG image of the country's flag.
+ *
+ * This can be used for UI elements where you want to display a flag next to a suggested place.
+ *
+ * @return A full URL string to the flag image, or null if [countryCode] is not available.
  */
 val SuggestionsResponse.Suggestion.circularCountryFlagUrl: String?
     get() = countryCode?.let {

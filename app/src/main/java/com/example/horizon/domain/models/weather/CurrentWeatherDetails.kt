@@ -8,7 +8,15 @@ import com.example.horizon.domain.models.location.Coordinates
 import kotlin.math.roundToInt
 
 /**
- * A data class that holds the current weather details for a specific location.
+ * Represents detailed weather information for a specific location.
+ *
+ * @property nameOfLocation The name of the location.
+ * @property temperatureRoundedToInt The current temperature in Celsius, rounded to the nearest integer.
+ * @property weatherCondition A textual description of the weather condition.
+ * @property isDay Indicates whether it is currently day (1) or night (0).
+ * @property iconResId A drawable resource ID for the weather condition icon.
+ * @property imageResId A drawable resource ID for the background image representing the weather condition.
+ * @property coordinates The geographical [Coordinates] of the location.
  */
 data class CurrentWeatherDetails(
     val nameOfLocation: String,
@@ -21,18 +29,24 @@ data class CurrentWeatherDetails(
 )
 
 /**
- * Used to convert an instance of [CurrentWeatherDetails] to an instance of [BriefWeatherDetails].
+ * Converts [CurrentWeatherDetails] into a [BriefWeatherDetails] object.
+ *
+ * @return A brief weather summary.
  */
-fun CurrentWeatherDetails.toBriefWeatherDetails(): BriefWeatherDetails = BriefWeatherDetails(
-    nameOfLocation = nameOfLocation,
-    currentTemperatureRoundedToInt = temperatureRoundedToInt,
-    shortDescription = weatherCondition,
-    shortDescriptionIcon = iconResId,
-    coordinates = coordinates
-)
+fun CurrentWeatherDetails.toBriefWeatherDetails(): BriefWeatherDetails =
+    BriefWeatherDetails(
+        nameOfLocation = nameOfLocation,
+        currentTemperatureRoundedToInt = temperatureRoundedToInt,
+        shortDescription = weatherCondition,
+        shortDescriptionIcon = iconResId,
+        coordinates = coordinates
+    )
 
 /**
- * Used to map an instance of [CurrentWeatherResponse] to an instance of [CurrentWeatherDetails]
+ * Converts a [CurrentWeatherResponse] to a domain-level [CurrentWeatherDetails] object.
+ *
+ * @param nameOfLocation The human-readable name of the location.
+ * @return A domain model with detailed weather data.
  */
 fun CurrentWeatherResponse.toCurrentWeatherDetails(nameOfLocation: String): CurrentWeatherDetails =
     CurrentWeatherDetails(
@@ -50,11 +64,13 @@ fun CurrentWeatherResponse.toCurrentWeatherDetails(nameOfLocation: String): Curr
         ),
         coordinates = Coordinates(
             latitude = latitude,
-            longitude = longitude,
+            longitude = longitude
         )
     )
 
-
+/**
+ * A map translating weather condition codes to human-readable descriptions.
+ */
 private val weatherCodeToDescriptionMap = mapOf(
     0 to "Clear sky",
     1 to "Mainly clear",
@@ -83,5 +99,5 @@ private val weatherCodeToDescriptionMap = mapOf(
     86 to "Heavy snow showers",
     95 to "Thunderstorms",
     96 to "Thunderstorms with slight hail",
-    99 to "Thunderstorms with heavy hail",
+    99 to "Thunderstorms with heavy hail"
 )

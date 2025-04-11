@@ -3,11 +3,18 @@ package com.example.horizon.domain.location
 import com.example.horizon.domain.models.location.Coordinates
 
 /**
- * A provider that provides the current location of the device.
+ * Interface for providing the current location of the device.
+ *
+ * Implementations of this interface are expected to use platform-specific
+ * location services to retrieve the current location as [Coordinates].
  */
 fun interface CurrentLocationProvider {
+
     /**
-     * Returns the current location of the device encapsulated in an instance of [Result].
+     * Asynchronously retrieves the current location of the device.
+     *
+     * @return A [Result] containing either the current [Coordinates] if successful,
+     * or an exception in case of failure.
      */
     suspend fun getCurrentLocation(): Result<Coordinates>
 }

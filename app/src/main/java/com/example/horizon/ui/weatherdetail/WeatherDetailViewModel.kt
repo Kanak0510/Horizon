@@ -21,44 +21,69 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * [WeatherDetailViewModel] is responsible for managing UI state and data retrieval
+ * for the [WeatherDetailScreen]. It fetches and exposes current weather details, forecasts,
+ * AI-generated summaries, and saved location status.
+ *
+ * @property savedStateHandle A handle to access navigation arguments.
+ * @property weatherRepository Repository for weather data operations.
+ * @property generativeTextRepository Repository for generating textual weather summaries.
+ */
 @HiltViewModel
 class WeatherDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val weatherRepository: WeatherRepository,
     private val generativeTextRepository: GenerativeTextRepository
 ) : ViewModel() {
-    private val latitude: String =
-        savedStateHandle[WeatherDetailScreen.NAV_ARG_LATITUDE]!!
-    private val longitude: String =
-        savedStateHandle[WeatherDetailScreen.NAV_ARG_LONGITUDE]!!
-    private val nameOfLocation: String =
-        savedStateHandle[WeatherDetailScreen.NAV_ARG_NAME_OF_LOCATION]!!
+
+    private val latitude: String = savedStateHandle[WeatherDetailScreen.NAV_ARG_LATITUDE]!!
+    private val longitude: String = savedStateHandle[WeatherDetailScreen.NAV_ARG_LONGITUDE]!!
+    private val nameOfLocation: String = savedStateHandle[WeatherDetailScreen.NAV_ARG_NAME_OF_LOCATION]!!
 
     private val _uiState = MutableStateFlow(WeatherDetailScreenUiState())
-    val uiState = _uiState as StateFlow<WeatherDetailScreenUiState>
+    val uiState: StateFlow<WeatherDetailScreenUiState> = _uiState
 
     init {
+        observeSavedLocationStatus()
+        fetchWeatherDetailsOnInit()
+    }
+
+    /**
+     * Observes whether the current location is already saved by the user and updates the UI state accordingly.
+     */
+    private fun observeSavedLocationStatus() {
         weatherRepository.getSavedLocationsListStream()
-            .map { namesOfSavedLocationsList ->
-                namesOfSavedLocationsList.any { it.nameOfLocation == nameOfLocation }
+            .map { savedLocations -> savedLocations.any { it.nameOfLocation == nameOfLocation } }
+            .onEach { isSaved ->
+                _uiState.update { it.copy(isPreviouslySavedLocation = isSaved) }
             }
-            .onEach { isPreviouslySavedLocation ->
-                _uiState.update { it.copy(isPreviouslySavedLocation = isPreviouslySavedLocation) }
-            }
-            .launchIn(scope = viewModelScope)
+            .launchIn(viewModelScope)
+    }
+
+    /**
+     * Initiates data loading when the ViewModel is created.
+     */
+    private fun fetchWeatherDetailsOnInit() {
         viewModelScope.launch {
             try {
                 fetchWeatherDetailsAndUpdateState()
-            } catch (exception: Exception) {
-                if (exception is CancellationException) throw exception
-                _uiState.update { it.copy(isLoading = false, errorMessage = DEFAULT_ERROR_MESSAGE) }
+            } catch (e: Exception) {
+                if (e is CancellationException) throw e
+                _uiState.update {
+                    it.copy(isLoading = false, errorMessage = DEFAULT_ERROR_MESSAGE)
+                }
             }
         }
     }
 
-    private suspend fun fetchWeatherDetailsAndUpdateState(): Unit = coroutineScope {
+    /**
+     * Fetches weather data concurrently and updates the UI state.
+     */
+    private suspend fun fetchWeatherDetailsAndUpdateState() = coroutineScope {
         _uiState.update { it.copy(isLoading = true, isWeatherSummaryTextLoading = true) }
-        val weatherDetailsOfChosenLocation = async {
+
+        val weatherDetailsDeferred = async {
             weatherRepository.fetchWeatherForLocation(
                 nameOfLocation = nameOfLocation,
                 latitude = latitude,
@@ -66,54 +91,54 @@ class WeatherDetailViewModel @Inject constructor(
             ).getOrThrow()
         }
 
-        val summaryMessage = async {
-            generativeTextRepository.generateTextForWeatherDetails(
-                weatherDetails = weatherDetailsOfChosenLocation.await()
-            ).getOrNull()
+        val summaryDeferred = async {
+            generativeTextRepository.generateTextForWeatherDetails(weatherDetailsDeferred.await()).getOrNull()
         }
 
-        val precipitationProbabilities = async {
+        val precipitationDeferred = async {
             weatherRepository.fetchPrecipitationProbabilitiesForNext24hours(
                 latitude = latitude,
                 longitude = longitude
             ).getOrThrow()
         }
 
-        val hourlyForecasts = async {
+        val hourlyForecastsDeferred = async {
             weatherRepository.fetchHourlyForecastsForNext24Hours(
                 latitude = latitude,
                 longitude = longitude
             ).getOrThrow()
         }
 
-        val additionalWeatherInfoItems = async {
+        val additionalWeatherInfoDeferred = async {
             weatherRepository.fetchAdditionalWeatherInfoItemsListForCurrentDay(
                 latitude = latitude,
                 longitude = longitude
             ).getOrThrow()
         }
 
+        // Update UI with core weather data
         _uiState.update {
             it.copy(
                 isLoading = false,
-                weatherDetailsOfChosenLocation = weatherDetailsOfChosenLocation.await(),
-                precipitationProbabilities = precipitationProbabilities.await(),
-                hourlyForecasts = hourlyForecasts.await(),
-                additionalWeatherInfoItems = additionalWeatherInfoItems.await()
+                weatherDetailsOfChosenLocation = weatherDetailsDeferred.await(),
+                precipitationProbabilities = precipitationDeferred.await(),
+                hourlyForecasts = hourlyForecastsDeferred.await(),
+                additionalWeatherInfoItems = additionalWeatherInfoDeferred.await()
             )
         }
 
-        // The summary message will relatively take a longer amount of time to return
-        // back, when compared to other fetch operations. Hence update the ui state
-        // separately after the summary message successfully fetched.
+        // Update summary text separately as it may take longer to generate
         _uiState.update {
             it.copy(
                 isWeatherSummaryTextLoading = false,
-                weatherSummaryText = summaryMessage.await()
+                weatherSummaryText = summaryDeferred.await()
             )
         }
     }
 
+    /**
+     * Adds the current location to the saved locations list in the repository.
+     */
     fun addLocationToSavedLocations() {
         viewModelScope.launch {
             weatherRepository.saveWeatherLocation(
@@ -126,7 +151,6 @@ class WeatherDetailViewModel @Inject constructor(
 
     companion object {
         private const val DEFAULT_ERROR_MESSAGE =
-            "Oops! An error occurred when trying to fetch the " +
-                    "weather details. Please try again."
+            "Oops! An error occurred while fetching the weather details. Please try again."
     }
 }

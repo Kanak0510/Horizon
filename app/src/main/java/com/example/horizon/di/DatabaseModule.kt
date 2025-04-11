@@ -13,27 +13,47 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+/**
+ * Hilt module responsible for providing database-related dependencies.
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
 
+    /**
+     * Provides a singleton instance of [HorizonDatabaseDao], backed by [HorizonDatabase].
+     *
+     * @param context Application context injected by Hilt.
+     * @return The DAO interface for weather-related database operations.
+     */
     @Provides
     @Singleton
-    fun provideJustWeatherDatabaseDao(
+    fun provideWeatherDatabaseDao(
         @ApplicationContext context: Context
-    ): HorizonDatabaseDao = Room.databaseBuilder(
-        context = context,
-        klass = HorizonDatabase::class.java,
-        name = HorizonDatabase.DATABASE_NAME
-    ).build().getDao()
+    ): HorizonDatabaseDao {
+        return Room.databaseBuilder(
+            context,
+            HorizonDatabase::class.java,
+            HorizonDatabase.DATABASE_NAME
+        ).build().getDao()
+    }
 
+    /**
+     * Provides a singleton instance of [GeneratedTextCacheDatabaseDao], backed by
+     * [HorizonGeneratedTextCacheDatabase].
+     *
+     * @param context Application context injected by Hilt.
+     * @return The DAO interface for generated text cache operations.
+     */
     @Provides
     @Singleton
     fun provideGeneratedTextCacheDatabaseDao(
         @ApplicationContext context: Context
-    ): GeneratedTextCacheDatabaseDao = Room.databaseBuilder(
-        context = context,
-        klass = HorizonGeneratedTextCacheDatabase::class.java,
-        name = HorizonGeneratedTextCacheDatabase.DATABASE_NAME
-    ).build().getDao()
+    ): GeneratedTextCacheDatabaseDao {
+        return Room.databaseBuilder(
+            context,
+            HorizonGeneratedTextCacheDatabase::class.java,
+            HorizonGeneratedTextCacheDatabase.DATABASE_NAME
+        ).build().getDao()
+    }
 }

@@ -3,12 +3,17 @@ package com.example.horizon.data.repositories.location
 import com.example.horizon.domain.models.location.LocationAutofillSuggestion
 
 /**
- * A repository that is responsible for managing all location related operations.
+ * Repository interface responsible for managing all location-related operations,
+ * such as fetching place suggestions based on user queries.
  */
 interface LocationServicesRepository {
+
     /**
-     * Fetches suggested places for a given [query] and returns an instance of [Result] containing
-     * a list of [LocationAutofillSuggestion]'s if the fetch was successful.
+     * Fetches a list of suggested locations based on the provided [query].
+     *
+     * @param query The user input string used to search for matching place suggestions.
+     * @return A [Result] containing a list of [LocationAutofillSuggestion] if the operation
+     * was successful, or an error if the request failed.
      */
     suspend fun fetchSuggestedPlacesForQuery(query: String): Result<List<LocationAutofillSuggestion>>
 }

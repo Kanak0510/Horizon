@@ -17,18 +17,19 @@ import kotlin.coroutines.resume
 /**
  * Requests both [Manifest.permission.ACCESS_COARSE_LOCATION] and
  * [Manifest.permission.ACCESS_FINE_LOCATION] permissions.
- * Returns true if either of the permissions are granted. Otherwise, returns false.
+ *
+ * @return true if at least one of the permissions is granted, false otherwise.
  */
 suspend fun ComponentActivity.requestLocationPermission(): Boolean =
     suspendCancellableCoroutine { continuation ->
-        val locationPermissionRequest =
+        val permissionLauncher =
             registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
-                continuation.resume(
-                    permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true ||
-                            permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true
-                )
+                val granted = permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true ||
+                        permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true
+                continuation.resume(granted)
             }
-        locationPermissionRequest.launch(
+
+        permissionLauncher.launch(
             arrayOf(
                 Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -36,10 +37,12 @@ suspend fun ComponentActivity.requestLocationPermission(): Boolean =
         )
     }
 
-
 /**
- * Used to get the current [Location] of the user using [FusedLocationProviderClient]. If
- * any exception occurs when trying to get the location, this method will return null.
+ * Retrieves the current [Location] of the user using [FusedLocationProviderClient].
+ *
+ * @return the current [Location] if successful, or `null` if an error occurs.
+ *
+ * @throws CancellationException if the coroutine is cancelled during execution.
  */
 @RequiresPermission(anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION])
 suspend fun ComponentActivity.getCurrentLocation(): Location? {
@@ -47,13 +50,11 @@ suspend fun ComponentActivity.getCurrentLocation(): Location? {
     val locationRequest = CurrentLocationRequest.Builder()
         .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
         .build()
+
     return try {
-        fusedLocationClient.getCurrentLocation(
-            locationRequest,
-            null
-        ).await()
-    } catch (exception: Exception) {
-        if (exception is CancellationException) throw exception
+        fusedLocationClient.getCurrentLocation(locationRequest, null).await()
+    } catch (e: Exception) {
+        if (e is CancellationException) throw e
         null
     }
 }

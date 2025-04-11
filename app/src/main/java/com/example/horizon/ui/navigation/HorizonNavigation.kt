@@ -25,13 +25,18 @@ import com.example.horizon.ui.weatherdetail.WeatherDetailScreen
 import com.example.horizon.ui.weatherdetail.WeatherDetailViewModel
 import kotlinx.coroutines.launch
 
+/**
+ * Root navigation composable for the Horizon app.
+ * Hosts and manages all screen navigation using Jetpack Navigation Compose.
+ *
+ * @param navController The [NavHostController] to control navigation actions.
+ */
 @Composable
 fun HorizonNavigation(navController: NavHostController = rememberNavController()) {
     NavHost(
         navController = navController,
         startDestination = HorizonNavigationDestinations.HomeScreen.route
     ) {
-
         homeScreen(
             route = HorizonNavigationDestinations.HomeScreen.route,
             onSuggestionClick = {
@@ -57,9 +62,12 @@ fun HorizonNavigation(navController: NavHostController = rememberNavController()
     }
 }
 
+/**
+ * Adds the Home screen composable to the navigation graph.
+ */
 private fun NavGraphBuilder.homeScreen(
     route: String,
-    onSuggestionClick: (suggestion: LocationAutofillSuggestion) -> Unit,
+    onSuggestionClick: (LocationAutofillSuggestion) -> Unit,
     onSavedLocationItemClick: (BriefWeatherDetails) -> Unit
 ) {
     composable(route = route) {
@@ -67,15 +75,16 @@ private fun NavGraphBuilder.homeScreen(
         val uiState by viewModel.uiState.collectAsState()
         val snackbarHostState = remember { SnackbarHostState() }
         val coroutineScope = rememberCoroutineScope()
-        val showSnackbar = { briefWeatherDetails: BriefWeatherDetails ->
+
+        val showUndoSnackbar = { deletedItem: BriefWeatherDetails ->
             coroutineScope.launch {
                 snackbarHostState.currentSnackbarData?.dismiss()
-                val snackbarResult = snackbarHostState.showSnackbar(
-                    message = "${briefWeatherDetails.nameOfLocation} has been deleted",
+                val result = snackbarHostState.showSnackbar(
+                    message = "${deletedItem.nameOfLocation} has been deleted",
                     actionLabel = "Undo",
                     duration = SnackbarDuration.Short
                 )
-                if (snackbarResult == SnackbarResult.ActionPerformed) {
+                if (result == SnackbarResult.ActionPerformed) {
                     viewModel.restoreRecentlyDeletedItem()
                 }
             }
@@ -87,7 +96,7 @@ private fun NavGraphBuilder.homeScreen(
             snackbarHostState = snackbarHostState,
             onSavedLocationDismissed = {
                 viewModel.deleteSavedWeatherLocation(it)
-                showSnackbar(it)
+                showUndoSnackbar(it)
             },
             onSearchQueryChange = viewModel::setSearchQueryForSuggestionsGeneration,
             onSuggestionClick = onSuggestionClick,
@@ -98,6 +107,9 @@ private fun NavGraphBuilder.homeScreen(
     }
 }
 
+/**
+ * Adds the Weather Detail screen composable to the navigation graph.
+ */
 fun NavGraphBuilder.weatherDetailScreen(
     route: String,
     onBackButtonClick: () -> Unit
@@ -123,15 +135,20 @@ fun NavGraphBuilder.weatherDetailScreen(
     }
 }
 
+/**
+ * Navigates to the Weather Detail screen with the specified [nameOfLocation], [latitude], and [longitude].
+ */
 private fun NavHostController.navigateToWeatherDetailScreen(
     nameOfLocation: String,
     latitude: String,
     longitude: String
 ) {
-    val destination = HorizonNavigationDestinations.WeatherDetailScreen.buildRoute(
+    val route = HorizonNavigationDestinations.WeatherDetailScreen.buildRoute(
         nameOfLocation = nameOfLocation,
         latitude = latitude,
         longitude = longitude
     )
-    navigate(destination) { launchSingleTop = true }
+    navigate(route) {
+        launchSingleTop = true
+    }
 }

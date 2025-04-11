@@ -1,38 +1,39 @@
 package com.example.horizon.data.remote.weather
 
+import com.example.horizon.data.remote.weather.WeatherClientConstants.TimeZoneConfiguration.DEFAULT_FOR_GIVEN_COORDINATES
 import com.example.horizon.data.remote.weather.WeatherClientConstants.TimeZoneConfiguration.LOCAL_DEVICE_TIMEZONE
 import java.time.ZoneId
 
 /**
- * This object contains used by the [WeatherClient].
+ * Contains constants and enums used by the [WeatherClient] to configure
+ * API requests for fetching weather data.
  */
 object WeatherClientConstants {
 
     /**
-     * The base URL of the OpenWeatherMap API.
+     * Base URL of the Open-Meteo API.
      */
     const val BASE_URL = "https://api.open-meteo.com/v1/"
 
     /**
-     * The endpoints of the OpenWeatherMap API
+     * API endpoints provided by the Open-Meteo service.
      */
     object EndPoints {
         const val FORECAST = "forecast"
     }
 
     /**
-     * Different temperature units supported by the API.
+     * Supported temperature units for weather data.
      */
     enum class TemperatureUnits(private val valueToBeSentToTheApi: String) {
         CELSIUS("celsius"),
         FAHRENHEIT("fahrenheit");
 
         override fun toString(): String = valueToBeSentToTheApi
-
     }
 
     /**
-     * Different wind speed units supported by the API.
+     * Supported wind speed units for weather data.
      */
     enum class WindSpeedUnit(private val valueToBeSentToTheApi: String) {
         KILOMETERS_PER_HOUR("kmh"),
@@ -42,18 +43,17 @@ object WeatherClientConstants {
     }
 
     /**
-     * Different precipitation units supported by the API.
+     * Supported precipitation units for weather data.
      */
     enum class PrecipitationUnit(private val valueToBeSentToTheApi: String) {
         MILLIMETERS("mm"),
         INCHES("inch");
 
         override fun toString(): String = valueToBeSentToTheApi
-
     }
 
     /**
-     * Contains constants that represent the different daily forecast items available in the API.
+     * Available daily forecast data fields supported by the API.
      */
     enum class DailyForecastItems(private val valueToBeSentToTheApi: String) {
         MAX_TEMPERATURE("temperature_2m_max"),
@@ -65,6 +65,10 @@ object WeatherClientConstants {
         UV_INDEX("uv_index_max"),
         WIND_SPEED("windspeed_10m_max"),
         WIND_DIRECTION("winddirection_10m_dominant"),
+
+        /**
+         * All available daily forecast data fields, combined as a single string.
+         */
         ALL(
             "${MAX_TEMPERATURE},$MIN_TEMPERATURE," +
                     "$MAX_APPARENT_TEMPERATURE,$MIN_APPARENT_TEMPERATURE," +
@@ -75,37 +79,55 @@ object WeatherClientConstants {
     }
 
     /**
-     * Contains constants that represent the different hourly forecast items available in the API
+     * Available hourly forecast data fields supported by the API.
      */
     enum class HourlyForecastItems(private val valueToBeSentToTheApi: String) {
         PRECIPITATION_PROBABILITIES("precipitation_probability"),
         WEATHER_CODE("weathercode"),
         TEMPERATURE("temperature_2m"),
+
+        /**
+         * All available hourly forecast data fields, combined as a single string.
+         */
         ALL("$WEATHER_CODE,$PRECIPITATION_PROBABILITIES,$TEMPERATURE");
 
         override fun toString(): String = valueToBeSentToTheApi
     }
 
     /**
-     * Contains supported return type time formats by the API.
+     * Time formats supported by the API for weather data timestamps.
      */
     enum class TimeFormats(private val valueToBeSentToTheApi: String) {
+        /**
+         * Unix epoch time format (seconds since 1970-01-01 UTC).
+         */
         UNIX_EPOCH_TIME_IN_SECONDS("unixtime"),
+
+        /**
+         * ISO 8601 standard datetime format.
+         */
         ISO_8601("iso8601");
 
         override fun toString(): String = valueToBeSentToTheApi
     }
 
     /**
-     * Contains supported timezone configurations.
-     * WARNING: Try to avoid using the [LOCAL_DEVICE_TIMEZONE]. Using this will fetch all
-     * information according to the device's current time zone. This will almost never
-     * be needed because weather details such as the time of sunset and sunrise
-     * should always be specified based off of the timezone of the given coordinates and
-     * not the timezone of the device.
+     * Timezone configuration options for aligning forecast timestamps.
+     *
+     * **Note:** Prefer using [DEFAULT_FOR_GIVEN_COORDINATES] for weather-related data.
+     * Avoid using [LOCAL_DEVICE_TIMEZONE] unless absolutely necessary, as it can lead to
+     * incorrect interpretations of sunrise, sunset, and other time-dependent weather fields.
      */
     enum class TimeZoneConfiguration(private val valueToBeSentToTheApi: String) {
+        /**
+         * Automatically resolves to the timezone of the provided coordinates.
+         */
         DEFAULT_FOR_GIVEN_COORDINATES("auto"),
+
+        /**
+         * Uses the device's current system timezone.
+         * **Warning:** This may lead to inaccurate results for location-based weather data.
+         */
         LOCAL_DEVICE_TIMEZONE(ZoneId.systemDefault().toString());
 
         override fun toString(): String = valueToBeSentToTheApi

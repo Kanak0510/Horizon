@@ -1,9 +1,10 @@
 package com.example.horizon.domain.models.location
 
 /**
- * A data class that contains the coordinates of a location.
- * @param latitude The latitude of the location.
- * @param longitude The longitude of the location.
+ * Represents geographic coordinates of a location.
+ *
+ * @property latitude The latitude component, as a [String].
+ * @property longitude The longitude component, as a [String].
  */
 data class Coordinates(
     val latitude: String,

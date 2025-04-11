@@ -5,28 +5,29 @@ import com.example.horizon.domain.models.weather.PrecipitationProbability
 import kotlinx.coroutines.CancellationException
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.LocalTime
 
 /**
- * Used to fetch a list of [PrecipitationProbability], encapsulated in an instance of type [Result]
- * for the next 24 hours, from the current time, for the location with the provided [latitude]
- * and [longitude].
+ * Fetches a list of [PrecipitationProbability] values for the next 24 hours
+ * starting from the current time, for the specified [latitude] and [longitude].
+ *
+ * @param latitude The latitude of the location.
+ * @param longitude The longitude of the location.
+ * @return A [Result] containing a list of up to 24 [PrecipitationProbability] entries, or an error.
  */
 suspend fun WeatherRepository.fetchPrecipitationProbabilitiesForNext24hours(
     latitude: String,
     longitude: String,
 ): Result<List<PrecipitationProbability>> {
     return try {
-        val probabilitiesForNext24hours = this.fetchHourlyPrecipitationProbabilities(
+        val now = LocalDateTime.now()
+        val filtered = this.fetchHourlyPrecipitationProbabilities(
             latitude = latitude,
             longitude = longitude,
             dateRange = LocalDate.now()..LocalDate.now().plusDays(1)
-        ).getOrThrow().filter {
-            val isSameDay = it.dateTime == LocalDateTime.now()
-            if (isSameDay) it.dateTime.toLocalTime() >= LocalTime.now()
-            else it.dateTime > LocalDateTime.now()
-        }.take(24)
-        Result.success(probabilitiesForNext24hours)
+        ).getOrThrow().filter { it.dateTime.isAfter(now) || it.dateTime.toLocalTime() == now.toLocalTime() }
+            .take(24)
+
+        Result.success(filtered)
     } catch (exception: Exception) {
         if (exception is CancellationException) throw exception
         Result.failure(exception)
@@ -34,25 +35,27 @@ suspend fun WeatherRepository.fetchPrecipitationProbabilitiesForNext24hours(
 }
 
 /**
- * Used to fetch a list of [HourlyForecast]s, encapsulated in an instance of type [Result]
- * for the next 24 hours, from the current time, for the location with the provided
- * [latitude] and [longitude].
+ * Fetches a list of [HourlyForecast] values for the next 24 hours
+ * starting from the current time, for the specified [latitude] and [longitude].
+ *
+ * @param latitude The latitude of the location.
+ * @param longitude The longitude of the location.
+ * @return A [Result] containing a list of up to 24 [HourlyForecast] entries, or an error.
  */
 suspend fun WeatherRepository.fetchHourlyForecastsForNext24Hours(
     latitude: String,
     longitude: String,
 ): Result<List<HourlyForecast>> {
     return try {
-        val hourlyForecastsForNext24Hours = this.fetchHourlyForecasts(
+        val now = LocalDateTime.now()
+        val filtered = this.fetchHourlyForecasts(
             latitude = latitude,
             longitude = longitude,
             dateRange = LocalDate.now()..LocalDate.now().plusDays(1)
-        ).getOrThrow().filter {
-            val isSameDay = it.dateTime == LocalDateTime.now()
-            if (isSameDay) it.dateTime.toLocalTime() >= LocalTime.now()
-            else it.dateTime > LocalDateTime.now()
-        }.take(24)
-        Result.success(hourlyForecastsForNext24Hours)
+        ).getOrThrow().filter { it.dateTime.isAfter(now) || it.dateTime.toLocalTime() == now.toLocalTime() }
+            .take(24)
+
+        Result.success(filtered)
     } catch (exception: Exception) {
         if (exception is CancellationException) throw exception
         Result.failure(exception)

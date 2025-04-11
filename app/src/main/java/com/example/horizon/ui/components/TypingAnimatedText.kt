@@ -22,10 +22,28 @@ import androidx.compose.ui.unit.TextUnit
 import kotlinx.coroutines.delay
 
 /**
- * A [Text] composable that displays the [text] with a Typewriter like animation.
- * A Typewriter animation is, as the name suggests, an effect that looks like a typing animation,
- * as being typed by a typewriter. The [delayBetweenEachChar] param can be used to specify the amount
- * of time to wait before displaying each character.
+ * A [Text] composable that displays the given [text] with a typewriter-style animation.
+ *
+ * Characters are revealed one-by-one with a delay defined by [delayBetweenEachChar].
+ *
+ * @param text The complete text to display.
+ * @param modifier Modifier to apply to the text.
+ * @param delayBetweenEachChar Lambda returning the delay (in milliseconds) between each character.
+ * @param color Color of the text.
+ * @param fontSize Font size of the text.
+ * @param fontStyle Style of the font (e.g., Italic).
+ * @param fontWeight Weight of the font (e.g., Bold).
+ * @param fontFamily Font family to use.
+ * @param letterSpacing Additional letter spacing.
+ * @param textDecoration Optional text decorations (underline, strikethrough).
+ * @param textAlign Text alignment.
+ * @param lineHeight Line height for the text.
+ * @param overflow Overflow behavior (e.g., ellipsis).
+ * @param softWrap Whether text should break at soft line breaks.
+ * @param maxLines Maximum number of lines to display.
+ * @param minLines Minimum number of lines to display.
+ * @param onTextLayout Callback with layout result of the text.
+ * @param style Overall text style (merged with others).
  */
 @Composable
 fun TypingAnimatedText(
@@ -50,13 +68,17 @@ fun TypingAnimatedText(
 ) {
     var currentText by rememberSaveable(text) { mutableStateOf("") }
     var currentIndex by rememberSaveable(text) { mutableStateOf(0) }
+
     LaunchedEffect(text) {
-        while (currentIndex in text.indices) {
+        currentText = ""
+        currentIndex = 0
+        while (currentIndex < text.length) {
             currentText += text[currentIndex]
             currentIndex++
             delay(delayBetweenEachChar())
         }
     }
+
     Text(
         text = currentText,
         modifier = modifier,

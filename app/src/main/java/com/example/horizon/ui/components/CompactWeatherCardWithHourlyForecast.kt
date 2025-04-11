@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -30,7 +31,16 @@ import com.example.horizon.domain.models.weather.HourlyForecast
 import java.time.LocalDateTime
 
 /**
- * A [CompactWeatherCard] with a scrollable hourly forecasts list.
+ * A weather card that shows basic weather info along with a horizontally scrollable
+ * list of hourly forecasts.
+ *
+ * @param nameOfLocation Location name (e.g., "San Francisco").
+ * @param shortDescription Brief description of the current weather.
+ * @param shortDescriptionIcon Drawable resource for the current weather icon.
+ * @param weatherInDegrees Temperature in degrees (e.g., "25").
+ * @param onClick Callback invoked when the card is clicked.
+ * @param hourlyForecasts List of [HourlyForecast] data to be displayed in a horizontal list.
+ * @param modifier Modifier for the card container.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,59 +53,70 @@ fun CompactWeatherCardWithHourlyForecast(
     hourlyForecasts: List<HourlyForecast>,
     modifier: Modifier = Modifier
 ) {
-    val weatherWithDegreesSuperscript = remember(weatherInDegrees) {
-        // note: the weather superscript used here is not the default one that
-        // is available on Macs by using the shortcut option + 0. The one used in
-        // MacOS does not look good in the user interface.
-        "$weatherInDegrees°"
-    }
-    OutlinedCard(modifier = modifier, onClick = onClick) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
+    val temperatureWithDegree = remember(weatherInDegrees) { "$weatherInDegrees°" }
+
+    OutlinedCard(
+        modifier = modifier,
+        onClick = onClick
+    ) {
+        Column {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = nameOfLocation,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Medium
+                    )
+                    ShortWeatherDescriptionWithIconRow(
+                        shortDescription = shortDescription,
+                        iconRes = shortDescriptionIcon
+                    )
+                }
+
                 Text(
-                    text = nameOfLocation,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Medium
-                )
-                ShortWeatherDescriptionWithIconRow(
-                    shortDescription = shortDescription,
-                    iconRes = shortDescriptionIcon
+                    text = temperatureWithDegree,
+                    style = MaterialTheme.typography.displayMedium
                 )
             }
-            Text(
-                text = weatherWithDegreesSuperscript,
-                style = MaterialTheme.typography.displayMedium
-            )
-        }
-        LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(16.dp)
-        ) {
-            items(hourlyForecasts) {
-                HourlyForecastItem(
-                    dateTime = it.dateTime,
-                    iconResId = it.weatherIconResId,
-                    temperature = it.temperature
-                )
+
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                contentPadding = PaddingValues(16.dp)
+            ) {
+                items(hourlyForecasts) { forecast ->
+                    HourlyForecastItem(
+                        dateTime = forecast.dateTime,
+                        iconResId = forecast.weatherIconResId,
+                        temperature = forecast.temperature
+                    )
+                }
             }
         }
     }
 }
 
+/**
+ * Represents a single forecast item in the horizontal scroll.
+ *
+ * @param dateTime Time for the forecast (used for hour label).
+ * @param iconResId Icon representing the weather condition.
+ * @param temperature Temperature at the given hour.
+ * @param modifier Modifier for layout customization.
+ */
 @Composable
 private fun HourlyForecastItem(
-    modifier: Modifier = Modifier,
     dateTime: LocalDateTime,
     @DrawableRes iconResId: Int,
-    temperature: Int
+    temperature: Int,
+    modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier,
@@ -106,25 +127,28 @@ private fun HourlyForecastItem(
             text = dateTime.hourStringInTwelveHourFormat,
             style = MaterialTheme.typography.labelLarge
         )
-        // Explicitly set tint to Color.Unspecified to ensure that no tint is applied to the vector
-        // resource. See documentation of the Icon composable for more information.
+
         Icon(
             modifier = Modifier.size(40.dp),
             imageVector = ImageVector.vectorResource(id = iconResId),
             contentDescription = null,
-            tint = Color.Unspecified
+            tint = Color.Unspecified // preserves original vector color
         )
-        // note: the weather superscript used here is not the default one that
-        // is available on MacOS by using the shortcut option + 0. The one used in
-        // MacOS does not look good in the user interface.
+
         Text(
-            text = "${temperature}°",
+            text = "$temperature°",
             style = MaterialTheme.typography.labelLarge
         )
     }
-
 }
 
+/**
+ * Displays a weather description and an icon in a horizontal row.
+ *
+ * @param shortDescription Short description of the weather.
+ * @param iconRes Icon to represent the description.
+ * @param modifier Modifier for the row.
+ */
 @Composable
 private fun ShortWeatherDescriptionWithIconRow(
     shortDescription: String,
@@ -135,14 +159,13 @@ private fun ShortWeatherDescriptionWithIconRow(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Explicitly set tint to Color.Unspecified to ensure that no tint is applied to the vector
-        // resource. See documentation of the Icon composable for more information.
         Icon(
             modifier = Modifier.size(24.dp),
             imageVector = ImageVector.vectorResource(id = iconRes),
             contentDescription = null,
             tint = Color.Unspecified
         )
+        Spacer(modifier = Modifier.size(8.dp))
         Text(
             text = shortDescription,
             maxLines = 1,

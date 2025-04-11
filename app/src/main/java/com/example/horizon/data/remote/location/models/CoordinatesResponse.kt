@@ -1,38 +1,49 @@
 package com.example.horizon.data.remote.location.models
 
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.Serializable
 
 /**
- * This class models a response that contains the coordinates of a particular location.
+ * Represents the API response containing geographical coordinate data for a given location.
+ *
+ * @property features A list of features, each containing geometry data with coordinates.
  */
-@JsonClass(generateAdapter = true)
+@Serializable
 data class CoordinatesResponse(val features: List<Feature>) {
+
     /**
-     * This class represents a single feature of the [CoordinatesResponse].
-     * @param geometry Geometry object.
+     * Represents a single feature within the [CoordinatesResponse], which contains
+     * geometric data related to the location.
+     *
+     * @property geometry An object that holds the coordinates of this feature.
      */
-    @JsonClass(generateAdapter = true)
+    @Serializable
     data class Feature(val geometry: Geometry) {
+
         /**
-         * This class is used to hold the geometry of the [Feature] data class.
-         * @param coordinates List of coordinates of a location.
+         * Represents the geometry section of a feature, containing a list of
+         * coordinates [longitude, latitude] as strings.
+         *
+         * @property coordinates A list containing the longitude and latitude of the feature.
          */
-        @JsonClass(generateAdapter = true)
+        @Serializable
         data class Geometry(val coordinates: List<String>)
     }
 
     /**
-     * This class is used to hold the coordinates of a location.
+     * A simplified model to hold the parsed coordinates of a location.
      *
-     * @param longitude Longitude of the location.
-     * @param latitude Latitude of the location.
+     * @property longitude The longitude value as a string.
+     * @property latitude The latitude value as a string.
      */
     data class Coordinates(val longitude: String, val latitude: String)
 }
 
 /**
- * An extension property that is used to get the [CoordinatesResponse.Coordinates] of an instance
- * of [CoordinatesResponse].
+ * Extension property to retrieve the parsed [CoordinatesResponse.Coordinates] from the
+ * first feature of the [CoordinatesResponse].
+ *
+ * @return A [CoordinatesResponse.Coordinates] object containing the longitude and latitude.
+ * @throws NoSuchElementException if the features list is empty or the coordinates are missing.
  */
 val CoordinatesResponse.coordinates: CoordinatesResponse.Coordinates
     get() {
