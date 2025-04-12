@@ -10,11 +10,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.horizon"
+    namespace = "com.project.horizon"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.horizon"
+        applicationId = "com.project.horizon"
         minSdk = 24
         targetSdk = 35
         versionCode = 1
@@ -53,8 +53,8 @@ android {
     }
 
     buildTypes {
-        getByName("release") {
-            isMinifyEnabled = false
+        release {
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
