@@ -16,7 +16,7 @@ Horizon is a simple weather app built completely with Jetpack Compose. Under the
 7. [Building and running the app](#building-and-running-the-app)
 
 ## Demo
-
+https://github.com/user-attachments/assets/476778c5-1ea7-43b2-8929-94fd4a57f6e3
 
 ## Screenshots
 <img src = "screenshots/home_screen.png" width = "240" height = "493"/> &nbsp; <img src = "screenshots/search_screen.png" width = "240" height = "493"/> &nbsp;  <img src = "screenshots/weather_detail_screen.png" width = "240" height = "493"/>
