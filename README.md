@@ -6,12 +6,6 @@
          alt="Project Status: Active – The project has reached a stable, usable state and is being actively developed." />
   </a>
 </p>
-<p align="center">
-  <a href="https://play.google.com/store/apps/details?id=your.app.id">
-    <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" 
-         alt="Get it on Google Play" height="80"/>
-  </a>
-</p>
 
 Horizon is a simple weather app built completely with Jetpack Compose. Under the hood, it uses the [Open-Meteo Weather API](https://open-meteo.com) to fetch the data. It also uses either the [OpenAI API](https://openai.com/blog/openai-api) or [Google's Gemini client SDK](https://ai.google.dev) to display a short whimsical summary of the current weather of a particular location. This app uses the Material 3 design system and also supports dynamic colors on supported devices.
 
