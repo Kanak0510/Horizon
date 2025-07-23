@@ -67,15 +67,15 @@ https://github.com/user-attachments/assets/476778c5-1ea7-43b2-8929-94fd4a57f6e3
 - All concrete implementations are prefixed by the term “Horizon”.
 - Uses multi-repository pattern.
 - MVVM architecture.
-- Each package is considered an individual module/submodule. Most notably, the data "module" is ensured to be considered as a separate module
+- Each package is considered an individual module/submodule. Most notably, the data "module" is considered a separate module
   and is ensured not to depend on any other "modules" in the upper layers of the architecture.
 - Commit messages follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification.
 - Consists of extensive unit tests focusing on testing the data layer.
-- All api methods that use the “get” procedure under the hood have the word “get” as the prefix of the method name. All repository methods that fetch some data have the prefix “fetch” in the method's name. This way, api specific terminologies like “get” and “post” are abstracted away from the clients of the repositories.
+- All api methods that use the “get” procedure under the hood have the word “get” as the prefix of the method name. All repository methods that fetch some data have the prefix “fetch” in the method's name. This way, API-specific terminologies like “get” and “post” are abstracted away from the repositories' clients.
 
 ## Building and running the app
 1. The app can be made to use [Gemini](https://ai.google.dev).
-   for its contextual text generation features. To use either of the two, make sure to get the access / api key for the chosen LLM service,
+   for its contextual text generation features. To use, make sure to get the access / api key for the chosen LLM service,
    and paste it in the `local.properties` file as follows.
 2. Add the API token to the `local.properties` file of your project in the following manner.
 
